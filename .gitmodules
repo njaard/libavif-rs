@@ -4,3 +4,6 @@
 [submodule "libavif-sys/aom"]
 	path = libavif-sys/aom
 	url = https://aomedia.googlesource.com/aom
+[submodule "libavif-sys/dav1d"]
+	path = libavif-sys/dav1d
+	url = https://code.videolan.org/videolan/dav1d.git
