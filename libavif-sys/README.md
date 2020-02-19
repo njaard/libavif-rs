@@ -10,10 +10,9 @@ into an unsafe rust crate.
 Minimal safe wrappers are provided by [libavif](https://crates.io/crates/libavif) and
 a `image`-compatible [libavif-image](https://crates.io/crates/libavif-image).
 
-# Codecs
-This crate, by default, uses `dav1d` for decoding and `rav1e` for encoding, because
-they are the best performing. You can also disable decoding or encoding for smaller
-libraries or also disable those features and instead use `aom`.
+# Codec Features
+This crate, by default, uses `codec-dav1d` for decoding and `codec-rav1e` for encoding, because
+they are the best performing. You can disable those features and instead use `codec-aom`.
 
 # Compiling
 `cmake` is required for compiling the crate.
@@ -25,4 +24,10 @@ uses it through its C-API.
 
 # Platform support
 This crate is only expected to compile on Linux. Patches accepted.
+
+# License
+This crate is released under the BSD-2-Clause license. The dependant
+C-libraries are released under similarly permissive licenses. Patent 
+licenses are also provided.
+
 
