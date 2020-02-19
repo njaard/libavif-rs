@@ -1,0 +1,20 @@
+[package]
+name = "libavif-sys"
+version = "0.1.0"
+authors = ["Kalle Samuels <charles@derkarl.org>"]
+edition = "2018"
+build = "build.rs"
+
+[features]
+default=["codec_dav1d", "codec_rav1e"]
+codec_rav1e=["rav1e"]
+codec_dav1d=["meson"]
+codec_aom=[]
+
+[dependencies]
+libc="0.2"
+rav1e = { version="0.3", features=["asm","capi"], optional=true}
+
+[build-dependencies]
+cmake = "0.1"
+meson= {version="1", optional=true }
