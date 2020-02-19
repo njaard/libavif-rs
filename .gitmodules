@@ -1,3 +1,6 @@
 [submodule "libavif-sys/libavif"]
 	path = libavif-sys/libavif
 	url = https://github.com/AOMediaCodec/libavif.git
+[submodule "libavif-sys/aom"]
+	path = libavif-sys/aom
+	url = https://aomedia.googlesource.com/aom
