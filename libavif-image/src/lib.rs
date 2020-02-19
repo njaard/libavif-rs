@@ -11,7 +11,6 @@
 pub fn is_avif(bytes: &[u8]) -> bool
 {
 	if bytes.len() < 14 { return false; }
-	eprintln!("bytes = {:?}", &bytes[4.. 12]);
 	&bytes[4.. 12] == b"ftypavif"
 }
 
