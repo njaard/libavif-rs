@@ -1,6 +1,6 @@
 [package]
 name = "libavif-image"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Charles Samuels <ks@ks.ax>"]
 edition = "2018"
 description="Load AVIF files into the `image` crate"
