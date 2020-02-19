@@ -13,5 +13,5 @@ license="BSD-2-Clause"
 libavif-sys={version="0.4",path= "libavif-sys" }
 
 [dev-dependencies]
-image="*"
+image="0.23"
 
