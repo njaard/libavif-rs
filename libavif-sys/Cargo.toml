@@ -9,6 +9,7 @@ keywords=["ffi","codec", "image", "avif", "AV1"]
 repository="https://github.com/njaard/libavif"
 documentation="https://docs.rs/libavif-sys"
 license="BSD-2-Clause"
+readme = "README.md"
 
 [features]
 default=["codec-dav1d", "codec-rav1e"]

@@ -8,6 +8,7 @@ keywords=["codec", "image","avif", "AV1"]
 repository="https://github.com/njaard/libavif"
 documentation="https://docs.rs/libavif"
 license="BSD-2-Clause"
+readme = "README.md"
 
 [dependencies]
 libavif-sys={version="0.4",path= "libavif-sys" }
