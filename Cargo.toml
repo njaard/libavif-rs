@@ -1,13 +1,16 @@
 [package]
 name = "libavif"
 version = "0.1.0"
-authors = ["Kalle Samuels <charles@derkarl.org>"]
+authors = ["Charles Samuels <ks@ks.ax>"]
 edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description="High-level API for AVIF image files"
+keywords=["codec", "image","avif", "AV1"]
+repository="https://github.com/njaard/libavif"
+documentation="https://docs.rs/libavif"
+license="BSD-2-Clause"
 
 [dependencies]
-libavif-sys={path= "libavif-sys" }
+libavif-sys={version="0.4",path= "libavif-sys" }
 
 [dev-dependencies]
 image="*"
