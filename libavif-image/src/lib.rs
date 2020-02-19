@@ -1,4 +1,13 @@
+//! Load and Save AVIF from [image](https://crates.io/crates/image)
+//! types.
+//!
+//! Converts to and from YUV (`image` only does RGB).
 
+/// Very efficiently detects AVIF files
+///
+/// returns true if the file header matches the AVIF type
+/// Does not necessarily confirm that the file can actually
+/// be decoded.
 pub fn is_avif(bytes: &[u8]) -> bool
 {
 	if bytes.len() < 14 { return false; }
@@ -6,6 +15,7 @@ pub fn is_avif(bytes: &[u8]) -> bool
 	&bytes[4.. 12] == b"ftypavif"
 }
 
+/// Read data that is in an AVIF file and load it into an image
 pub fn read(bytes: &[u8])
 	-> Result<image::DynamicImage, String>
 {
@@ -26,6 +36,7 @@ pub fn read(bytes: &[u8])
 }
 
 
+/// Save an image into an AVIF file
 pub fn save(src_image: &image::DynamicImage)
 	-> Result<Vec<u8>, String>
 {

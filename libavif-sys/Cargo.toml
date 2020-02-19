@@ -1,15 +1,15 @@
 [package]
 name = "libavif-sys"
-version = "0.1.0"
+version = "0.4.0"
 authors = ["Kalle Samuels <charles@derkarl.org>"]
 edition = "2018"
 build = "build.rs"
 
 [features]
-default=["codec_dav1d", "codec_rav1e"]
-codec_rav1e=["rav1e"]
-codec_dav1d=["meson"]
-codec_aom=[]
+default=["codec-dav1d", "codec-rav1e"]
+codec-rav1e=["rav1e"]
+codec-dav1d=["meson"]
+codec-aom=[]
 
 [dependencies]
 libc="0.2"

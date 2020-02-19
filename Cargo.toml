@@ -8,4 +8,7 @@ edition = "2018"
 
 [dependencies]
 libavif-sys={path= "libavif-sys" }
+
+[dev-dependencies]
 image="*"
+

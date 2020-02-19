@@ -5,10 +5,9 @@ fn main()
 	let mut _build_paths = String::new();
 	let mut avif = Config::new("libavif");
 
-	#[cfg(codec_aom)]
+	#[cfg(feature="codec-aom")]
 	{
 		eprintln!("building aom");
-		let crate_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
 		// let aom = "/home/charles/dev/libavif/target/release/build/libavif-sys-e65a2afd78d3a783/out/build";
 
 		let aom = Config::new("aom")
@@ -25,8 +24,9 @@ fn main()
 		println!("cargo:rustc-link-lib=static=aom");
 	}
 
-	#[cfg(codec_rav1e)]
+	#[cfg(feature="codec-rav1e")]
 	{
+		let crate_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
 		std::fs::create_dir_all(&format!("{}/include/rav1e", std::env::var("OUT_DIR").unwrap())).expect("mkdir");
 		std::fs::copy(
 			&format!("{}/rav1e.h", crate_dir),
@@ -37,7 +37,7 @@ fn main()
 			.define("LIBRAV1E_LIBRARY_PATH", "-rav1e");
 	}
 
-	#[cfg(codec_dav1d)]
+	#[cfg(feature="codec-dav1d")]
 	{
 		let build_path = std::env::var("OUT_DIR").unwrap() + "/dav1d";
 		{
@@ -63,7 +63,7 @@ fn main()
 		}
 		_build_paths += &format!("{}/install;", build_path);
 		println!("cargo:rustc-link-search=native={}/src", build_path);
-		avif.define("AVIF_CODEC_DAV1D", "1")
+		avif.define("AVIF_CODEC_DAV1D", "1");
 	}
 
 	eprintln!("building libavif");
