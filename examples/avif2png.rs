@@ -6,24 +6,23 @@ use image::{DynamicImage, ImageOutputFormat, RgbImage};
 
 fn main() {
     let input = env::args().nth(1).expect("input filename");
-    let mut avifdata = vec![];
+    let mut buf = vec![];
     let mut f = File::open(&input).expect("opening");
-    f.read_to_end(&mut avifdata).expect("reading");
+    f.read_to_end(&mut buf).expect("reading");
 
-    let pixels = libavif::decode_rgb(&avifdata).expect("decoding");
+    let pixels = libavif::decode_rgb(&buf).expect("decoding");
     eprintln!("w={}, h={}", pixels.width(), pixels.height());
 
-    let mut im = RgbImage::new(pixels.width(), pixels.height());
+    let mut img = RgbImage::new(pixels.width(), pixels.height());
 
-    for y in 0..im.height() {
-        for x in 0..im.width() {
+    for y in 0..img.height() {
+        for x in 0..img.width() {
             let (r, g, b, _a) = pixels.pixel(x, y);
-            im.put_pixel(x, y, [r, g, b].into());
+            img.put_pixel(x, y, [r, g, b].into());
         }
     }
 
-    let im = DynamicImage::ImageRgb8(im);
-
-    im.write_to(&mut std::io::stdout(), ImageOutputFormat::Png)
+    let img = DynamicImage::ImageRgb8(img);
+    img.write_to(&mut std::io::stdout(), ImageOutputFormat::Png)
         .expect("out");
 }
