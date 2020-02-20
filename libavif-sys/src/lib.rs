@@ -1,3 +1,4 @@
+#[cfg(feature="codec-rav1e")]
 pub use rav1e::capi::*;
 
 pub const AVIF_PLANE_COUNT_RGB: usize = 3;
@@ -68,8 +69,8 @@ pub const AVIF_CODEC_CHOICE_RAV1E: avifCodecChoice = 3;
 #[allow(non_snake_case)]
 pub struct avifIOStats
 {
-    colorOBUSize: libc::size_t,
-    alphaOBUSize: libc::size_t,
+	colorOBUSize: libc::size_t,
+	alphaOBUSize: libc::size_t,
 }
 
 #[repr(C)]
@@ -97,7 +98,8 @@ pub struct avifImage
 {
 	pub width: u32,
 	pub height: u32,
-	pub depth: u32, // all planes (RGB/YUV/A) must share this depth; if depth>8, all planes are uint16_t internally
+	/// all planes (RGB/YUV/A) must share this depth; if depth>8, all planes are uint16_t internally
+	pub depth: u32,
 
 	pub rgbPlanes: [*mut u8; AVIF_PLANE_COUNT_RGB],
 	pub rgbRowBytes: [u32; AVIF_PLANE_COUNT_RGB],
