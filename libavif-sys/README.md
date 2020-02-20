@@ -12,7 +12,7 @@ a `image`-compatible [libavif-image](https://crates.io/crates/libavif-image).
 
 # Codec Features
 This crate, by default, uses `codec-dav1d` for decoding and `codec-rav1e` for encoding, because
-they are the best performing. You can disable those features and instead use `codec-aom`.
+they have the best (speed) performance. You can disable those features and instead use `codec-aom`.
 
 # Compiling
 * cmake is required for compiling the crate.
