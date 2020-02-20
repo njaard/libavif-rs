@@ -15,12 +15,10 @@ This crate, by default, uses `codec-dav1d` for decoding and `codec-rav1e` for en
 they are the best performing. You can disable those features and instead use `codec-aom`.
 
 # Compiling
-`cmake` is required for compiling the crate.
-
-`dav1d` requires ninja/meson for compiling.
-
-`rav1e` is implemented in Rust and has no other dependencies (though note that libavif itself
-uses it through its C-API.
+* cmake is required for compiling the crate.
+* `dav1d` requires ninja/meson and nasm
+* `rav1e` is implemented in Rust and has no other dependencies (though note that libavif itself
+uses it via rav1e's C-API).
 
 # Platform support
 This crate is only expected to compile on Linux. Patches accepted.
