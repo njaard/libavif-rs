@@ -3,6 +3,8 @@
 //!
 //! Converts to and from YUV (`image` only does RGB).
 
+use image::{DynamicImage, RgbImage};
+
 /// Very efficiently detects AVIF files
 ///
 /// returns true if the file header matches the AVIF type
@@ -13,9 +15,9 @@ pub fn is_avif(bytes: &[u8]) -> bool {
 }
 
 /// Read data that is in an AVIF file and load it into an image
-pub fn read(bytes: &[u8]) -> Result<image::DynamicImage, String> {
+pub fn read(bytes: &[u8]) -> Result<DynamicImage, String> {
     let pixels = libavif::decode_rgb(bytes).map_err(|e| format!("decoding AVIF: {}", e))?;
-    let mut im = image::RgbImage::new(pixels.width(), pixels.height());
+    let mut im = RgbImage::new(pixels.width(), pixels.height());
 
     for y in 0..im.height() {
         for x in 0..im.width() {
@@ -24,13 +26,13 @@ pub fn read(bytes: &[u8]) -> Result<image::DynamicImage, String> {
         }
     }
 
-    Ok(image::DynamicImage::ImageRgb8(im))
+    Ok(DynamicImage::ImageRgb8(im))
 }
 
 /// Save an image into an AVIF file
-pub fn save(src_image: &image::DynamicImage) -> Result<Vec<u8>, String> {
+pub fn save(src_image: &DynamicImage) -> Result<Vec<u8>, String> {
     let src = match src_image {
-        image::DynamicImage::ImageRgb8(image) => image,
+        DynamicImage::ImageRgb8(image) => image,
         _ => return Err("image type not supported".into()),
     };
 

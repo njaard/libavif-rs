@@ -1,6 +1,10 @@
-fn main() {
-    use cmake::Config;
+use std::env;
+use std::fs;
+use std::process::Command;
 
+use cmake::Config;
+
+fn main() {
     let mut _build_paths = String::new();
     let mut avif = Config::new("libavif");
 
@@ -25,18 +29,12 @@ fn main() {
 
     #[cfg(feature = "codec-rav1e")]
     {
-        let crate_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
-        std::fs::create_dir_all(&format!(
-            "{}/include/rav1e",
-            std::env::var("OUT_DIR").unwrap()
-        ))
-        .expect("mkdir");
-        std::fs::copy(
+        let crate_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+        fs::create_dir_all(&format!("{}/include/rav1e", env::var("OUT_DIR").unwrap()))
+            .expect("mkdir");
+        fs::copy(
             &format!("{}/rav1e.h", crate_dir),
-            &format!(
-                "{}/include/rav1e/rav1e.h",
-                std::env::var("OUT_DIR").unwrap()
-            ),
+            &format!("{}/include/rav1e/rav1e.h", env::var("OUT_DIR").unwrap()),
         )
         .expect("copy rav1e.h");
         avif.define("AVIF_CODEC_RAV1E", "1")
@@ -46,11 +44,11 @@ fn main() {
 
     #[cfg(feature = "codec-dav1d")]
     {
-        let build_path = std::env::var("OUT_DIR").unwrap() + "/dav1d";
+        let build_path = env::var("OUT_DIR").unwrap() + "/dav1d";
         {
             println!("cargo:rustc-link-lib=static=dav1d");
             println!("cargo:rustc-link-search=native={}", build_path);
-            let s = std::process::Command::new("meson")
+            let s = Command::new("meson")
                 .arg("--default-library=static")
                 .arg("--buildtype")
                 .arg("release")
@@ -61,7 +59,7 @@ fn main() {
                 .status()
                 .expect("meson");
             assert!(s.success());
-            let s = std::process::Command::new("ninja")
+            let s = Command::new("ninja")
                 .current_dir(&build_path)
                 .arg("install")
                 .status()
@@ -83,5 +81,5 @@ fn main() {
     avif_built.push("lib");
     println!("cargo:rustc-link-search=native={}", avif_built.display());
     println!("cargo:rustc-link-lib=static=avif");
-    println!("cargo:outdir={}", std::env::var("OUT_DIR").unwrap());
+    println!("cargo:outdir={}", env::var("OUT_DIR").unwrap());
 }

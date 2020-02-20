@@ -1,7 +1,8 @@
-use std::io::Write;
+use std::env;
+use std::io::{self, Write};
 
 fn main() {
-    let input = std::env::args().nth(1).expect("input png");
+    let input = env::args().nth(1).expect("input png");
 
     let png = match image::open(&input).expect("opening") {
         image::DynamicImage::ImageRgb8(image) => image,
@@ -14,5 +15,5 @@ fn main() {
 
     let data = libavif::encode_rgb(png.width(), png.height(), rows, 0).expect("encoding avif");
 
-    std::io::stdout().write_all(&data).expect("output avif");
+    io::stdout().write_all(&data).expect("output avif");
 }
