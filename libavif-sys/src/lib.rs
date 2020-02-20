@@ -25,6 +25,23 @@ pub const AVIF_PLANES_A: avifPlanesFlags = 1 << 2;
 pub const AVIF_PLANES_ALL: avifPlanesFlags = 0xff;
 
 #[allow(non_camel_case_types)]
+pub type avifDecoderSource = __enum;
+/// If a moov box is present in the .avif(s), use the tracks in it, otherwise decode the primary item.
+pub const AVIF_DECODER_SOURCE_AUTO: avifDecoderSource = 0;
+
+/// Use the primary item and the aux (alpha) item in the avif(s).
+/// This is where single-image avifs store their image.
+pub const AVIF_DECODER_SOURCE_PRIMARY_ITEM: avifDecoderSource = 1;
+
+/// Use the chunks inside primary/aux tracks in the moov block.
+/// This is where avifs image sequences store their images.
+pub const AVIF_DECODER_SOURCE_TRACKS: avifDecoderSource = 2;
+
+// Decode the thumbnail item. Currently unimplemented.
+// pub const AVIF_DECODER_SOURCE_THUMBNAIL_ITEM
+
+
+#[allow(non_camel_case_types)]
 pub type avifRange = __enum;
 
 pub const AVIF_RANGE_LIMITED: avifRange = 0;
@@ -139,6 +156,23 @@ pub struct avifEncoder
 pub type avifResult = __enum;
 
 pub const AVIF_RESULT_OK: avifResult = 0;
+pub const AVIF_RESULT_UNKNOWN_ERROR: avifResult = 1;
+pub const AVIF_RESULT_INVALID_FTYP: avifResult = 2;
+pub const AVIF_RESULT_NO_CONTENT: avifResult = 3;
+pub const AVIF_RESULT_NO_YUV_FORMAT_SELECTED: avifResult = 4;
+pub const AVIF_RESULT_REFORMAT_FAILED: avifResult = 5;
+pub const AVIF_RESULT_UNSUPPORTED_DEPTH: avifResult = 6;
+pub const AVIF_RESULT_ENCODE_COLOR_FAILED: avifResult = 7;
+pub const AVIF_RESULT_ENCODE_ALPHA_FAILED: avifResult = 8;
+pub const AVIF_RESULT_BMFF_PARSE_FAILED: avifResult = 9;
+pub const AVIF_RESULT_NO_AV1_ITEMS_FOUND: avifResult = 10;
+pub const AVIF_RESULT_DECODE_COLOR_FAILED: avifResult = 11;
+pub const AVIF_RESULT_DECODE_ALPHA_FAILED: avifResult = 12;
+pub const AVIF_RESULT_COLOR_ALPHA_SIZE_MISMATCH: avifResult = 13;
+pub const AVIF_RESULT_ISPE_SIZE_MISMATCH: avifResult = 14;
+pub const AVIF_RESULT_NO_CODEC_AVAILABLE: avifResult = 15;
+pub const AVIF_RESULT_NO_IMAGES_REMAINING: avifResult = 16;
+pub const AVIF_RESULT_INVALID_EXIF_PAYLOAD: avifResult = 17;
 
 #[repr(C)]
 #[allow(non_camel_case_types)]
@@ -166,25 +200,40 @@ extern
 {
 	pub fn avifImageCreateEmpty() -> *mut avifImage;
 	pub fn avifImageCreate(width: libc::c_int, height: libc::c_int, depth: libc::c_int, yuvFormat: avifPixelFormat) -> *mut avifImage;
-	pub fn avifDecoderCreate() -> *mut avifDecoder;
+	pub fn avifImageDestroy(image: *mut avifImage) -> avifResult;
+
 	pub fn avifEncoderCreate() -> *mut avifEncoder;
 	pub fn avifEncoderWrite(encoder: *mut avifEncoder, image: *mut avifImage, output: *mut avifRWData)
 		-> avifResult;
 	pub fn avifEncoderDestroy(encoder: *mut avifEncoder);
 
+	pub fn avifDecoderCreate() -> *mut avifDecoder;
+	pub fn avifDecoderDestroy(decoder: *mut avifDecoder) -> avifResult;
 	pub fn avifDecoderRead(decoder: *mut avifDecoder, image: *mut avifImage, data: *mut avifROData)
 		-> avifResult;
+	pub fn avifDecoderSetSource(decoder: *mut avifDecoder, source: avifDecoderSource)
+		-> avifResult;
+	pub fn avifDecoderParse(decoder: *mut avifDecoder, input: *mut avifROData)
+		-> avifResult;
+	pub fn avifDecoderNextImage(decoder: *mut avifDecoder)
+		-> avifResult;
+	pub fn avifDecoderNthImage(decoder: *mut avifDecoder, frameIndex: u32)
+		-> avifResult;
+	pub fn avifDecoderReset(decoder: *mut avifDecoder)
+		-> avifResult;
+
 	pub fn avifRWDataFree(raw: *mut avifRWData);
 
 	pub fn avifImageYUVToRGB(image: *mut avifImage) -> avifResult;
 	pub fn avifImageRGBToYUV(image: *mut avifImage) -> avifResult;
 
-	pub fn avifImageDestroy(image: *mut avifImage) -> avifResult;
-	pub fn avifDecoderDestroy(decoder: *mut avifDecoder) -> avifResult;
 
 	pub fn avifImageAllocatePlanes(image: *mut avifImage, planes: u32); // Ignores any pre-existing planes
 	pub fn avifImageFreePlanes(image: *mut avifImage, planes: u32); // Ignores any pre-existing planes
 
 	pub fn avifImageSetProfileNCLX(image: *mut avifImage, nclx: *mut avifNclxColorProfile);
+
+	pub fn avifVersion() -> *const libc::c_char;
+	pub fn avifCodecVersions(outBuffer: *mut libc::c_char);
 }
 
