@@ -19,7 +19,7 @@ pub const AVIF_PROFILE_FORMAT_NCLX: avifProfileFormat = 2;
 
 #[allow(non_camel_case_types)]
 pub type avifPlanesFlags = __enum;
-pub const AVIF_PLANES_RGB: avifPlanesFlags = 1 << 0;
+pub const AVIF_PLANES_RGB: avifPlanesFlags = 1;
 pub const AVIF_PLANES_YUV: avifPlanesFlags = 1 << 1;
 pub const AVIF_PLANES_A: avifPlanesFlags = 1 << 2;
 pub const AVIF_PLANES_ALL: avifPlanesFlags = 0xff;

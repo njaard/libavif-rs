@@ -1,3 +1,5 @@
+#![allow(clippy::many_single_char_names)]
+
 use libavif_sys as sys;
 
 pub struct RgbPixels {
@@ -28,14 +30,13 @@ impl RgbPixels {
             let r = *rgb[0].add(x + y * (pitch[0] as usize));
             let g = *rgb[1].add(x + y * (pitch[1] as usize));
             let b = *rgb[2].add(x + y * (pitch[2] as usize));
-            let a;
-            if !(*self.decoded).alphaPlane.is_null() {
+            let a = if !(*self.decoded).alphaPlane.is_null() {
                 let pitch = (*self.decoded).alphaRowBytes;
                 let aplane = (*self.decoded).alphaPlane;
-                a = *aplane.add(x + y * (pitch as usize));
+                *aplane.add(x + y * (pitch as usize))
             } else {
-                a = 255;
-            }
+                255
+            };
             (r, g, b, a)
         }
     }
@@ -89,10 +90,10 @@ pub fn encode_rgb<Rows: Iterator<Item = Vec<(u8, u8, u8)>>>(
         let rgb = (*image).rgbPlanes;
 
         for (y, row) in rows.enumerate() {
-            for x in 0..width {
-                *rgb[0].add(x + y * (pitch[0] as usize)) = row[x].0;
-                *rgb[1].add(x + y * (pitch[1] as usize)) = row[x].1;
-                *rgb[2].add(x + y * (pitch[2] as usize)) = row[x].2;
+            for (x, pixel) in row.iter().enumerate().take(width) {
+                *rgb[0].add(x + y * (pitch[0] as usize)) = pixel.0;
+                *rgb[1].add(x + y * (pitch[1] as usize)) = pixel.1;
+                *rgb[2].add(x + y * (pitch[2] as usize)) = pixel.2;
             }
         }
 

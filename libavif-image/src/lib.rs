@@ -9,10 +9,7 @@
 /// Does not necessarily confirm that the file can actually
 /// be decoded.
 pub fn is_avif(bytes: &[u8]) -> bool {
-    if bytes.len() < 14 {
-        return false;
-    }
-    &bytes[4..12] == b"ftypavif"
+    bytes.get(4..12) == Some(b"ftypavif")
 }
 
 /// Read data that is in an AVIF file and load it into an image
@@ -32,11 +29,10 @@ pub fn read(bytes: &[u8]) -> Result<image::DynamicImage, String> {
 
 /// Save an image into an AVIF file
 pub fn save(src_image: &image::DynamicImage) -> Result<Vec<u8>, String> {
-    let src;
-    match src_image {
-        image::DynamicImage::ImageRgb8(image) => src = image,
-        _ => return Err("image type not supported".to_string()),
-    }
+    let src = match src_image {
+        image::DynamicImage::ImageRgb8(image) => image,
+        _ => return Err("image type not supported".into()),
+    };
 
     let rows = src
         .rows()
