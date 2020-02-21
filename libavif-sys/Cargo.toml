@@ -17,9 +17,15 @@ codec-rav1e = ["rav1e"]
 codec-dav1d = []
 codec-aom = []
 
+__internal_aom_generic_target = []
+
 [dependencies]
 libc = "0.2"
 rav1e = { version = "0.3", features = ["asm", "capi"], optional = true }
 
 [build-dependencies]
 cmake = "0.1"
+
+[package.metadata.docs.rs]
+no-default-features = true
+features = ["codec-aom", "__internal_aom_generic_target"]
