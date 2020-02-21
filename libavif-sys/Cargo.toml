@@ -12,16 +12,14 @@ license="BSD-2-Clause"
 readme = "README.md"
 
 [features]
-default=["codec-dav1d", "codec-rav1e"]
-codec-rav1e=["rav1e"]
-codec-dav1d=["meson"]
-codec-aom=[]
+default = ["codec-dav1d", "codec-rav1e"]
+codec-rav1e = ["rav1e"]
+codec-dav1d = []
+codec-aom = []
 
 [dependencies]
-libc="0.2"
-rav1e = { version="0.3", features=["asm","capi"], optional=true}
+libc = "0.2"
+rav1e = { version = "0.3", features = ["asm", "capi"], optional = true }
 
 [build-dependencies]
 cmake = "0.1"
-meson= {version="1", optional=true }
-
