@@ -1,5 +1,7 @@
 use std::env;
+#[cfg(feature = "codec-rav1e")]
 use std::fs;
+#[cfg(feature = "codec-dav1d")]
 use std::process::Command;
 
 use cmake::Config;
