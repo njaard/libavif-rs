@@ -5,14 +5,7 @@
 
 use image::{DynamicImage, RgbImage};
 
-/// Very efficiently detects AVIF files
-///
-/// returns true if the file header matches the AVIF type
-/// Does not necessarily confirm that the file can actually
-/// be decoded.
-pub fn is_avif(buf: &[u8]) -> bool {
-    buf.get(4..12) == Some(b"ftypavif")
-}
+pub use libavif::is_avif;
 
 /// Read data that is in an AVIF file and load it into an image
 pub fn read(buf: &[u8]) -> Result<DynamicImage, String> {

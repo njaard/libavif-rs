@@ -53,6 +53,15 @@ impl Drop for RgbPixels {
     }
 }
 
+/// Very efficiently detects AVIF files
+///
+/// returns true if the file header matches the AVIF type
+/// Does not necessarily confirm that the file can actually
+/// be decoded.
+pub fn is_avif(buf: &[u8]) -> bool {
+    buf.get(4..12) == Some(b"ftypavif")
+}
+
 /// Decode into RGB pixels
 pub fn decode_rgb(avif_bytes: &[u8]) -> io::Result<RgbPixels> {
     unsafe {
