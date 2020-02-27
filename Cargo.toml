@@ -11,10 +11,22 @@ license="BSD-2-Clause"
 readme = "README.md"
 
 [dependencies]
-libavif-sys={version="0.4",path= "libavif-sys" }
+libavif-sys = { version = "0.4", path = "libavif-sys", default-features = false }
 
 [dev-dependencies]
-image="0.23"
+image = "0.23"
+
+[features]
+default = ["codec-dav1d", "codec-rav1e"]
+codec-rav1e = ["libavif-sys/codec-rav1e"]
+codec-dav1d = ["libavif-sys/codec-dav1d"]
+codec-aom = ["libavif-sys/codec-aom"]
+
+__internal_aom_generic_target = ["libavif-sys/__internal_aom_generic_target"]
+
+[package.metadata.docs.rs]
+no-default-features = true
+features = ["codec-aom", "__internal_aom_generic_target"]
 
 [workspace]
 members = [

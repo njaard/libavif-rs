@@ -13,16 +13,20 @@ fn main() {
         eprintln!("building aom");
         // let aom = "/home/charles/dev/libavif/target/release/build/libavif-sys-e65a2afd78d3a783/out/build";
 
-        let aom = Config::new("aom")
-            .define("ENABLE_DOCS", "0")
+        let mut aom = Config::new("aom");
+        aom.define("ENABLE_DOCS", "0")
             .define("ENABLE_EXAMPLES", "0")
             .define("ENABLE_TESTDATA", "0")
             .define("ENABLE_TESTS", "0")
-            .define("ENABLE_TOOLS", "0")
-            .profile("Release")
-            .build();
+            .define("ENABLE_TOOLS", "0");
 
-        eprintln!("built aom: {:?}", aom);
+        #[cfg(feature = "__internal_aom_generic_target")]
+        {
+            aom.define("AOM_TARGET_CPU", "generic");
+        }
+
+        aom.profile("Release").build();
+
         avif.define("AVIF_CODEC_AOM", "1");
         println!("cargo:rustc-link-lib=static=aom");
     }
