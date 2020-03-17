@@ -58,8 +58,17 @@ impl Drop for RgbPixels {
 /// returns true if the file header matches the AVIF type
 /// Does not necessarily confirm that the file can actually
 /// be decoded.
-pub fn is_avif(buf: &[u8]) -> bool {
-    buf.get(4..12) == Some(b"ftypavif")
+///
+/// Generally requires no more than 64 bytes to make
+/// this determination.
+pub fn is_avif(avif_bytes: &[u8]) -> bool {
+    let raw = sys::avifROData {
+        data: avif_bytes.as_ptr(),
+        size: avif_bytes.len(),
+    };
+    unsafe {
+        sys::avifPeekCompatibleFileType(&raw)==1
+    }
 }
 
 /// Decode into RGB pixels

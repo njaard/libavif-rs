@@ -239,4 +239,9 @@ extern "C" {
 
     pub fn avifVersion() -> *const libc::c_char;
     pub fn avifCodecVersions(outBuffer: *mut libc::c_char);
+
+    /// Returns AVIF_TRUE if input begins with a valid FileTypeBox (ftyp) that supports
+    /// either the brand 'avif' or 'avis' (or both), without performing any allocations.
+    pub fn avifPeekCompatibleFileType(input: *const avifROData) -> avifBool;
 }
+
