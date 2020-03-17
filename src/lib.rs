@@ -1,5 +1,6 @@
 #![allow(clippy::many_single_char_names)]
 
+use std::convert::TryInto;
 use std::io;
 use std::slice;
 
@@ -62,11 +63,11 @@ impl Drop for RgbPixels {
 /// Generally requires no more than 64 bytes to make
 /// this determination.
 pub fn is_avif(avif_bytes: &[u8]) -> bool {
-    let raw = sys::avifROData {
+    let mut raw = sys::avifROData {
         data: avif_bytes.as_ptr(),
         size: avif_bytes.len(),
     };
-    unsafe { sys::avifPeekCompatibleFileType(&raw) == 1 }
+    unsafe { sys::avifPeekCompatibleFileType(&mut raw as *mut sys::avifROData) == 1 }
 }
 
 /// Decode into RGB pixels
@@ -84,7 +85,7 @@ pub fn decode_rgb(avif_bytes: &[u8]) -> io::Result<RgbPixels> {
         if result != sys::AVIF_RESULT_OK {
             return Err(io::Error::new(
                 io::ErrorKind::InvalidData,
-                format!("result={}", result),
+                format!("result={:?}", result),
             ));
         }
         sys::avifImageYUVToRGB(decoded);
@@ -127,11 +128,11 @@ pub fn encode_rgb<Rows: Iterator<Item = Vec<(u8, u8, u8)>>>(
         if result != sys::AVIF_RESULT_OK {
             return Err(io::Error::new(
                 io::ErrorKind::InvalidData,
-                format!("result={}", result),
+                format!("result={:?}", result),
             ));
         }
 
-        let v = slice::from_raw_parts(raw.data, raw.size).to_vec();
+        let v = slice::from_raw_parts(raw.data, raw.size.try_into().unwrap()).to_vec();
 
         sys::avifRWDataFree(&mut raw);
 
