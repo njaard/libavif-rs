@@ -1,7 +1,7 @@
 [package]
 name = "libavif-sys"
 version = "0.4.0"
-authors = ["Kalle Samuels <charles@derkarl.org>"]
+authors = ["Charles Samuels <ks@ks.ax>"]
 edition = "2018"
 build = "build.rs"
 description="Unsafe wrapper around libavif, the image codec"
