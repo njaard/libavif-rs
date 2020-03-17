@@ -2,7 +2,7 @@ use image::GenericImageView;
 
 #[test]
 fn images() {
-    for non_avifs in ["lena512color.jpg"].iter() {
+    for non_avifs in ["rgb.jpg"].iter() {
         let path = format!("tests/{}", non_avifs);
         let image = image::open(path).expect("image::open non avif input");
 
