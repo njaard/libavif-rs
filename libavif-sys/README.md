@@ -4,7 +4,7 @@
 [![Documentation](https://docs.rs/libavif-sys/badge.svg)](https://docs.rs/libavif-sys)
 [![BSD-2-Clause licensed](https://img.shields.io/crates/l/libavif-sys.svg)](../LICENSE)
 [![Rustc Version 1.36+](https://img.shields.io/badge/rustc-1.36+-lightgray.svg)](https://blog.rust-lang.org/2019/07/04/Rust-1.36.0.html)
-[![CI](https://github.com/njaard/libavif/workflows/CI/badge.svg)](https://github.com/njaard/libavif/actions?query=workflow%3ACI)
+[![CI](https://github.com/njaard/libavif-rs/workflows/CI/badge.svg)](https://github.com/njaard/libavif-rs/actions?query=workflow%3ACI)
 
 AVIF is an image codec based on the next-generation
 open, royalty-free video coding format [AV1](https://en.wikipedia.org/wiki/AV1).

@@ -4,7 +4,7 @@
 [![Documentation](https://docs.rs/libavif-image/badge.svg)](https://docs.rs/libavif-image)
 [![BSD-2-Clause licensed](https://img.shields.io/crates/l/libavif-image.svg)](../LICENSE)
 [![Rustc Version 1.36+](https://img.shields.io/badge/rustc-1.36+-lightgray.svg)](https://blog.rust-lang.org/2019/07/04/Rust-1.36.0.html)
-[![CI](https://github.com/njaard/libavif/workflows/CI/badge.svg)](https://github.com/njaard/libavif/actions?query=workflow%3ACI)
+[![CI](https://github.com/njaard/libavif-rs/workflows/CI/badge.svg)](https://github.com/njaard/libavif-rs/actions?query=workflow%3ACI)
 
 This is a woefully incomplete utility crate
 for loading AVIF files into [`image`](https://crates.io/crates/image).

@@ -244,4 +244,3 @@ extern "C" {
     /// either the brand 'avif' or 'avis' (or both), without performing any allocations.
     pub fn avifPeekCompatibleFileType(input: *const avifROData) -> avifBool;
 }
-

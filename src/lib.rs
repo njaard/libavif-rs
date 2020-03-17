@@ -66,9 +66,7 @@ pub fn is_avif(avif_bytes: &[u8]) -> bool {
         data: avif_bytes.as_ptr(),
         size: avif_bytes.len(),
     };
-    unsafe {
-        sys::avifPeekCompatibleFileType(&raw)==1
-    }
+    unsafe { sys::avifPeekCompatibleFileType(&raw) == 1 }
 }
 
 /// Decode into RGB pixels
