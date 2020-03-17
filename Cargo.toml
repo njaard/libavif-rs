@@ -24,6 +24,9 @@ codec-aom = ["libavif-sys/codec-aom"]
 
 __internal_aom_generic_target = ["libavif-sys/__internal_aom_generic_target"]
 
+[profile.dev]
+opt-level = 2
+
 [package.metadata.docs.rs]
 no-default-features = true
 features = ["codec-aom", "__internal_aom_generic_target"]
