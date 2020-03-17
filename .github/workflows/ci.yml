@@ -35,8 +35,6 @@ jobs:
 
   clippy:
     name: Check Clippy
-    needs: [style]
-
     runs-on: ubuntu-latest
 
     steps:
@@ -73,8 +71,6 @@ jobs:
 
   build:
     name: ${{ matrix.name }}
-    needs: [clippy]
-
     runs-on: ${{ matrix.os || 'ubuntu-latest' }}
 
     strategy:
@@ -143,8 +139,6 @@ jobs:
 
   minversion:
     name: Minimum version ${{ matrix.rust }}
-    needs: [build]
-
     runs-on: ubuntu-latest
 
     strategy:
