@@ -80,6 +80,7 @@ jobs:
           - linux / beta
           - linux / nightly
           - macOS / stable
+          - "feat.: codec-aom"
 
         include:
           - name: linux / stable
@@ -91,6 +92,9 @@ jobs:
 
           - name: macOS / stable
             os: macOS-latest
+
+          - name: "feat.: codec-aom"
+            features: "--no-default-features --features codec-aom"
 
     steps:
       - name: Checkout
@@ -130,12 +134,13 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: check
-          args: --all --examples
+          args: ${{ matrix.features }} --all --examples
 
       - name: Test
         uses: actions-rs/cargo@v1
         with:
           command: test
+          args: ${{ matrix.features }}
 
   minversion:
     name: Minimum version ${{ matrix.rust }}
