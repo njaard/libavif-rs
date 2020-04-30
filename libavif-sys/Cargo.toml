@@ -21,7 +21,7 @@ __internal_aom_generic_target = []
 
 [dependencies]
 libc = "0.2"
-rav1e = { version = "0.3", default-features = false, features = ["asm", "capi"], optional = true }
+rav1e = { version = "0.3.1", default-features = false, features = ["asm", "capi"], optional = true }
 
 [build-dependencies]
 cmake = "0.1"

@@ -6,40 +6,32 @@ use std::slice;
 use libavif_sys as sys;
 
 pub struct RgbPixels {
-    decoded: *mut sys::avifImage,
+    rgb: sys::avifRGBImage,
 }
 
 impl RgbPixels {
     /// width of the image in pixels
     pub fn width(&self) -> u32 {
-        unsafe { (*self.decoded).width }
+        self.rgb.width
     }
 
     /// height of the image in pixels
     pub fn height(&self) -> u32 {
-        unsafe { (*self.decoded).height }
+        self.rgb.height
     }
 
     pub fn pixel(&self, x: u32, y: u32) -> (u8, u8, u8, u8) {
         assert!(x < self.width());
         assert!(y < self.height());
+
         unsafe {
-            let x = x as usize;
-            let y = y as usize;
-
-            let pitch = (*self.decoded).rgbRowBytes;
-            let rgb = (*self.decoded).rgbPlanes;
-
-            let r = *rgb[0].add(x + y * (pitch[0] as usize));
-            let g = *rgb[1].add(x + y * (pitch[1] as usize));
-            let b = *rgb[2].add(x + y * (pitch[2] as usize));
-            let a = if !(*self.decoded).alphaPlane.is_null() {
-                let pitch = (*self.decoded).alphaRowBytes;
-                let aplane = (*self.decoded).alphaPlane;
-                *aplane.add(x + y * (pitch as usize))
-            } else {
-                255
-            };
+            let pixels = self.rgb.pixels;
+            let row_bytes = self.rgb.rowBytes as usize;
+            let rgb = pixels.add((4 * x as usize) + (row_bytes * y as usize));
+            let r = *rgb.add(0);
+            let g = *rgb.add(1);
+            let b = *rgb.add(2);
+            let a = *rgb.add(3);
             (r, g, b, a)
         }
     }
@@ -48,7 +40,7 @@ impl RgbPixels {
 impl Drop for RgbPixels {
     fn drop(&mut self) {
         unsafe {
-            sys::avifImageDestroy(self.decoded);
+            sys::avifRGBImageFreePixels(&mut self.rgb as *mut sys::avifRGBImage);
         }
     }
 }
@@ -77,9 +69,9 @@ pub fn decode_rgb(avif_bytes: &[u8]) -> io::Result<RgbPixels> {
             size: avif_bytes.len(),
         };
 
-        let decoded = sys::avifImageCreateEmpty();
+        let image = sys::avifImageCreateEmpty();
         let decoder = sys::avifDecoderCreate();
-        let result = sys::avifDecoderRead(decoder, decoded, &mut raw);
+        let result = sys::avifDecoderRead(decoder, image, &mut raw);
         sys::avifDecoderDestroy(decoder);
         if result != sys::AVIF_RESULT_OK {
             return Err(io::Error::new(
@@ -87,8 +79,17 @@ pub fn decode_rgb(avif_bytes: &[u8]) -> io::Result<RgbPixels> {
                 format!("result={}", result),
             ));
         }
-        sys::avifImageYUVToRGB(decoded);
-        Ok(RgbPixels { decoded })
+
+        let mut rgb = sys::avifRGBImage::default();
+        let raw_rgb = &mut rgb as *mut sys::avifRGBImage;
+        sys::avifRGBImageSetDefaults(raw_rgb, image);
+        rgb.format = sys::AVIF_RGB_FORMAT_RGBA;
+        rgb.depth = 8;
+
+        sys::avifRGBImageAllocatePixels(raw_rgb);
+        sys::avifImageYUVToRGB(image, raw_rgb);
+
+        Ok(RgbPixels { rgb })
     }
 }
 
@@ -101,20 +102,29 @@ pub fn encode_rgb<Rows: Iterator<Item = Vec<(u8, u8, u8)>>>(
 ) -> io::Result<Vec<u8>> {
     unsafe {
         let image = sys::avifImageCreate(width as _, height as _, 8, sys::AVIF_PIXEL_FORMAT_YUV444);
-        sys::avifImageAllocatePlanes(image, sys::AVIF_PLANES_RGB as _);
+        sys::avifImageAllocatePlanes(image, sys::AVIF_PLANES_YUV as _);
+
+        let mut rgb = sys::avifRGBImage::default();
+        sys::avifRGBImageSetDefaults(&mut rgb, image);
+        rgb.format = sys::AVIF_RGB_FORMAT_RGB;
+        rgb.depth = 8;
+
+        sys::avifRGBImageAllocatePixels(&mut rgb);
 
         let width = width as usize;
-
-        let pitch = (*image).rgbRowBytes;
-        let rgb = (*image).rgbPlanes;
-
         for (y, row) in rows.enumerate() {
             for (x, pixel) in row.iter().enumerate().take(width) {
-                *rgb[0].add(x + y * (pitch[0] as usize)) = pixel.0;
-                *rgb[1].add(x + y * (pitch[1] as usize)) = pixel.1;
-                *rgb[2].add(x + y * (pitch[2] as usize)) = pixel.2;
+                let pixels = rgb.pixels;
+                let row_bytes = rgb.rowBytes as usize;
+                let pix = pixels.add((3 * x as usize) + (row_bytes * y as usize));
+
+                *pix.add(0) = pixel.0;
+                *pix.add(1) = pixel.1;
+                *pix.add(2) = pixel.2;
             }
         }
+
+        sys::avifImageRGBToYUV(image, &mut rgb);
 
         let mut encoder = sys::avifEncoderCreate();
         (*encoder).maxThreads = 1;
