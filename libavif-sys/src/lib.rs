@@ -1,7 +1,6 @@
 #[cfg(feature = "codec-rav1e")]
 pub use rav1e::capi::*;
 
-pub const AVIF_PLANE_COUNT_RGB: usize = 3;
 pub const AVIF_PLANE_COUNT_YUV: usize = 3;
 
 #[allow(non_camel_case_types)]
@@ -19,9 +18,8 @@ pub const AVIF_PROFILE_FORMAT_NCLX: avifProfileFormat = 2;
 
 #[allow(non_camel_case_types)]
 pub type avifPlanesFlags = __enum;
-pub const AVIF_PLANES_RGB: avifPlanesFlags = 1;
-pub const AVIF_PLANES_YUV: avifPlanesFlags = 1 << 1;
-pub const AVIF_PLANES_A: avifPlanesFlags = 1 << 2;
+pub const AVIF_PLANES_YUV: avifPlanesFlags = 1;
+pub const AVIF_PLANES_A: avifPlanesFlags = 1 << 1;
 pub const AVIF_PLANES_ALL: avifPlanesFlags = 0xff;
 
 #[allow(non_camel_case_types)]
@@ -56,11 +54,21 @@ pub const AVIF_PIXEL_FORMAT_YUV420: avifPixelFormat = 3;
 pub const AVIF_PIXEL_FORMAT_YV12: avifPixelFormat = 4;
 
 #[allow(non_camel_case_types)]
+pub type avifRGBFormat = __enum;
+
+pub const AVIF_RGB_FORMAT_RGB: avifRGBFormat = 0;
+pub const AVIF_RGB_FORMAT_RGBA: avifRGBFormat = 1;
+pub const AVIF_RGB_FORMAT_ARGB: avifRGBFormat = 2;
+pub const AVIF_RGB_FORMAT_BGR: avifRGBFormat = 3;
+pub const AVIF_RGB_FORMAT_BGRA: avifRGBFormat = 4;
+pub const AVIF_RGB_FORMAT_ABGR: avifRGBFormat = 5;
+
+#[allow(non_camel_case_types)]
 pub type avifCodecChoice = __enum;
 pub const AVIF_CODEC_CHOICE_AUTO: avifCodecChoice = 0;
 pub const AVIF_CODEC_CHOICE_AOM: avifCodecChoice = 1;
 pub const AVIF_CODEC_CHOICE_DAV1D: avifCodecChoice = 2;
-pub const AVIF_CODEC_CHOICE_RAV1E: avifCodecChoice = 3;
+pub const AVIF_CODEC_CHOICE_RAV1E: avifCodecChoice = 4;
 
 #[repr(C)]
 #[allow(non_camel_case_types)]
@@ -93,19 +101,16 @@ pub const AVIF_SPEED_FASTEST: libc::c_int = 10;
 pub struct avifImage {
     pub width: u32,
     pub height: u32,
-    /// all planes (RGB/YUV/A) must share this depth; if depth>8, all planes are uint16_t internally
+    /// all planes must share this depth; if depth>8, all planes are uint16_t internally
     pub depth: u32,
-
-    pub rgbPlanes: [*mut u8; AVIF_PLANE_COUNT_RGB],
-    pub rgbRowBytes: [u32; AVIF_PLANE_COUNT_RGB],
 
     pub yuvFormat: avifPixelFormat,
     pub yuvRange: avifRange,
     pub yuvPlanes: [*mut u8; AVIF_PLANE_COUNT_YUV],
     pub yuvRowBytes: [u32; AVIF_PLANE_COUNT_YUV],
-
     pub decoderOwnsYUVPlanes: avifBool,
 
+    pub alphaRange: avifRange,
     pub alphaPlane: *mut u8,
     pub alphaRowBytes: u32,
     pub decoderOwnsAlphaPlane: avifBool,
@@ -117,6 +122,33 @@ pub struct avifImage {
     // Metadata - set with avifImageSetMetadata*() before write, check .size>0 for existence after read
     pub exif: avifRWData,
     pub xmp: avifRWData,
+}
+
+#[repr(C)]
+#[allow(non_camel_case_types)]
+#[allow(non_snake_case)]
+
+pub struct avifRGBImage {
+    pub width: u32,
+    pub height: u32,
+    pub depth: u32,
+    pub format: avifRGBFormat,
+
+    pub pixels: *mut u8,
+    pub rowBytes: u32,
+}
+
+impl Default for avifRGBImage {
+    fn default() -> Self {
+        unsafe { std::mem::zeroed() }
+    }
+}
+
+#[allow(non_camel_case_types)]
+#[repr(C)]
+#[allow(non_snake_case)]
+pub struct avifEncoderData {
+    _private: [u8; 0],
 }
 
 #[allow(non_camel_case_types)]
@@ -137,6 +169,10 @@ pub struct avifEncoder {
     pub minQuantizer: libc::c_int,
     /// quality
     pub maxQuantizer: libc::c_int,
+    // quality
+    pub minQuantizerAlpha: libc::c_int,
+    // quality
+    pub maxQuantizerAlpha: libc::c_int,
 
     /// range 0-6. Turn off tiling with 0
     pub tileRowsLog2: libc::c_int,
@@ -148,6 +184,9 @@ pub struct avifEncoder {
 
     /// stats from the most recent write
     pub ioStats: avifIOStats,
+
+    // Internals used by the encoder
+    pub data: *mut avifEncoderData,
 }
 
 #[allow(non_camel_case_types)]
@@ -229,8 +268,12 @@ extern "C" {
 
     pub fn avifRWDataFree(raw: *mut avifRWData);
 
-    pub fn avifImageYUVToRGB(image: *mut avifImage) -> avifResult;
-    pub fn avifImageRGBToYUV(image: *mut avifImage) -> avifResult;
+    pub fn avifRGBImageSetDefaults(rgb: *mut avifRGBImage, image: *mut avifImage);
+    pub fn avifRGBImageAllocatePixels(rgb: *mut avifRGBImage);
+    pub fn avifRGBImageFreePixels(rgb: *mut avifRGBImage);
+
+    pub fn avifImageYUVToRGB(image: *mut avifImage, rgb: *mut avifRGBImage) -> avifResult;
+    pub fn avifImageRGBToYUV(image: *mut avifImage, rgb: *mut avifRGBImage) -> avifResult;
 
     pub fn avifImageAllocatePlanes(image: *mut avifImage, planes: u32); // Ignores any pre-existing planes
     pub fn avifImageFreePlanes(image: *mut avifImage, planes: u32); // Ignores any pre-existing planes

@@ -12,9 +12,6 @@ fn main() {
 
     #[cfg(feature = "codec-aom")]
     {
-        eprintln!("building aom");
-        // let aom = "/home/charles/dev/libavif/target/release/build/libavif-sys-e65a2afd78d3a783/out/build";
-
         let mut aom = Config::new("aom");
         aom.define("ENABLE_DOCS", "0")
             .define("ENABLE_EXAMPLES", "0")
@@ -45,7 +42,7 @@ fn main() {
         .expect("copy rav1e.h");
         avif.define("AVIF_CODEC_RAV1E", "1")
             .define("AVIF_CODEC_LIBRARIES", "rav1e")
-            .define("LIBRAV1E_LIBRARY_PATH", "-rav1e");
+            .define("RAV1E_LIBRARY", "-rav1e");
     }
 
     #[cfg(feature = "codec-dav1d")]
