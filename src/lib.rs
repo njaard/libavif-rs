@@ -95,36 +95,30 @@ pub fn decode_rgb(avif_bytes: &[u8]) -> io::Result<RgbPixels> {
     }
 }
 
-/// Encode rows of pixels
-pub fn encode_rgb<Rows: Iterator<Item = Vec<(u8, u8, u8)>>>(
-    width: u32,
-    height: u32,
-    rows: Rows,
-    _q: u32,
-) -> io::Result<AvifData<'static>> {
+/// Encode an 8 bit per channel RGB or RGBA image
+pub fn encode_rgb8(width: u32, height: u32, rgb: &[u8]) -> io::Result<AvifData<'static>> {
+    let (stride, format) = if (width * height * 3) as usize == rgb.len() {
+        // RGB
+        (3, sys::AVIF_RGB_FORMAT_RGB)
+    } else if (width * height * 4) as usize == rgb.len() {
+        // RGBA
+        (4, sys::AVIF_RGB_FORMAT_RGBA)
+    } else {
+        panic!("invalid rgb len")
+    };
+
     unsafe {
         let image = sys::avifImageCreate(width as _, height as _, 8, sys::AVIF_PIXEL_FORMAT_YUV444);
         sys::avifImageAllocatePlanes(image, sys::AVIF_PLANES_YUV as _);
 
-        let mut rgb = sys::avifRGBImage::default();
-        sys::avifRGBImageSetDefaults(&mut rgb, image);
-        rgb.format = sys::AVIF_RGB_FORMAT_RGB;
-        rgb.depth = 8;
-
-        sys::avifRGBImageAllocatePixels(&mut rgb);
-
-        let width = width as usize;
-        for (y, row) in rows.enumerate() {
-            for (x, pixel) in row.iter().enumerate().take(width) {
-                let pixels = rgb.pixels;
-                let row_bytes = rgb.rowBytes as usize;
-                let pix = pixels.add((3 * x as usize) + (row_bytes * y as usize));
-
-                *pix.add(0) = pixel.0;
-                *pix.add(1) = pixel.1;
-                *pix.add(2) = pixel.2;
-            }
-        }
+        let mut rgb = sys::avifRGBImage {
+            width,
+            height,
+            depth: 8,
+            format,
+            pixels: rgb.as_ptr() as *mut u8,
+            rowBytes: stride * width,
+        };
 
         sys::avifImageRGBToYUV(image, &mut rgb);
 

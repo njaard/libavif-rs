@@ -25,16 +25,14 @@ pub fn read(buf: &[u8]) -> Result<DynamicImage, String> {
 
 /// Save an image into an AVIF file
 pub fn save(img: &DynamicImage) -> Result<AvifData, String> {
-    let img = match img {
-        DynamicImage::ImageRgb8(img) => img,
+    let data = match img {
+        DynamicImage::ImageRgb8(img) => {
+            let rgb = img.as_flat_samples();
+            libavif::encode_rgb8(img.width(), img.height(), rgb.as_slice())
+                .map_err(|e| format!("encoding AVIF: {:?}", e))?
+        }
         _ => return Err("image type not supported".into()),
     };
 
-    let rows = img
-        .rows()
-        .map(|row| row.map(|c| (c[0], c[1], c[2])).collect());
-
-    let data = libavif::encode_rgb(img.width(), img.height(), rows, 0)
-        .map_err(|e| format!("encoding AVIF: {:?}", e))?;
     Ok(data)
 }
