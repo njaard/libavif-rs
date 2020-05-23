@@ -10,9 +10,9 @@ fn images() {
         let height = image.height();
 
         let avif = libavif_image::save(&image).expect("encode avif");
-        assert!(libavif_image::is_avif(&avif));
+        assert!(libavif_image::is_avif(avif.as_slice()));
 
-        let image2 = libavif_image::read(&avif).expect("decode avif");
+        let image2 = libavif_image::read(avif.as_slice()).expect("decode avif");
         assert_eq!(width, image2.width());
         assert_eq!(height, image2.height());
     }

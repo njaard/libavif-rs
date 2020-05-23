@@ -13,6 +13,8 @@ fn main() {
         .rows()
         .map(|row| row.map(|c| (c[0], c[1], c[2])).collect());
 
-    let buf = libavif::encode_rgb(img.width(), img.height(), rows, 0).expect("encoding avif");
-    io::stdout().write_all(&buf).expect("output avif");
+    let data = libavif::encode_rgb(img.width(), img.height(), rows, 0).expect("encoding avif");
+    io::stdout()
+        .write_all(data.as_slice())
+        .expect("output avif");
 }

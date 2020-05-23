@@ -1,9 +1,11 @@
 #![allow(clippy::many_single_char_names)]
 
 use std::io;
-use std::slice;
 
+pub use self::data::AvifData;
 use libavif_sys as sys;
+
+mod data;
 
 pub struct RgbPixels {
     rgb: sys::avifRGBImage,
@@ -99,7 +101,7 @@ pub fn encode_rgb<Rows: Iterator<Item = Vec<(u8, u8, u8)>>>(
     height: u32,
     rows: Rows,
     _q: u32,
-) -> io::Result<Vec<u8>> {
+) -> io::Result<AvifData<'static>> {
     unsafe {
         let image = sys::avifImageCreate(width as _, height as _, 8, sys::AVIF_PIXEL_FORMAT_YUV444);
         sys::avifImageAllocatePlanes(image, sys::AVIF_PLANES_YUV as _);
@@ -141,10 +143,6 @@ pub fn encode_rgb<Rows: Iterator<Item = Vec<(u8, u8, u8)>>>(
             ));
         }
 
-        let v = slice::from_raw_parts(raw.data, raw.size).to_vec();
-
-        sys::avifRWDataFree(&mut raw);
-
-        Ok(v)
+        Ok(AvifData::from(raw))
     }
 }
