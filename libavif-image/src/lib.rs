@@ -6,6 +6,7 @@
 use image::{DynamicImage, RgbImage};
 
 pub use libavif::is_avif;
+use libavif::AvifData;
 
 /// Read data that is in an AVIF file and load it into an image
 pub fn read(buf: &[u8]) -> Result<DynamicImage, String> {
@@ -23,7 +24,7 @@ pub fn read(buf: &[u8]) -> Result<DynamicImage, String> {
 }
 
 /// Save an image into an AVIF file
-pub fn save(img: &DynamicImage) -> Result<Vec<u8>, String> {
+pub fn save(img: &DynamicImage) -> Result<AvifData, String> {
     let img = match img {
         DynamicImage::ImageRgb8(img) => img,
         _ => return Err("image type not supported".into()),
