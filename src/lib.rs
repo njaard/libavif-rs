@@ -55,7 +55,7 @@ pub fn decode_rgb(avif_bytes: &[u8]) -> io::Result<RgbPixels> {
         sys::avifImageYUVToRGB(image, raw_rgb);
         sys::avifImageDestroy(image);
 
-        Ok(RgbPixels { rgb })
+        Ok(RgbPixels { inner: rgb })
     }
 }
 

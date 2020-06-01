@@ -1,18 +1,18 @@
 use libavif_sys as sys;
 
 pub struct RgbPixels {
-    pub(crate) rgb: sys::avifRGBImage,
+    pub(crate) inner: sys::avifRGBImage,
 }
 
 impl RgbPixels {
     /// width of the image in pixels
     pub fn width(&self) -> u32 {
-        self.rgb.width
+        self.inner.width
     }
 
     /// height of the image in pixels
     pub fn height(&self) -> u32 {
-        self.rgb.height
+        self.inner.height
     }
 
     pub fn pixel(&self, x: u32, y: u32) -> (u8, u8, u8, u8) {
@@ -20,8 +20,8 @@ impl RgbPixels {
         assert!(y < self.height());
 
         unsafe {
-            let pixels = self.rgb.pixels;
-            let row_bytes = self.rgb.rowBytes as usize;
+            let pixels = self.inner.pixels;
+            let row_bytes = self.inner.rowBytes as usize;
             let rgb = pixels.add((4 * x as usize) + (row_bytes * y as usize));
             let r = *rgb.add(0);
             let g = *rgb.add(1);
@@ -35,7 +35,7 @@ impl RgbPixels {
 impl Drop for RgbPixels {
     fn drop(&mut self) {
         unsafe {
-            sys::avifRGBImageFreePixels(&mut self.rgb as *mut sys::avifRGBImage);
+            sys::avifRGBImageFreePixels(&mut self.inner as *mut sys::avifRGBImage);
         }
     }
 }
