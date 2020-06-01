@@ -1,4 +1,4 @@
-use image::GenericImageView;
+use image::{GenericImageView, Pixel};
 
 #[test]
 fn images() {
@@ -15,5 +15,22 @@ fn images() {
         let image2 = libavif_image::read(avif.as_slice()).expect("decode avif");
         assert_eq!(width, image2.width());
         assert_eq!(height, image2.height());
+
+        let image = image.to_rgba();
+        let image2 = image2.to_rgba();
+
+        let diff = image
+            .pixels()
+            .zip(image2.pixels())
+            .map(|(pix1, pix2)| {
+                pix1.channels()
+                    .iter()
+                    .zip(pix2.channels().iter())
+                    .map(|(p1, p2)| ((*p1 as i64) - (*p2 as i64)).abs() as u64)
+                    .sum::<u64>()
+            })
+            .sum::<u64>()
+            / image.pixels().count() as u64;
+        assert!(diff < 20);
     }
 }
