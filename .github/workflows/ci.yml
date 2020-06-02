@@ -12,8 +12,7 @@ env:
 jobs:
   style:
     name: Check Style
-
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout
@@ -35,7 +34,7 @@ jobs:
 
   clippy:
     name: Check Clippy
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout
@@ -43,28 +42,10 @@ jobs:
         with:
           submodules: true
 
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3.8
-
-      - name: Install nasm
-        env:
-          LINK: http://debian-archive.trafficmanager.net/debian/pool/main/n/nasm
-          NASM_VERSION: 2.14.02-1
-          NASM_SHA256: >-
-            5225d0654783134ae616f56ce8649e4df09cba191d612a0300cfd0494bb5a3ef
-        run: |
-          curl -O "$LINK/nasm_${NASM_VERSION}_amd64.deb"
-          echo "$NASM_SHA256 nasm_${NASM_VERSION}_amd64.deb" | sha256sum --check
-          sudo dpkg -i "nasm_${NASM_VERSION}_amd64.deb"
-
       - name: Install dependencies
         run: |
           DEBIAN_FRONTEND=noninteractive sudo apt-get update
-          DEBIAN_FRONTEND=noninteractive sudo apt-get install -y ninja-build
-          pip install --upgrade pip
-          pip install meson
+          DEBIAN_FRONTEND=noninteractive sudo apt-get install -y ninja-build nasm meson
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
@@ -82,7 +63,7 @@ jobs:
 
   build:
     name: ${{ matrix.name }}
-    runs-on: ${{ matrix.os || 'ubuntu-latest' }}
+    runs-on: ${{ matrix.os || 'ubuntu-20.04' }}
 
     strategy:
       matrix:
@@ -113,37 +94,16 @@ jobs:
         with:
           submodules: true
 
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3.8
-
-      - name: Install nasm (linux)
-        if: matrix.os != 'macOS-latest'
-        env:
-          LINK: http://debian-archive.trafficmanager.net/debian/pool/main/n/nasm
-          NASM_VERSION: 2.14.02-1
-          NASM_SHA256: >-
-            5225d0654783134ae616f56ce8649e4df09cba191d612a0300cfd0494bb5a3ef
-        run: |
-          curl -O "$LINK/nasm_${NASM_VERSION}_amd64.deb"
-          echo "$NASM_SHA256 nasm_${NASM_VERSION}_amd64.deb" | sha256sum --check
-          sudo dpkg -i "nasm_${NASM_VERSION}_amd64.deb"
-
       - name: Install dependencies (linux)
         if: matrix.os != 'macOS-latest'
         run: |
           DEBIAN_FRONTEND=noninteractive sudo apt-get update
-          DEBIAN_FRONTEND=noninteractive sudo apt-get install -y ninja-build
-          pip install --upgrade pip
-          pip install meson
+          DEBIAN_FRONTEND=noninteractive sudo apt-get install -y ninja-build nasm meson
 
       - name: Install dependencies (macOS)
         if: matrix.os == 'macOS-latest'
         run: |
-          brew install ninja nasm
-          pip install --upgrade pip
-          pip install meson
+          brew install ninja nasm meson
 
       - name: Install rust
         uses: actions-rs/toolchain@v1
@@ -167,7 +127,7 @@ jobs:
 
   minversion:
     name: Minimum version ${{ matrix.rust }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     strategy:
       matrix:
@@ -179,28 +139,10 @@ jobs:
         with:
           submodules: true
 
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3.8
-
-      - name: Install nasm
-        env:
-          LINK: http://debian-archive.trafficmanager.net/debian/pool/main/n/nasm
-          NASM_VERSION: 2.14.02-1
-          NASM_SHA256: >-
-            5225d0654783134ae616f56ce8649e4df09cba191d612a0300cfd0494bb5a3ef
-        run: |
-          curl -O "$LINK/nasm_${NASM_VERSION}_amd64.deb"
-          echo "$NASM_SHA256 nasm_${NASM_VERSION}_amd64.deb" | sha256sum --check
-          sudo dpkg -i "nasm_${NASM_VERSION}_amd64.deb"
-
       - name: Install dependencies
         run: |
           DEBIAN_FRONTEND=noninteractive sudo apt-get update
-          DEBIAN_FRONTEND=noninteractive sudo apt-get install -y ninja-build
-          pip install --upgrade pip
-          pip install meson
+          DEBIAN_FRONTEND=noninteractive sudo apt-get install -y ninja-build nasm meson
 
       - name: Install rust
         uses: actions-rs/toolchain@v1
