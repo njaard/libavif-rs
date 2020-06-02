@@ -73,6 +73,7 @@ jobs:
           - linux / nightly
           - macOS / stable
           - "feat.: codec-aom"
+          - linux / 1.36.0
 
         include:
           - name: linux / stable
@@ -81,6 +82,8 @@ jobs:
             rust: beta
           - name: linux / nightly
             rust: nightly
+          - name: linux / 1.36.0
+            rust: 1.36.0
 
           - name: macOS / stable
             os: macOS-latest
@@ -124,35 +127,3 @@ jobs:
         with:
           command: test
           args: ${{ matrix.features }} --all
-
-  minversion:
-    name: Minimum version ${{ matrix.rust }}
-    runs-on: ubuntu-20.04
-
-    strategy:
-      matrix:
-        rust: [1.36.0]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          submodules: true
-
-      - name: Install dependencies
-        run: |
-          DEBIAN_FRONTEND=noninteractive sudo apt-get update
-          DEBIAN_FRONTEND=noninteractive sudo apt-get install -y ninja-build nasm meson
-
-      - name: Install rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: ${{ matrix.rust }}
-          profile: minimal
-          override: true
-
-      - name: Check
-        uses: actions-rs/cargo@v1
-        with:
-          command: check
-          args: --all --examples
