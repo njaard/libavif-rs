@@ -31,6 +31,18 @@ impl<'a> AvifData<'a> {
     pub fn to_vec(&self) -> Vec<u8> {
         self.as_slice().to_vec()
     }
+
+    /// Returns the number of bytes of avif data
+    pub fn len(&self) -> usize {
+        self.as_slice().len()
+    }
+}
+
+impl<'a> std::ops::Deref for AvifData<'a> {
+    type Target = [u8];
+    fn deref(&self) -> &Self::Target {
+        self.as_slice()
+    }
 }
 
 impl<'a> From<sys::avifRWData> for AvifData<'a> {
