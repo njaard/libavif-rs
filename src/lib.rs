@@ -76,6 +76,7 @@ pub fn decode_rgb(avif_bytes: &[u8]) -> io::Result<RgbPixels> {
         let result = sys::avifDecoderRead(decoder, image, &mut raw);
         sys::avifDecoderDestroy(decoder);
         if result != sys::AVIF_RESULT_OK {
+            sys::avifImageDestroy(image);
             return Err(io::Error::new(
                 io::ErrorKind::InvalidData,
                 format!("result={}", result),
@@ -90,6 +91,7 @@ pub fn decode_rgb(avif_bytes: &[u8]) -> io::Result<RgbPixels> {
 
         sys::avifRGBImageAllocatePixels(raw_rgb);
         sys::avifImageYUVToRGB(image, raw_rgb);
+        sys::avifImageDestroy(image);
 
         Ok(RgbPixels { rgb })
     }
