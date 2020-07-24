@@ -36,6 +36,11 @@ impl<'a> AvifData<'a> {
     pub fn len(&self) -> usize {
         self.as_slice().len()
     }
+
+    /// Returns true if the avif data is of zero length
+    pub fn is_empty(&self) -> bool {
+        self.as_slice().is_empty()
+    }
 }
 
 impl<'a> std::ops::Deref for AvifData<'a> {
