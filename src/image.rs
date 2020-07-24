@@ -89,6 +89,13 @@ impl<'a> From<sys::avifRGBImage> for RgbPixels<'a> {
     }
 }
 
+impl<'a> std::ops::Deref for RgbPixels<'a> {
+    type Target = [u8];
+    fn deref(&self) -> &Self::Target {
+        self.as_slice()
+    }
+}
+
 impl Drop for RgbPixels<'_> {
     fn drop(&mut self) {
         if !self.owned {
