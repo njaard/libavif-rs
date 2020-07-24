@@ -118,6 +118,7 @@ pub fn encode_rgb8(width: u32, height: u32, rgb: &[u8]) -> io::Result<AvifData<'
             height,
             depth: 8,
             format,
+            chromaUpsampling: sys::AVIF_CHROMA_UPSAMPLING_BILINEAR,
             pixels: rgb.as_ptr() as *mut u8,
             rowBytes: stride * width,
         };
