@@ -3,49 +3,11 @@
 use std::io;
 
 pub use self::data::AvifData;
+pub use self::image::RgbPixels;
 use libavif_sys as sys;
 
 mod data;
-
-pub struct RgbPixels {
-    rgb: sys::avifRGBImage,
-}
-
-impl RgbPixels {
-    /// width of the image in pixels
-    pub fn width(&self) -> u32 {
-        self.rgb.width
-    }
-
-    /// height of the image in pixels
-    pub fn height(&self) -> u32 {
-        self.rgb.height
-    }
-
-    pub fn pixel(&self, x: u32, y: u32) -> (u8, u8, u8, u8) {
-        assert!(x < self.width());
-        assert!(y < self.height());
-
-        unsafe {
-            let pixels = self.rgb.pixels;
-            let row_bytes = self.rgb.rowBytes as usize;
-            let rgb = pixels.add((4 * x as usize) + (row_bytes * y as usize));
-            let r = *rgb.add(0);
-            let g = *rgb.add(1);
-            let b = *rgb.add(2);
-            let a = *rgb.add(3);
-            (r, g, b, a)
-        }
-    }
-}
-
-impl Drop for RgbPixels {
-    fn drop(&mut self) {
-        unsafe {
-            sys::avifRGBImageFreePixels(&mut self.rgb as *mut sys::avifRGBImage);
-        }
-    }
-}
+mod image;
 
 /// Very efficiently detects AVIF files
 ///
@@ -93,37 +55,19 @@ pub fn decode_rgb(avif_bytes: &[u8]) -> io::Result<RgbPixels> {
         sys::avifImageYUVToRGB(image, raw_rgb);
         sys::avifImageDestroy(image);
 
-        Ok(RgbPixels { rgb })
+        Ok(RgbPixels::from(rgb))
     }
 }
 
 /// Encode an 8 bit per channel RGB or RGBA image
 pub fn encode_rgb8(width: u32, height: u32, rgb: &[u8]) -> io::Result<AvifData<'static>> {
-    let (stride, format) = if (width * height * 3) as usize == rgb.len() {
-        // RGB
-        (3, sys::AVIF_RGB_FORMAT_RGB)
-    } else if (width * height * 4) as usize == rgb.len() {
-        // RGBA
-        (4, sys::AVIF_RGB_FORMAT_RGBA)
-    } else {
-        panic!("invalid rgb len")
-    };
+    let mut rgb = RgbPixels::new(width, height, rgb);
 
     unsafe {
         let image = sys::avifImageCreate(width as _, height as _, 8, sys::AVIF_PIXEL_FORMAT_YUV444);
         sys::avifImageAllocatePlanes(image, sys::AVIF_PLANES_YUV as _);
 
-        let mut rgb = sys::avifRGBImage {
-            width,
-            height,
-            depth: 8,
-            format,
-            chromaUpsampling: sys::AVIF_CHROMA_UPSAMPLING_BILINEAR,
-            pixels: rgb.as_ptr() as *mut u8,
-            rowBytes: stride * width,
-        };
-
-        sys::avifImageRGBToYUV(image, &mut rgb);
+        sys::avifImageRGBToYUV(image, rgb.inner_mut());
 
         let mut encoder = sys::avifEncoderCreate();
         (*encoder).maxThreads = 1;
