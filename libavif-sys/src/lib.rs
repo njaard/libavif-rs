@@ -10,13 +10,6 @@ pub type avifBool = libc::c_int;
 pub type __enum = libc::c_int;
 
 #[allow(non_camel_case_types)]
-pub type avifProfileFormat = __enum;
-
-pub const AVIF_PROFILE_FORMAT_NONE: avifProfileFormat = 0;
-pub const AVIF_PROFILE_FORMAT_ICC: avifProfileFormat = 1;
-pub const AVIF_PROFILE_FORMAT_NCLX: avifProfileFormat = 2;
-
-#[allow(non_camel_case_types)]
 pub type avifPlanesFlags = __enum;
 pub const AVIF_PLANES_YUV: avifPlanesFlags = 1;
 pub const AVIF_PLANES_A: avifPlanesFlags = 1 << 1;
@@ -51,7 +44,72 @@ pub const AVIF_PIXEL_FORMAT_NONE: avifPixelFormat = 0;
 pub const AVIF_PIXEL_FORMAT_YUV444: avifPixelFormat = 1;
 pub const AVIF_PIXEL_FORMAT_YUV422: avifPixelFormat = 2;
 pub const AVIF_PIXEL_FORMAT_YUV420: avifPixelFormat = 3;
-pub const AVIF_PIXEL_FORMAT_YV12: avifPixelFormat = 4;
+pub const AVIF_PIXEL_FORMAT_YUV400: avifPixelFormat = 4;
+
+#[allow(non_camel_case_types)]
+pub type avifChromaSamplePosition = __enum;
+
+pub const AVIF_CHROMA_SAMPLE_POSITION_UNKNOWN: avifChromaSamplePosition = 0;
+pub const AVIF_CHROMA_SAMPLE_POSITION_VERTICAL: avifChromaSamplePosition = 1;
+pub const AVIF_CHROMA_SAMPLE_POSITION_COLOCATED: avifChromaSamplePosition = 2;
+
+#[allow(non_camel_case_types)]
+pub type avifColorPrimaries = __enum;
+
+pub const AVIF_COLOR_PRIMARIES_UNKNOWN: avifColorPrimaries = 0;
+pub const AVIF_COLOR_PRIMARIES_BT709: avifColorPrimaries = 1;
+pub const AVIF_COLOR_PRIMARIES_IEC61966_2_4: avifColorPrimaries = 1;
+pub const AVIF_COLOR_PRIMARIES_UNSPECIFIED: avifColorPrimaries = 2;
+pub const AVIF_COLOR_PRIMARIES_BT470M: avifColorPrimaries = 4;
+pub const AVIF_COLOR_PRIMARIES_BT470BG: avifColorPrimaries = 5;
+pub const AVIF_COLOR_PRIMARIES_BT601: avifColorPrimaries = 6;
+pub const AVIF_COLOR_PRIMARIES_SMPTE240: avifColorPrimaries = 7;
+pub const AVIF_COLOR_PRIMARIES_GENERIC_FILM: avifColorPrimaries = 8;
+pub const AVIF_COLOR_PRIMARIES_BT2020: avifColorPrimaries = 9;
+pub const AVIF_COLOR_PRIMARIES_XYZ: avifColorPrimaries = 10;
+pub const AVIF_COLOR_PRIMARIES_SMPTE431: avifColorPrimaries = 11;
+pub const AVIF_COLOR_PRIMARIES_SMPTE432: avifColorPrimaries = 12;
+pub const AVIF_COLOR_PRIMARIES_EBU3213: avifColorPrimaries = 22;
+
+#[allow(non_camel_case_types)]
+pub type avifTransferCharacteristics = __enum;
+
+pub const AVIF_TRANSFER_CHARACTERISTICS_UNKNOWN: avifTransferCharacteristics = 0;
+pub const AVIF_TRANSFER_CHARACTERISTICS_BT709: avifTransferCharacteristics = 1;
+pub const AVIF_TRANSFER_CHARACTERISTICS_UNSPECIFIED: avifTransferCharacteristics = 2;
+pub const AVIF_TRANSFER_CHARACTERISTICS_BT470M: avifTransferCharacteristics = 4;
+pub const AVIF_TRANSFER_CHARACTERISTICS_BT470BG: avifTransferCharacteristics = 5;
+pub const AVIF_TRANSFER_CHARACTERISTICS_BT601: avifTransferCharacteristics = 6;
+pub const AVIF_TRANSFER_CHARACTERISTICS_SMPTE240: avifTransferCharacteristics = 7;
+pub const AVIF_TRANSFER_CHARACTERISTICS_LINEAR: avifTransferCharacteristics = 8;
+pub const AVIF_TRANSFER_CHARACTERISTICS_LOG100: avifTransferCharacteristics = 9;
+pub const AVIF_TRANSFER_CHARACTERISTICS_LOG100_SQRT10: avifTransferCharacteristics = 10;
+pub const AVIF_TRANSFER_CHARACTERISTICS_IEC61966: avifTransferCharacteristics = 11;
+pub const AVIF_TRANSFER_CHARACTERISTICS_BT1361: avifTransferCharacteristics = 12;
+pub const AVIF_TRANSFER_CHARACTERISTICS_SRGB: avifTransferCharacteristics = 13;
+pub const AVIF_TRANSFER_CHARACTERISTICS_BT2020_10BIT: avifTransferCharacteristics = 14;
+pub const AVIF_TRANSFER_CHARACTERISTICS_BT2020_12BIT: avifTransferCharacteristics = 15;
+pub const AVIF_TRANSFER_CHARACTERISTICS_SMPTE2084: avifTransferCharacteristics = 16;
+pub const AVIF_TRANSFER_CHARACTERISTICS_SMPTE428: avifTransferCharacteristics = 17;
+pub const AVIF_TRANSFER_CHARACTERISTICS_HLG: avifTransferCharacteristics = 18;
+
+#[allow(non_camel_case_types)]
+pub type avifMatrixCoefficients = __enum;
+
+pub const AVIF_MATRIX_COEFFICIENTS_IDENTITY: avifMatrixCoefficients = 0;
+pub const AVIF_MATRIX_COEFFICIENTS_BT709: avifMatrixCoefficients = 1;
+pub const AVIF_MATRIX_COEFFICIENTS_UNSPECIFIED: avifMatrixCoefficients = 2;
+pub const AVIF_MATRIX_COEFFICIENTS_FCC: avifMatrixCoefficients = 4;
+pub const AVIF_MATRIX_COEFFICIENTS_BT470BG: avifMatrixCoefficients = 5;
+pub const AVIF_MATRIX_COEFFICIENTS_BT601: avifMatrixCoefficients = 6;
+pub const AVIF_MATRIX_COEFFICIENTS_SMPTE240: avifMatrixCoefficients = 7;
+pub const AVIF_MATRIX_COEFFICIENTS_YCGCO: avifMatrixCoefficients = 8;
+pub const AVIF_MATRIX_COEFFICIENTS_BT2020_NCL: avifMatrixCoefficients = 9;
+pub const AVIF_MATRIX_COEFFICIENTS_BT2020_CL: avifMatrixCoefficients = 10;
+pub const AVIF_MATRIX_COEFFICIENTS_SMPTE2085: avifMatrixCoefficients = 11;
+pub const AVIF_MATRIX_COEFFICIENTS_CHROMA_DERIVED_NCL: avifMatrixCoefficients = 12;
+pub const AVIF_MATRIX_COEFFICIENTS_CHROMA_DERIVED_CL: avifMatrixCoefficients = 13;
+pub const AVIF_MATRIX_COEFFICIENTS_ICTCP: avifMatrixCoefficients = 14;
 
 #[allow(non_camel_case_types)]
 pub type avifRGBFormat = __enum;
@@ -62,6 +120,12 @@ pub const AVIF_RGB_FORMAT_ARGB: avifRGBFormat = 2;
 pub const AVIF_RGB_FORMAT_BGR: avifRGBFormat = 3;
 pub const AVIF_RGB_FORMAT_BGRA: avifRGBFormat = 4;
 pub const AVIF_RGB_FORMAT_ABGR: avifRGBFormat = 5;
+
+#[allow(non_camel_case_types)]
+pub type avifChromaUpsampling = __enum;
+
+pub const AVIF_CHROMA_UPSAMPLING_BILINEAR: avifChromaUpsampling = 0;
+pub const AVIF_CHROMA_UPSAMPLING_NEAREST: avifChromaUpsampling = 1;
 
 #[allow(non_camel_case_types)]
 pub type avifCodecChoice = __enum;
@@ -76,15 +140,6 @@ pub const AVIF_CODEC_CHOICE_RAV1E: avifCodecChoice = 4;
 pub struct avifIOStats {
     colorOBUSize: libc::size_t,
     alphaOBUSize: libc::size_t,
-}
-
-#[repr(C)]
-#[allow(non_snake_case)]
-pub struct avifNclxColorProfile {
-    pub colourPrimaries: u16,
-    pub transferCharacteristics: u16,
-    pub matrixCoefficients: u16,
-    pub fullRangeFlag: u8,
 }
 
 pub const AVIF_QUANTIZER_LOSSLESS: libc::c_int = 0;
@@ -106,18 +161,21 @@ pub struct avifImage {
 
     pub yuvFormat: avifPixelFormat,
     pub yuvRange: avifRange,
+    pub yuvChromaSamplePosition: avifChromaSamplePosition,
     pub yuvPlanes: [*mut u8; AVIF_PLANE_COUNT_YUV],
     pub yuvRowBytes: [u32; AVIF_PLANE_COUNT_YUV],
-    pub decoderOwnsYUVPlanes: avifBool,
+    pub imageOwnsYUVPlanes: avifBool,
 
     pub alphaRange: avifRange,
     pub alphaPlane: *mut u8,
     pub alphaRowBytes: u32,
-    pub decoderOwnsAlphaPlane: avifBool,
+    pub imageOwnsAlphaPlane: avifBool,
 
-    pub profileFormat: avifProfileFormat,
     pub icc: avifRWData,
-    pub nclx: avifNclxColorProfile,
+
+    pub colorPrimaries: avifColorPrimaries,
+    pub transferCharacteristics: avifTransferCharacteristics,
+    pub matrixCoefficients: avifMatrixCoefficients,
 
     // Metadata - set with avifImageSetMetadata*() before write, check .size>0 for existence after read
     pub exif: avifRWData,
@@ -133,6 +191,7 @@ pub struct avifRGBImage {
     pub height: u32,
     pub depth: u32,
     pub format: avifRGBFormat,
+    pub chromaUpsampling: avifChromaUpsampling,
 
     pub pixels: *mut u8,
     pub rowBytes: u32,
@@ -277,8 +336,6 @@ extern "C" {
 
     pub fn avifImageAllocatePlanes(image: *mut avifImage, planes: u32); // Ignores any pre-existing planes
     pub fn avifImageFreePlanes(image: *mut avifImage, planes: u32); // Ignores any pre-existing planes
-
-    pub fn avifImageSetProfileNCLX(image: *mut avifImage, nclx: *mut avifNclxColorProfile);
 
     pub fn avifVersion() -> *const libc::c_char;
     pub fn avifCodecVersions(outBuffer: *mut libc::c_char);
