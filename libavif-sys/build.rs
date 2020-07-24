@@ -9,6 +9,7 @@ use cmake::Config;
 fn main() {
     let mut _build_paths = String::new();
     let mut avif = Config::new("libavif");
+    let out_dir = env::var("OUT_DIR").unwrap();
 
     #[cfg(feature = "codec-aom")]
     {
@@ -33,11 +34,11 @@ fn main() {
     #[cfg(feature = "codec-rav1e")]
     {
         let crate_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-        fs::create_dir_all(&format!("{}/include/rav1e", env::var("OUT_DIR").unwrap()))
+        fs::create_dir_all(&format!("{}/include/rav1e", out_dir))
             .expect("mkdir");
         fs::copy(
             &format!("{}/rav1e.h", crate_dir),
-            &format!("{}/include/rav1e/rav1e.h", env::var("OUT_DIR").unwrap()),
+            &format!("{}/include/rav1e/rav1e.h", out_dir),
         )
         .expect("copy rav1e.h");
         avif.define("AVIF_CODEC_RAV1E", "1")
@@ -47,7 +48,7 @@ fn main() {
 
     #[cfg(feature = "codec-dav1d")]
     {
-        let build_path = env::var("OUT_DIR").unwrap() + "/dav1d";
+        let build_path = out_dir.clone() + "/dav1d";
         {
             println!("cargo:rustc-link-lib=static=dav1d");
             println!("cargo:rustc-link-search=native={}", build_path);
@@ -76,13 +77,19 @@ fn main() {
 
     eprintln!("building libavif");
 
+    let local_pc_files = env::join_paths(
+        std::iter::once(std::path::Path::new(&out_dir).join("lib").join("pkgconfig"))
+            .chain(env::var("PKG_CONFIG_PATH").ok().iter().flat_map(|v| env::split_paths(v)))
+    ).unwrap();
+
     let mut avif_built = avif
         .define("CMAKE_PREFIX_PATH", &_build_paths)
         .define("BUILD_SHARED_LIBS", "0")
+        .env("PKG_CONFIG_PATH", local_pc_files)
         .profile("Release")
         .build();
     avif_built.push("lib");
     println!("cargo:rustc-link-search=native={}", avif_built.display());
     println!("cargo:rustc-link-lib=static=avif");
-    println!("cargo:outdir={}", env::var("OUT_DIR").unwrap());
+    println!("cargo:outdir={}", out_dir);
 }
