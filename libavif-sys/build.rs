@@ -34,8 +34,7 @@ fn main() {
     #[cfg(feature = "codec-rav1e")]
     {
         let crate_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-        fs::create_dir_all(&format!("{}/include/rav1e", out_dir))
-            .expect("mkdir");
+        fs::create_dir_all(&format!("{}/include/rav1e", out_dir)).expect("mkdir");
         fs::copy(
             &format!("{}/rav1e.h", crate_dir),
             &format!("{}/include/rav1e/rav1e.h", out_dir),
@@ -78,9 +77,14 @@ fn main() {
     eprintln!("building libavif");
 
     let local_pc_files = env::join_paths(
-        std::iter::once(std::path::Path::new(&out_dir).join("lib").join("pkgconfig"))
-            .chain(env::var("PKG_CONFIG_PATH").ok().iter().flat_map(|v| env::split_paths(v)))
-    ).unwrap();
+        std::iter::once(std::path::Path::new(&out_dir).join("lib").join("pkgconfig")).chain(
+            env::var("PKG_CONFIG_PATH")
+                .ok()
+                .iter()
+                .flat_map(|v| env::split_paths(v)),
+        ),
+    )
+    .unwrap();
 
     let mut avif_built = avif
         .define("CMAKE_PREFIX_PATH", &_build_paths)
