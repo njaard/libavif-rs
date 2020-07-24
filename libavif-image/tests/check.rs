@@ -28,6 +28,6 @@ fn images() {
             })
             .sum::<u64>()
             / image.pixels().count() as u64;
-        assert!(diff < 16);
+        assert!(diff < 20);
     }
 }
