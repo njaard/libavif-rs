@@ -25,6 +25,11 @@ pub fn save(img: &DynamicImage) -> Result<AvifData, String> {
             libavif::encode_rgb8(img.width(), img.height(), rgb.as_slice())
                 .map_err(|e| format!("encoding AVIF: {:?}", e))?
         }
+        DynamicImage::ImageRgba8(img) => {
+            let rgb = img.as_flat_samples();
+            libavif::encode_rgb8(img.width(), img.height(), rgb.as_slice())
+                .map_err(|e| format!("encoding AVIF: {:?}", e))?
+        }
         _ => return Err("image type not supported".into()),
     };
 
