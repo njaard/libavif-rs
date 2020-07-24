@@ -72,6 +72,7 @@ jobs:
           - linux / beta
           - linux / nightly
           - macOS / stable
+          - windows / stable
           - "feat.: codec-aom"
           - linux / 1.36.0
 
@@ -87,6 +88,8 @@ jobs:
 
           - name: macOS / stable
             os: macOS-latest
+          - name: windows / stable
+            os: windows-latest
 
           - name: "feat.: codec-aom"
             features: "--no-default-features --features codec-aom"
@@ -98,7 +101,7 @@ jobs:
           submodules: true
 
       - name: Install dependencies (linux)
-        if: matrix.os != 'macOS-latest'
+        if: (matrix.os || 'ubuntu-20.04') == 'ubuntu-20.04'
         run: |
           DEBIAN_FRONTEND=noninteractive sudo apt-get update
           DEBIAN_FRONTEND=noninteractive sudo apt-get install -y ninja-build nasm meson
@@ -107,6 +110,16 @@ jobs:
         if: matrix.os == 'macOS-latest'
         run: |
           brew install ninja nasm meson
+
+      - name: Install dependencies (windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          choco install -y ninja
+          pip install meson
+
+      - name: Install nasm (windows)
+        if: matrix.os == 'windows-latest'
+        uses: ilammy/setup-nasm@v1
 
       - name: Install rust
         uses: actions-rs/toolchain@v1
