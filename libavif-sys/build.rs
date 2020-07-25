@@ -5,13 +5,13 @@ use std::path::Path;
 #[cfg(feature = "codec-dav1d")]
 use std::process::Command;
 
-use std::ffi::OsString;
 use cmake::Config;
+use std::ffi::OsString;
 
 fn main() {
     let out_dir_ = env::var("OUT_DIR").unwrap();
     let out_dir = Path::new(&out_dir_);
-    let mut _build_paths = vec!();
+    let mut _build_paths = vec![];
     let mut avif = Config::new("libavif");
 
     #[cfg(feature = "codec-aom")]
@@ -57,7 +57,7 @@ fn main() {
         .collect();
     pc_paths.reverse();
 
-    pc_paths.push( std::path::Path::new(&out_dir).join("lib").join("pkgconfig") );
+    pc_paths.push(out_dir.join("lib").join("pkgconfig"));
 
     let _dav1d_libbpath;
 
@@ -94,7 +94,7 @@ fn main() {
             build_path.join("src").display()
         );
         avif.define("AVIF_CODEC_DAV1D", "1");
-        pc_paths.push( build_path.join("install").join("lib").join("pkgconfig") );
+        pc_paths.push(build_path.join("install").join("lib").join("pkgconfig"));
         _dav1d_libbpath = build_path.join("install").join("lib").join("libdav1d.a");
     }
 
@@ -103,17 +103,21 @@ fn main() {
     let local_pc_files = env::join_paths(pc_paths.iter().rev()).unwrap();
     let mut build_paths: OsString = OsString::new();
     for s in _build_paths {
-        build_paths.push( s.as_os_str().to_owned() );
-        //build_paths.push( ";" );
-	}
+        build_paths.push(s.as_os_str().to_owned());
+        // build_paths.push(";");
+    }
 
     eprintln!("pc=\"{:?}\"; bp=\"{:?}\"", local_pc_files, build_paths);
 
     let avif_built = avif
         .define("CMAKE_PREFIX_PATH", build_paths)
         .define("BUILD_SHARED_LIBS", "0");
-    #[cfg(target_os = "windows")] avif_built.define("DAV1D_LIBRARY", _dav1d_libbpath);
-    let mut avif_built = avif_built.env("PKG_CONFIG_PATH", local_pc_files)
+
+    #[cfg(target_os = "windows")]
+    avif_built.define("DAV1D_LIBRARY", _dav1d_libbpath);
+
+    let mut avif_built = avif_built
+        .env("PKG_CONFIG_PATH", local_pc_files)
         .profile("Release")
         .build();
 
