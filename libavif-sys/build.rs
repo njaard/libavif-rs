@@ -5,12 +5,13 @@ use std::path::Path;
 #[cfg(feature = "codec-dav1d")]
 use std::process::Command;
 
+use std::ffi::OsString;
 use cmake::Config;
 
 fn main() {
     let out_dir_ = env::var("OUT_DIR").unwrap();
     let out_dir = Path::new(&out_dir_);
-    let mut _build_paths = String::new();
+    let mut _build_paths = vec!();
     let mut avif = Config::new("libavif");
 
     #[cfg(feature = "codec-aom")]
@@ -49,6 +50,17 @@ fn main() {
             .define("RAV1E_LIBRARY", "-rav1e");
     }
 
+    let mut pc_paths: Vec<_> = env::var("PKG_CONFIG_PATH")
+        .ok()
+        .iter()
+        .flat_map(|v| env::split_paths(v))
+        .collect();
+    pc_paths.reverse();
+
+    pc_paths.push( std::path::Path::new(&out_dir).join("lib").join("pkgconfig") );
+
+    let _dav1d_libbpath;
+
     #[cfg(feature = "codec-dav1d")]
     {
         let build_path = out_dir.join("dav1d");
@@ -74,32 +86,34 @@ fn main() {
                 .status()
                 .expect("ninja");
             assert!(s.success());
+            eprintln!("the dav1d build_path is {:?}", build_path)
         }
-        _build_paths.push_str(build_path.join("install").to_str().unwrap());
-        _build_paths.push(';');
+        _build_paths.push(build_path.join("install"));
         println!(
             "cargo:rustc-link-search=native={}",
             build_path.join("src").display()
         );
         avif.define("AVIF_CODEC_DAV1D", "1");
+        pc_paths.push( build_path.join("install").join("lib").join("pkgconfig") );
+        _dav1d_libbpath = build_path.join("install").join("lib").join("libdav1d.a");
     }
 
     eprintln!("building libavif");
 
-    let local_pc_files = env::join_paths(
-        std::iter::once(std::path::Path::new(&out_dir).join("lib").join("pkgconfig")).chain(
-            env::var("PKG_CONFIG_PATH")
-                .ok()
-                .iter()
-                .flat_map(|v| env::split_paths(v)),
-        ),
-    )
-    .unwrap();
+    let local_pc_files = env::join_paths(pc_paths.iter().rev()).unwrap();
+    let mut build_paths: OsString = OsString::new();
+    for s in _build_paths {
+        build_paths.push( s.as_os_str().to_owned() );
+        //build_paths.push( ";" );
+	}
 
-    let mut avif_built = avif
-        .define("CMAKE_PREFIX_PATH", _build_paths)
-        .define("BUILD_SHARED_LIBS", "0")
-        .env("PKG_CONFIG_PATH", local_pc_files)
+    eprintln!("pc=\"{:?}\"; bp=\"{:?}\"", local_pc_files, build_paths);
+
+    let avif_built = avif
+        .define("CMAKE_PREFIX_PATH", build_paths)
+        .define("BUILD_SHARED_LIBS", "0");
+    #[cfg(target_os = "windows")] avif_built.define("DAV1D_LIBRARY", _dav1d_libbpath);
+    let mut avif_built = avif_built.env("PKG_CONFIG_PATH", local_pc_files)
         .profile("Release")
         .build();
 
