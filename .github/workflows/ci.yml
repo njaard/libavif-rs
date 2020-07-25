@@ -119,7 +119,12 @@ jobs:
 
       - name: Install nasm (windows)
         if: matrix.os == 'windows-latest'
-        uses: ilammy/setup-nasm@v1
+        run: |
+          $NASM_VERSION="2.15.02"
+          $LINK="https://www.nasm.us/pub/nasm/releasebuilds/$NASM_VERSION/win64"
+          curl -LO "$LINK/nasm-$NASM_VERSION-win64.zip"
+          7z e -y "nasm-$NASM_VERSION-win64.zip" -o"C:\nasm"
+          echo "::add-path::C:\nasm"
 
       - name: Install rust
         uses: actions-rs/toolchain@v1
