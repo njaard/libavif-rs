@@ -60,6 +60,9 @@ fn main() {
     pc_paths.push(out_dir.join("lib").join("pkgconfig"));
 
     #[cfg(feature = "codec-dav1d")]
+    pc_paths.push( std::path::Path::new(&out_dir).join("lib").join("pkgconfig") );
+
+    #[cfg(feature = "codec-dav1d")]
     let _dav1d_libbpath = {
         let david_build_path = out_dir.join("dav1d");
         {
@@ -87,7 +90,7 @@ fn main() {
                 david_build_path.join("src").join("dav1d.lib"),
             )
             .unwrap();
-            eprintln!("david_build_path is {:?}", david_build_path)
+            eprintln!("david_build_path is {:?}", david_build_path);
         }
         _build_paths.push(david_build_path.join("install"));
         println!("cargo:rustc-link-lib=static=dav1d");
@@ -128,6 +131,7 @@ fn main() {
 
     #[cfg(all(target_os = "windows", feature = "codec-dav1d"))]
     avif_built.define("DAV1D_LIBRARY", _dav1d_libbpath);
+
     if env::var_os("CI").is_some() {
         avif_built.very_verbose(true);
     }

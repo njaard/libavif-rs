@@ -112,6 +112,67 @@ pub const AVIF_MATRIX_COEFFICIENTS_CHROMA_DERIVED_CL: avifMatrixCoefficients = 1
 pub const AVIF_MATRIX_COEFFICIENTS_ICTCP: avifMatrixCoefficients = 14;
 
 #[allow(non_camel_case_types)]
+pub type avifTransformationFlags = __enum;
+pub const AVIF_TRANSFORM_NONE: avifTransformationFlags = 0;
+pub const AVIF_TRANSFORM_PASP: avifTransformationFlags = 1 << 0;
+pub const AVIF_TRANSFORM_CLAP: avifTransformationFlags = 1 << 1;
+pub const AVIF_TRANSFORM_IROT: avifTransformationFlags = 1 << 2;
+pub const AVIF_TRANSFORM_IMIR: avifTransformationFlags = 1 << 3;
+
+#[repr(C)]
+#[allow(non_camel_case_types)]
+#[allow(non_snake_case)]
+/// 'pasp' from ISO/IEC 14496-12:2015 12.1.4.3
+///
+/// define the relative width and height of a pixel
+pub struct avifPixelAspectRatioBox {
+    pub hSpacing: u32,
+    pub vSpacing: u32,
+}
+
+#[repr(C)]
+#[allow(non_camel_case_types)]
+#[allow(non_snake_case)]
+/// 'clap' from ISO/IEC 14496-12:2015 12.1.4.3
+pub struct avifCleanApertureBox {
+    /// a fractional number which defines the exact clean aperture width, in counted pixels, of the video image
+    widthN: u32,
+    widthD: u32,
+
+    /// a fractional number which defines the exact clean aperture height, in counted pixels, of the video image
+    heightN: u32,
+    heightD: u32,
+
+    /// a fractional number which defines the horizontal offset of clean aperture centre minus (width‐1)/2. Typically 0.
+    horizOffN: u32,
+    horizOffD: u32,
+
+    /// a fractional number which defines the vertical offset of clean aperture centre minus (height‐1)/2. Typically 0.
+    vertOffN: u32,
+    vertOffD: u32,
+}
+
+#[repr(C)]
+#[allow(non_camel_case_types)]
+#[allow(non_snake_case)]
+/// 'irot' from ISO/IEC 23008-12:2017 6.5.10
+pub struct avifImageRotation {
+    /// angle * 90 specifies the angle (in anti-clockwise direction) in units of degrees.
+    /// legal values: [0-3]
+    angle: u8,
+}
+
+#[repr(C)]
+#[allow(non_camel_case_types)]
+#[allow(non_snake_case)]
+/// 'imir' from ISO/IEC 23008-12:2017 6.5.12
+pub struct avifImageMirror {
+    /// axis specifies a vertical (axis = 0) or horizontal (axis = 1) axis for the mirroring operation.
+    /// legal values: [0, 1]
+    axis: u8,
+}
+
+#[allow(non_camel_case_types)]
 pub type avifRGBFormat = __enum;
 
 pub const AVIF_RGB_FORMAT_RGB: avifRGBFormat = 0;
@@ -176,6 +237,12 @@ pub struct avifImage {
     pub colorPrimaries: avifColorPrimaries,
     pub transferCharacteristics: avifTransferCharacteristics,
     pub matrixCoefficients: avifMatrixCoefficients,
+
+    pub transformFlags: u32,
+    pub pasp: avifPixelAspectRatioBox,
+    pub clap: avifCleanApertureBox,
+    pub irot: avifImageRotation,
+    pub imir: avifImageMirror,
 
     // Metadata - set with avifImageSetMetadata*() before write, check .size>0 for existence after read
     pub exif: avifRWData,
