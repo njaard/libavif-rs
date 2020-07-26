@@ -59,10 +59,8 @@ fn main() {
 
     pc_paths.push(out_dir.join("lib").join("pkgconfig"));
 
-    let _dav1d_libbpath;
-
     #[cfg(feature = "codec-dav1d")]
-    {
+    let _dav1d_libbpath = {
         let build_path = out_dir.join("dav1d");
         {
             println!("cargo:rustc-link-lib=static=dav1d");
@@ -95,8 +93,8 @@ fn main() {
         );
         avif.define("AVIF_CODEC_DAV1D", "1");
         pc_paths.push(build_path.join("install").join("lib").join("pkgconfig"));
-        _dav1d_libbpath = build_path.join("install").join("lib").join("libdav1d.a");
-    }
+        build_path.join("install").join("lib").join("libdav1d.a")
+    };
 
     eprintln!("building libavif");
 
@@ -113,7 +111,7 @@ fn main() {
         .define("CMAKE_PREFIX_PATH", build_paths)
         .define("BUILD_SHARED_LIBS", "0");
 
-    #[cfg(target_os = "windows")]
+    #[cfg(all(target_os = "windows", feature = "codec-dav1d"))]
     avif_built.define("DAV1D_LIBRARY", _dav1d_libbpath);
 
     let mut avif_built = avif_built
