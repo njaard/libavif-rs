@@ -48,19 +48,12 @@ impl<'a> RgbPixels<'a> {
     }
 
     pub fn pixel(&self, x: u32, y: u32) -> (u8, u8, u8, u8) {
-        assert!(x < self.width());
-        assert!(y < self.height());
+        let row_bytes = self.inner.rowBytes as usize;
+        let i = (4 * x as usize) + (row_bytes * y as usize);
 
-        unsafe {
-            let pixels = self.inner.pixels;
-            let row_bytes = self.inner.rowBytes as usize;
-            let rgb = pixels.add((4 * x as usize) + (row_bytes * y as usize));
-            let r = *rgb.add(0);
-            let g = *rgb.add(1);
-            let b = *rgb.add(2);
-            let a = *rgb.add(3);
-            (r, g, b, a)
-        }
+        let slice = self.as_slice();
+        let slice = &slice[i..][..4];
+        (slice[0], slice[1], slice[2], slice[3])
     }
 
     /// Extracts a slice containg all of the pixels without doing clones or allocation.
