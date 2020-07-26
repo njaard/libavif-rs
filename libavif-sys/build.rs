@@ -5,8 +5,8 @@ use std::path::Path;
 #[cfg(feature = "codec-dav1d")]
 use std::process::Command;
 
-use std::ffi::OsString;
 use cmake::Config;
+use std::ffi::OsString;
 
 fn main() {
     let out_dir_ = env::var("OUT_DIR").unwrap();
@@ -84,8 +84,9 @@ fn main() {
             #[cfg(all(target_os = "windows", feature = "codec-dav1d"))]
             std::fs::rename(
                 david_build_path.join("src").join("libdav1d.a"),
-                david_build_path.join("src").join("dav1d.lib")
-            ).unwrap();
+                david_build_path.join("src").join("dav1d.lib"),
+            )
+            .unwrap();
             eprintln!("david_build_path is {:?}", david_build_path)
         }
         _build_paths.push(david_build_path.join("install"));
@@ -93,10 +94,21 @@ fn main() {
         // even though we've installed dav1d's static lib to install/lib, we get it from src/
         // because it will install to `install/lib/x86_64-linux-gnu/libdav1d.a`
         // (on linux). We do the same on windows just for consistency.
-        println!("cargo:rustc-link-search=native={}", david_build_path.join("src").display());
+        println!(
+            "cargo:rustc-link-search=native={}",
+            david_build_path.join("src").display()
+        );
         avif.define("AVIF_CODEC_DAV1D", "1");
-        pc_paths.push(david_build_path.join("install").join("lib").join("pkgconfig"));
-        david_build_path.join("install").join("lib").join("libdav1d.a")
+        pc_paths.push(
+            david_build_path
+                .join("install")
+                .join("lib")
+                .join("pkgconfig"),
+        );
+        david_build_path
+            .join("install")
+            .join("lib")
+            .join("libdav1d.a")
     };
 
     eprintln!("building libavif");
