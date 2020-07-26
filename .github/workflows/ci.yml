@@ -85,16 +85,12 @@ jobs:
             rust: nightly
           - name: linux / 1.36.0
             rust: 1.36.0
-
           - name: macOS / stable
             os: macOS-latest
-          - name: windows / stable
-            os: windows-latest
-
           - name: "feat.: codec-aom"
             features: "--no-default-features --features codec-aom"
           - {
-              name: "Windows Latest MSVC", artifact: "Windows-MSVC.tar.xz",
+              name: "windows / stable", artifact: "Windows-MSVC.tar.xz",
               os: windows-latest,
               build_type: "Release", cc: "cl", cxx: "cl",
               environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
@@ -116,7 +112,7 @@ jobs:
         run: |
           brew install ninja nasm meson
 
-      - name: Install dependencies (windows)
+      - name: Install build tools (windows)
         if: matrix.os == 'windows-latest'
         run: |
           choco install -y ninja
@@ -130,14 +126,6 @@ jobs:
           curl -LO "$LINK/nasm-$NASM_VERSION-win64.zip"
           7z e -y "nasm-$NASM_VERSION-win64.zip" -o"C:\nasm"
           echo "::add-path::C:\nasm"
-
-      - name: Set MSVC x86_64 linker path (windows)
-        if: matrix.os == 'windows-latest'
-        run: |
-          $LinkGlob = "VC\Tools\MSVC\*\bin\Hostx64\x64"
-          $env:PATH = "$env:PATH;${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer"
-          $LinkPath = vswhere -latest -products * -find "$LinkGlob" | Select-Object -Last 1
-          echo "::add-path::$LinkPath"
 
       - name: Install rust
         uses: actions-rs/toolchain@v1
