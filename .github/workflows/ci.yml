@@ -8,7 +8,6 @@ on:
 
 env:
   RUST_BACKTRACE: full
-  CC: gcc
 
 jobs:
   style:
