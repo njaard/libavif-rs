@@ -126,8 +126,8 @@ pub const AVIF_TRANSFORM_IMIR: avifTransformationFlags = 1 << 3;
 ///
 /// define the relative width and height of a pixel
 pub struct avifPixelAspectRatioBox {
-	pub hSpacing: u32,
-	pub vSpacing: u32,
+    pub hSpacing: u32,
+    pub vSpacing: u32,
 }
 
 #[repr(C)]
@@ -135,7 +135,6 @@ pub struct avifPixelAspectRatioBox {
 #[allow(non_snake_case)]
 /// 'clap' from ISO/IEC 14496-12:2015 12.1.4.3
 pub struct avifCleanApertureBox {
-
     /// a fractional number which defines the exact clean aperture width, in counted pixels, of the video image
     widthN: u32,
     widthD: u32,
@@ -168,12 +167,10 @@ pub struct avifImageRotation {
 #[allow(non_snake_case)]
 /// 'imir' from ISO/IEC 23008-12:2017 6.5.12
 pub struct avifImageMirror {
-
     /// axis specifies a vertical (axis = 0) or horizontal (axis = 1) axis for the mirroring operation.
     /// legal values: [0, 1]
     axis: u8,
 }
-
 
 #[allow(non_camel_case_types)]
 pub type avifRGBFormat = __enum;
