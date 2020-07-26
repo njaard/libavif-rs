@@ -5,8 +5,8 @@ use std::path::Path;
 #[cfg(feature = "codec-dav1d")]
 use std::process::Command;
 
-use cmake::Config;
 use std::ffi::OsString;
+use cmake::Config;
 
 fn main() {
     let out_dir_ = env::var("OUT_DIR").unwrap();
@@ -63,7 +63,6 @@ fn main() {
     let _dav1d_libbpath = {
         let david_build_path = out_dir.join("dav1d");
         {
-
             let s = Command::new("meson")
                 .arg("--default-library=static")
                 .arg("--buildtype")
