@@ -128,6 +128,9 @@ fn main() {
 
     #[cfg(all(target_os = "windows", feature = "codec-dav1d"))]
     avif_built.define("DAV1D_LIBRARY", _dav1d_libbpath);
+    if env::var_os("CI").is_some() {
+        avif_built.very_verbose(true);
+    }
 
     let mut avif_built = avif_built
         .env("PKG_CONFIG_PATH", local_pc_files)
