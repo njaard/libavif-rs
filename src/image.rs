@@ -48,12 +48,23 @@ impl<'a> RgbPixels<'a> {
     }
 
     pub fn pixel(&self, x: u32, y: u32) -> (u8, u8, u8, u8) {
+        let stride = if self.inner.format == sys::AVIF_RGB_FORMAT_RGBA {
+            4
+        } else {
+            3
+        };
+
         let row_bytes = self.inner.rowBytes as usize;
-        let i = (4 * x as usize) + (row_bytes * y as usize);
+        let i = (stride * x as usize) + (row_bytes * y as usize);
 
         let slice = self.as_slice();
-        let slice = &slice[i..][..4];
-        (slice[0], slice[1], slice[2], slice[3])
+        let slice = &slice[i..][..stride];
+        (
+            slice[0],
+            slice[1],
+            slice[2],
+            if stride == 4 { slice[3] } else { 255 },
+        )
     }
 
     /// Extracts a slice containg all of the pixels without doing clones or allocation.
