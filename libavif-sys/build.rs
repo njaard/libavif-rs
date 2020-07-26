@@ -61,39 +61,43 @@ fn main() {
 
     #[cfg(feature = "codec-dav1d")]
     let _dav1d_libbpath = {
-        let build_path = out_dir.join("dav1d");
+        let david_build_path = out_dir.join("dav1d");
         {
-            println!("cargo:rustc-link-lib=static=dav1d");
-            println!("cargo:rustc-link-search=native={}", build_path.display());
 
             let s = Command::new("meson")
                 .arg("--default-library=static")
                 .arg("--buildtype")
                 .arg("release")
-                .arg(&build_path)
+                .arg(&david_build_path)
                 .arg("dav1d")
                 .arg("--prefix")
-                .arg(build_path.join("install"))
+                .arg(david_build_path.join("install"))
                 .status()
                 .expect("meson");
             assert!(s.success());
 
             let s = Command::new("ninja")
-                .current_dir(&build_path)
+                .current_dir(&david_build_path)
                 .arg("install")
                 .status()
                 .expect("ninja");
             assert!(s.success());
-            eprintln!("the dav1d build_path is {:?}", build_path)
+            #[cfg(all(target_os = "windows", feature = "codec-dav1d"))]
+            std::fs::rename(
+                david_build_path.join("src").join("libdav1d.a"),
+                david_build_path.join("src").join("dav1d.lib")
+            ).unwrap();
+            eprintln!("david_build_path is {:?}", david_build_path)
         }
-        _build_paths.push(build_path.join("install"));
-        println!(
-            "cargo:rustc-link-search=native={}",
-            build_path.join("src").display()
-        );
+        _build_paths.push(david_build_path.join("install"));
+        println!("cargo:rustc-link-lib=static=dav1d");
+        // even though we've installed dav1d's static lib to install/lib, we get it from src/
+        // because it will install to `install/lib/x86_64-linux-gnu/libdav1d.a`
+        // (on linux). We do the same on windows just for consistency.
+        println!("cargo:rustc-link-search=native={}", david_build_path.join("src").display());
         avif.define("AVIF_CODEC_DAV1D", "1");
-        pc_paths.push(build_path.join("install").join("lib").join("pkgconfig"));
-        build_path.join("install").join("lib").join("libdav1d.a")
+        pc_paths.push(david_build_path.join("install").join("lib").join("pkgconfig"));
+        david_build_path.join("install").join("lib").join("libdav1d.a")
     };
 
     eprintln!("building libavif");
