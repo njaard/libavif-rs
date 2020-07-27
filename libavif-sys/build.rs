@@ -60,7 +60,7 @@ fn main() {
     pc_paths.push(out_dir.join("lib").join("pkgconfig"));
 
     #[cfg(feature = "codec-dav1d")]
-    pc_paths.push( std::path::Path::new(&out_dir).join("lib").join("pkgconfig") );
+    pc_paths.push(Path::new(&out_dir).join("lib").join("pkgconfig"));
 
     #[cfg(feature = "codec-dav1d")]
     let _dav1d_libbpath = {
