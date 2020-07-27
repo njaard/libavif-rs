@@ -10,8 +10,8 @@ env:
   RUST_BACKTRACE: full
 
 jobs:
-  style:
-    name: Check Style
+  rustfmt:
+    name: rustfmt / linux / stable
     runs-on: ubuntu-20.04
 
     steps:
@@ -33,7 +33,7 @@ jobs:
           args: --all -- --check
 
   clippy:
-    name: Check Clippy
+    name: clippy / linux / stable
     runs-on: ubuntu-20.04
 
     steps:
@@ -61,8 +61,8 @@ jobs:
           command: clippy
           args: --all --examples
 
-  build:
-    name: ${{ matrix.name }}
+  test:
+    name: test / ${{ matrix.name }}
     runs-on: ${{ matrix.os || 'ubuntu-20.04' }}
 
     strategy:
@@ -73,7 +73,7 @@ jobs:
           - linux / nightly
           - macOS / stable
           - windows / stable
-          - "feat.: codec-aom"
+          - linux / stable / codec-aom
           - linux / 1.36.0
 
         include:
@@ -90,7 +90,7 @@ jobs:
           - name: windows / stable
             os: windows-latest
 
-          - name: "feat.: codec-aom"
+          - name: linux / stable / codec-aom
             features: "--no-default-features --features codec-aom"
     steps:
       - name: Checkout
