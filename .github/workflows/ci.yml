@@ -67,18 +67,11 @@ jobs:
 
     strategy:
       matrix:
-        name:
-          - linux / stable
-          - linux / beta
-          - linux / nightly
-          - macOS / stable
-          - windows / stable
-          - linux / stable / codec-aom
-          - linux / 1.36.0
-
         include:
           - name: linux / stable
             rust: stable
+          - name: linux / stable / codec-aom
+            features: "--no-default-features --features codec-aom"
           - name: linux / beta
             rust: beta
           - name: linux / nightly
@@ -90,8 +83,6 @@ jobs:
           - name: windows / stable
             os: windows-latest
 
-          - name: linux / stable / codec-aom
-            features: "--no-default-features --features codec-aom"
     steps:
       - name: Checkout
         uses: actions/checkout@v2
