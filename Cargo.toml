@@ -34,5 +34,6 @@ features = ["codec-aom", "__internal_aom_generic_target"]
 [workspace]
 members = [
   "libavif-image",
-  "libavif-sys"
+  "libavif-sys",
+  "libaom-sys",
 ]
