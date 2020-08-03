@@ -2,6 +2,7 @@ use std::env;
 #[cfg(feature = "codec-rav1e")]
 use std::fs;
 use std::path::Path;
+use std::path::PathBuf;
 #[cfg(feature = "codec-dav1d")]
 use std::process::Command;
 
@@ -11,7 +12,7 @@ use std::ffi::OsString;
 fn main() {
     let out_dir_ = env::var("OUT_DIR").unwrap();
     let out_dir = Path::new(&out_dir_);
-    let mut _build_paths = vec![];
+    let mut _built_products_paths: Vec<PathBuf> = vec![];
     let mut avif = Config::new("libavif");
 
     #[cfg(feature = "codec-aom")]
@@ -92,7 +93,7 @@ fn main() {
             .unwrap();
             eprintln!("david_build_path is {:?}", david_build_path);
         }
-        _build_paths.push(david_build_path.join("install"));
+        _built_products_paths.push(david_build_path.join("install"));
         println!("cargo:rustc-link-lib=static=dav1d");
         // even though we've installed dav1d's static lib to install/lib, we get it from src/
         // because it will install to `install/lib/x86_64-linux-gnu/libdav1d.a`
@@ -117,16 +118,18 @@ fn main() {
     eprintln!("building libavif");
 
     let local_pc_files = env::join_paths(pc_paths.iter().rev()).unwrap();
-    let mut build_paths: OsString = OsString::new();
-    for s in _build_paths {
-        build_paths.push(s.as_os_str().to_owned());
-        // build_paths.push(";");
+    let mut cmake_prefix_path = OsString::new();
+    for s in _built_products_paths {
+        if !cmake_prefix_path.is_empty() {
+            cmake_prefix_path.push(";");
+        }
+        cmake_prefix_path.push(s);
     }
 
-    eprintln!("pc=\"{:?}\"; bp=\"{:?}\"", local_pc_files, build_paths);
+    eprintln!("pc=\"{:?}\"; bp=\"{:?}\"", local_pc_files, cmake_prefix_path);
 
     let avif_built = avif
-        .define("CMAKE_PREFIX_PATH", build_paths)
+        .define("CMAKE_PREFIX_PATH", cmake_prefix_path)
         .define("BUILD_SHARED_LIBS", "0");
 
     #[cfg(all(target_os = "windows", feature = "codec-dav1d"))]
