@@ -11,14 +11,11 @@ fn main() {
 
     let host = env::var("HOST").expect("HOST");
     let target = env::var("TARGET").expect("TARGET");
-    if host != target {
+    if env::var_os("DOCS_RS").is_some() {
+        aom.define("AOM_TARGET_CPU", "generic");
+    } else if host != target {
         let target_arch = env::var("CARGO_CFG_TARGET_ARCH").expect("CARGO_CFG_TARGET_ARCH");
         aom.define("AOM_TARGET_CPU", target_arch);
-    }
-
-    #[cfg(feature = "__internal_aom_generic_target")]
-    {
-        aom.define("AOM_TARGET_CPU", "generic");
     }
 
     let dst = aom.build();
