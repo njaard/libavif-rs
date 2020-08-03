@@ -23,6 +23,13 @@ fn main() {
             .define("ENABLE_TESTS", "0")
             .define("ENABLE_TOOLS", "0");
 
+        let host = env::var("HOST").expect("HOST");
+        let target = env::var("TARGET").expect("TARGET");
+        if host != target {
+            let target_arch = env::var("CARGO_CFG_TARGET_ARCH").expect("CARGO_CFG_TARGET_ARCH");
+            aom.define("AOM_TARGET_CPU", target_arch);
+        }
+
         #[cfg(feature = "__internal_aom_generic_target")]
         {
             aom.define("AOM_TARGET_CPU", "generic");
