@@ -1,8 +1,7 @@
 use std::env;
 #[cfg(feature = "codec-rav1e")]
 use std::fs;
-use std::path::Path;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 #[cfg(feature = "codec-dav1d")]
 use std::process::Command;
 
@@ -126,7 +125,10 @@ fn main() {
         cmake_prefix_path.push(s);
     }
 
-    eprintln!("pc=\"{:?}\"; bp=\"{:?}\"", local_pc_files, cmake_prefix_path);
+    eprintln!(
+        "pc=\"{:?}\"; bp=\"{:?}\"",
+        local_pc_files, cmake_prefix_path
+    );
 
     let avif_built = avif
         .define("CMAKE_PREFIX_PATH", cmake_prefix_path)
