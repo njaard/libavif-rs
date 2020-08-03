@@ -22,8 +22,14 @@ fn main() {
 
     // DEP_AOM_INCLUDE, DEP_AOM_PKGCONFIG variables
     println!("cargo:include={}", dst.join("include").display());
-    println!("cargo:pkgconfig={}", dst.join("lib").join("pkgconfig").display());
+    println!(
+        "cargo:pkgconfig={}",
+        dst.join("lib").join("pkgconfig").display()
+    );
 
-    println!("cargo:rustc-link-search=native={}", dst.join("lib").display());
+    println!(
+        "cargo:rustc-link-search=native={}",
+        dst.join("lib").display()
+    );
     println!("cargo:rustc-link-lib=static=aom");
 }

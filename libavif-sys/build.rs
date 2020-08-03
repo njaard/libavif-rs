@@ -23,11 +23,13 @@ fn main() {
 
     #[cfg(feature = "codec-aom")]
     {
-        let include = env::var_os("DEP_AOM_INCLUDE").expect("libaom-sys should have set pkgconfig path");
+        let include =
+            env::var_os("DEP_AOM_INCLUDE").expect("libaom-sys should have set pkgconfig path");
         avif.define("AVIF_CODEC_AOM", "1");
         avif.define("AOM_INCLUDE_DIR", include);
 
-        let pc_path = env::var_os("DEP_AOM_PKGCONFIG").expect("libaom-sys should have set pkgconfig path");
+        let pc_path =
+            env::var_os("DEP_AOM_PKGCONFIG").expect("libaom-sys should have set pkgconfig path");
         pc_paths.push(pc_path.into());
     }
 
@@ -46,7 +48,6 @@ fn main() {
             .define("AVIF_CODEC_LIBRARIES", "rav1e")
             .define("RAV1E_LIBRARY", "-rav1e");
     }
-
 
     pc_paths.push(out_dir.join("lib").join("pkgconfig"));
 
