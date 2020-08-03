@@ -23,7 +23,7 @@ fn main() {
 
     let dst = aom.build();
 
-    // CARGO_DEP_AOM_INCLUDE variable
+    // DEP_AOM_INCLUDE, DEP_AOM_PKGCONFIG variables
     println!("cargo:include={}", dst.join("include").display());
     println!("cargo:pkgconfig={}", dst.join("lib").join("pkgconfig").display());
 

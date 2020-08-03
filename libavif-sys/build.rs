@@ -14,31 +14,21 @@ fn main() {
     let mut _built_products_paths: Vec<PathBuf> = vec![];
     let mut avif = Config::new("libavif");
 
+    let mut pc_paths: Vec<_> = env::var("PKG_CONFIG_PATH")
+        .ok()
+        .iter()
+        .flat_map(|v| env::split_paths(v))
+        .collect();
+    pc_paths.reverse();
+
     #[cfg(feature = "codec-aom")]
     {
-        let mut aom = Config::new("aom");
-        aom.define("ENABLE_DOCS", "0")
-            .define("ENABLE_EXAMPLES", "0")
-            .define("ENABLE_TESTDATA", "0")
-            .define("ENABLE_TESTS", "0")
-            .define("ENABLE_TOOLS", "0");
-
-        let host = env::var("HOST").expect("HOST");
-        let target = env::var("TARGET").expect("TARGET");
-        if host != target {
-            let target_arch = env::var("CARGO_CFG_TARGET_ARCH").expect("CARGO_CFG_TARGET_ARCH");
-            aom.define("AOM_TARGET_CPU", target_arch);
-        }
-
-        #[cfg(feature = "__internal_aom_generic_target")]
-        {
-            aom.define("AOM_TARGET_CPU", "generic");
-        }
-
-        aom.profile("Release").build();
-
+        let include = env::var_os("DEP_AOM_INCLUDE").expect("libaom-sys should have set pkgconfig path");
         avif.define("AVIF_CODEC_AOM", "1");
-        println!("cargo:rustc-link-lib=static=aom");
+        avif.define("AOM_INCLUDE_DIR", include);
+
+        let pc_path = env::var_os("DEP_AOM_PKGCONFIG").expect("libaom-sys should have set pkgconfig path");
+        pc_paths.push(pc_path.into());
     }
 
     #[cfg(feature = "codec-rav1e")]
@@ -57,12 +47,6 @@ fn main() {
             .define("RAV1E_LIBRARY", "-rav1e");
     }
 
-    let mut pc_paths: Vec<_> = env::var("PKG_CONFIG_PATH")
-        .ok()
-        .iter()
-        .flat_map(|v| env::split_paths(v))
-        .collect();
-    pc_paths.reverse();
 
     pc_paths.push(out_dir.join("lib").join("pkgconfig"));
 
