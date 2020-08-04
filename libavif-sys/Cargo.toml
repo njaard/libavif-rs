@@ -21,7 +21,7 @@ codec-aom = ["libaom-sys"]
 libc = "0.2"
 rav1e = { version = "=0.3.3", default-features = false, features = ["asm", "capi"], optional = true }
 nasm-rs = { version = "=0.1.7", optional = true }
-libaom-sys = { version = "0.5", path = "../libaom-sys", optional = true }
+libaom-sys = { version = "0.6", path = "../libaom-sys", optional = true }
 
 [build-dependencies]
 cmake = "0.1"
