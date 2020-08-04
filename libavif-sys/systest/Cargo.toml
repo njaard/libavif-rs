@@ -1,0 +1,13 @@
+[package]
+name = "systest"
+version = "0.1.0"
+authors = ["Kornel Lesiński <kornel@cloudflare.com>"]
+edition = "2018"
+publish = false
+
+[dependencies]
+libavif-sys = { path = "../", default-features = false }
+libc = "0.2.74"
+
+[build-dependencies]
+ctest = "0.2.22"
