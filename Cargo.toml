@@ -33,5 +33,6 @@ features = ["codec-aom"]
 members = [
   "libavif-image",
   "libavif-sys",
+  "libavif-sys/systest",
   "libaom-sys",
 ]
