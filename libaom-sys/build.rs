@@ -18,18 +18,37 @@ fn main() {
         aom.define("AOM_TARGET_CPU", target_arch);
     }
 
+    let using_msvc = target.ends_with("-msvc");
+
+    if using_msvc {
+        // aom's cmake build hides install target for msvc
+        aom.build_target("aom");
+    }
+
     let dst = aom.build();
 
-    // DEP_AOM_INCLUDE, DEP_AOM_PKGCONFIG variables
-    println!("cargo:include={}", dst.join("include").display());
-    println!(
-        "cargo:pkgconfig={}",
-        dst.join("lib").join("pkgconfig").display()
-    );
+    // without install target these files are all over the place
+    if using_msvc {
+        let root = std::path::PathBuf::from(env::var_os("CARGO_MANIFEST_DIR").expect("root"));
+        // DEP_AOM_INCLUDE variable
+        println!("cargo:include={}", root.join("vendor").display());
 
-    println!(
-        "cargo:rustc-link-search=native={}",
-        dst.join("lib").display()
-    );
+        println!(
+            "cargo:rustc-link-search=native={}",
+            dst.join("build").join("Release").display()
+        );
+    } else {
+        println!("cargo:include={}", dst.join("include").display());
+        // DEP_AOM_PKGCONFIG variable
+        println!(
+            "cargo:pkgconfig={}",
+            dst.join("lib").join("pkgconfig").display()
+        );
+
+        println!(
+            "cargo:rustc-link-search=native={}",
+            dst.join("lib").display()
+        );
+    }
     println!("cargo:rustc-link-lib=static=aom");
 }

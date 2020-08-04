@@ -28,9 +28,9 @@ fn main() {
         avif.define("AVIF_CODEC_AOM", "1");
         avif.define("AOM_INCLUDE_DIR", include);
 
-        let pc_path =
-            env::var_os("DEP_AOM_PKGCONFIG").expect("libaom-sys should have set pkgconfig path");
-        pc_paths.push(pc_path.into());
+        if let Some(pc_path) = env::var_os("DEP_AOM_PKGCONFIG") {
+            pc_paths.push(pc_path.into());
+        }
     }
 
     #[cfg(feature = "codec-rav1e")]
