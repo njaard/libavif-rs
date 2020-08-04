@@ -262,7 +262,7 @@ pub struct avifRGBImage {
     pub depth: u32,
     pub format: avifRGBFormat,
     pub chromaUpsampling: avifChromaUpsampling,
-
+    pub ignoreAlpha: avifBool,
     pub pixels: *mut u8,
     pub rowBytes: u32,
 }
