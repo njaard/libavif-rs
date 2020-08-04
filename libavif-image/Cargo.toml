@@ -25,8 +25,6 @@ codec-rav1e = ["libavif/codec-rav1e"]
 codec-dav1d = ["libavif/codec-dav1d"]
 codec-aom = ["libavif/codec-aom"]
 
-__internal_aom_generic_target = ["libavif/__internal_aom_generic_target"]
-
 [package.metadata.docs.rs]
 no-default-features = true
-features = ["codec-aom", "__internal_aom_generic_target"]
+features = ["codec-aom"]
