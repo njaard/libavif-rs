@@ -311,6 +311,11 @@ pub struct avifEncoder {
     /// 0-10: 10 should produce a better quality image
     pub speed: libc::c_int,
 
+    /// How many frames between automatic forced keyframes; 0 to disable (default).
+    pub keyframeInterval: libc::c_int,
+    /// timescale of the media (Hz)
+    pub timescale: u64,
+
     /// stats from the most recent write
     pub ioStats: avifIOStats,
 
@@ -371,38 +376,38 @@ extern "C" {
         depth: libc::c_int,
         yuvFormat: avifPixelFormat,
     ) -> *mut avifImage;
-    pub fn avifImageDestroy(image: *mut avifImage) -> avifResult;
+    pub fn avifImageDestroy(image: *mut avifImage);
 
     pub fn avifEncoderCreate() -> *mut avifEncoder;
     pub fn avifEncoderWrite(
         encoder: *mut avifEncoder,
-        image: *mut avifImage,
+        image: *const avifImage,
         output: *mut avifRWData,
     ) -> avifResult;
     pub fn avifEncoderDestroy(encoder: *mut avifEncoder);
 
     pub fn avifDecoderCreate() -> *mut avifDecoder;
-    pub fn avifDecoderDestroy(decoder: *mut avifDecoder) -> avifResult;
+    pub fn avifDecoderDestroy(decoder: *mut avifDecoder);
     pub fn avifDecoderRead(
         decoder: *mut avifDecoder,
         image: *mut avifImage,
-        data: *mut avifROData,
+        data: *const avifROData,
     ) -> avifResult;
     pub fn avifDecoderSetSource(decoder: *mut avifDecoder, source: avifDecoderSource)
         -> avifResult;
-    pub fn avifDecoderParse(decoder: *mut avifDecoder, input: *mut avifROData) -> avifResult;
+    pub fn avifDecoderParse(decoder: *mut avifDecoder, input: *const avifROData) -> avifResult;
     pub fn avifDecoderNextImage(decoder: *mut avifDecoder) -> avifResult;
     pub fn avifDecoderNthImage(decoder: *mut avifDecoder, frameIndex: u32) -> avifResult;
     pub fn avifDecoderReset(decoder: *mut avifDecoder) -> avifResult;
 
     pub fn avifRWDataFree(raw: *mut avifRWData);
 
-    pub fn avifRGBImageSetDefaults(rgb: *mut avifRGBImage, image: *mut avifImage);
+    pub fn avifRGBImageSetDefaults(rgb: *mut avifRGBImage, image: *const avifImage);
     pub fn avifRGBImageAllocatePixels(rgb: *mut avifRGBImage);
     pub fn avifRGBImageFreePixels(rgb: *mut avifRGBImage);
 
-    pub fn avifImageYUVToRGB(image: *mut avifImage, rgb: *mut avifRGBImage) -> avifResult;
-    pub fn avifImageRGBToYUV(image: *mut avifImage, rgb: *mut avifRGBImage) -> avifResult;
+    pub fn avifImageYUVToRGB(image: *const avifImage, rgb: *mut avifRGBImage) -> avifResult;
+    pub fn avifImageRGBToYUV(image: *mut avifImage, rgb: *const avifRGBImage) -> avifResult;
 
     pub fn avifImageAllocatePlanes(image: *mut avifImage, planes: u32); // Ignores any pre-existing planes
     pub fn avifImageFreePlanes(image: *mut avifImage, planes: u32); // Ignores any pre-existing planes
