@@ -30,6 +30,7 @@ impl<'a> RgbPixels<'a> {
                 depth: 8,
                 format,
                 chromaUpsampling: sys::AVIF_CHROMA_UPSAMPLING_BILINEAR,
+                ignoreAlpha: 0,
                 pixels: rgb.as_ptr() as *mut u8,
                 rowBytes: stride * width,
             },

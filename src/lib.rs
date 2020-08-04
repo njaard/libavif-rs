@@ -28,14 +28,14 @@ pub fn is_avif(avif_bytes: &[u8]) -> bool {
 /// Decode into RGB pixels
 pub fn decode_rgb(avif_bytes: &[u8]) -> io::Result<RgbPixels> {
     unsafe {
-        let mut raw = sys::avifROData {
+        let raw = sys::avifROData {
             data: avif_bytes.as_ptr(),
             size: avif_bytes.len(),
         };
 
         let image = sys::avifImageCreateEmpty();
         let decoder = sys::avifDecoderCreate();
-        let result = sys::avifDecoderRead(decoder, image, &mut raw);
+        let result = sys::avifDecoderRead(decoder, image, &raw);
         sys::avifDecoderDestroy(decoder);
         if result != sys::AVIF_RESULT_OK {
             sys::avifImageDestroy(image);
