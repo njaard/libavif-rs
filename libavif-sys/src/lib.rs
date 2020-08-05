@@ -118,7 +118,7 @@ pub const AVIF_TRANSFORM_IMIR: avifTransformationFlags = 1 << 3;
 ///
 /// define the relative width and height of a pixel
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct avifPixelAspectRatioBox {
     pub hSpacing: u32,
     pub vSpacing: u32,
@@ -126,7 +126,7 @@ pub struct avifPixelAspectRatioBox {
 
 /// 'clap' from ISO/IEC 14496-12:2015 12.1.4.3
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct avifCleanApertureBox {
     /// a fractional number which defines the exact clean aperture width, in counted pixels, of the video image
     widthN: u32,
@@ -147,7 +147,7 @@ pub struct avifCleanApertureBox {
 
 /// 'irot' from ISO/IEC 23008-12:2017 6.5.10
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct avifImageRotation {
     /// angle * 90 specifies the angle (in anti-clockwise direction) in units of degrees.
     /// legal values: [0-3]
@@ -156,7 +156,7 @@ pub struct avifImageRotation {
 
 /// 'imir' from ISO/IEC 23008-12:2017 6.5.12
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct avifImageMirror {
     /// axis specifies a vertical (axis = 0) or horizontal (axis = 1) axis for the mirroring operation.
     /// legal values: [0, 1]
@@ -184,7 +184,7 @@ pub const AVIF_CODEC_CHOICE_DAV1D: avifCodecChoice = 2;
 pub const AVIF_CODEC_CHOICE_RAV1E: avifCodecChoice = 4;
 
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct avifIOStats {
     colorOBUSize: libc::size_t,
     alphaOBUSize: libc::size_t,
