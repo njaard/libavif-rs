@@ -1,7 +1,7 @@
 use std::env;
 
 fn main() {
-    if cfg!(rustdoc) || env::var_os("DOCS_RS").is_some() {
+    if env::var_os("DOCS_RS").is_some() {
         return;
     }
 
