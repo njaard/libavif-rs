@@ -1,3 +1,6 @@
+#![allow(non_camel_case_types)]
+#![allow(non_snake_case)]
+
 #[cfg(feature = "codec-aom")]
 extern crate libaom_sys; // mark it as used
 
@@ -6,19 +9,15 @@ pub use rav1e::capi::*;
 
 pub const AVIF_PLANE_COUNT_YUV: usize = 3;
 
-#[allow(non_camel_case_types)]
 pub type avifBool = libc::c_int;
 
-#[allow(non_camel_case_types)]
 pub type __enum = libc::c_int;
 
-#[allow(non_camel_case_types)]
 pub type avifPlanesFlags = __enum;
 pub const AVIF_PLANES_YUV: avifPlanesFlags = 1;
 pub const AVIF_PLANES_A: avifPlanesFlags = 1 << 1;
 pub const AVIF_PLANES_ALL: avifPlanesFlags = 0xff;
 
-#[allow(non_camel_case_types)]
 pub type avifDecoderSource = __enum;
 /// If a moov box is present in the .avif(s), use the tracks in it, otherwise decode the primary item.
 pub const AVIF_DECODER_SOURCE_AUTO: avifDecoderSource = 0;
@@ -34,13 +33,11 @@ pub const AVIF_DECODER_SOURCE_TRACKS: avifDecoderSource = 2;
 // Decode the thumbnail item. Currently unimplemented.
 // pub const AVIF_DECODER_SOURCE_THUMBNAIL_ITEM
 
-#[allow(non_camel_case_types)]
 pub type avifRange = __enum;
 
 pub const AVIF_RANGE_LIMITED: avifRange = 0;
 pub const AVIF_RANGE_FULL: avifRange = 1;
 
-#[allow(non_camel_case_types)]
 pub type avifPixelFormat = __enum;
 
 pub const AVIF_PIXEL_FORMAT_NONE: avifPixelFormat = 0;
@@ -49,14 +46,12 @@ pub const AVIF_PIXEL_FORMAT_YUV422: avifPixelFormat = 2;
 pub const AVIF_PIXEL_FORMAT_YUV420: avifPixelFormat = 3;
 pub const AVIF_PIXEL_FORMAT_YUV400: avifPixelFormat = 4;
 
-#[allow(non_camel_case_types)]
 pub type avifChromaSamplePosition = __enum;
 
 pub const AVIF_CHROMA_SAMPLE_POSITION_UNKNOWN: avifChromaSamplePosition = 0;
 pub const AVIF_CHROMA_SAMPLE_POSITION_VERTICAL: avifChromaSamplePosition = 1;
 pub const AVIF_CHROMA_SAMPLE_POSITION_COLOCATED: avifChromaSamplePosition = 2;
 
-#[allow(non_camel_case_types)]
 pub type avifColorPrimaries = __enum;
 
 pub const AVIF_COLOR_PRIMARIES_UNKNOWN: avifColorPrimaries = 0;
@@ -74,7 +69,6 @@ pub const AVIF_COLOR_PRIMARIES_SMPTE431: avifColorPrimaries = 11;
 pub const AVIF_COLOR_PRIMARIES_SMPTE432: avifColorPrimaries = 12;
 pub const AVIF_COLOR_PRIMARIES_EBU3213: avifColorPrimaries = 22;
 
-#[allow(non_camel_case_types)]
 pub type avifTransferCharacteristics = __enum;
 
 pub const AVIF_TRANSFER_CHARACTERISTICS_UNKNOWN: avifTransferCharacteristics = 0;
@@ -96,7 +90,6 @@ pub const AVIF_TRANSFER_CHARACTERISTICS_SMPTE2084: avifTransferCharacteristics =
 pub const AVIF_TRANSFER_CHARACTERISTICS_SMPTE428: avifTransferCharacteristics = 17;
 pub const AVIF_TRANSFER_CHARACTERISTICS_HLG: avifTransferCharacteristics = 18;
 
-#[allow(non_camel_case_types)]
 pub type avifMatrixCoefficients = __enum;
 
 pub const AVIF_MATRIX_COEFFICIENTS_IDENTITY: avifMatrixCoefficients = 0;
@@ -114,7 +107,6 @@ pub const AVIF_MATRIX_COEFFICIENTS_CHROMA_DERIVED_NCL: avifMatrixCoefficients = 
 pub const AVIF_MATRIX_COEFFICIENTS_CHROMA_DERIVED_CL: avifMatrixCoefficients = 13;
 pub const AVIF_MATRIX_COEFFICIENTS_ICTCP: avifMatrixCoefficients = 14;
 
-#[allow(non_camel_case_types)]
 pub type avifTransformationFlags = __enum;
 pub const AVIF_TRANSFORM_NONE: avifTransformationFlags = 0;
 pub const AVIF_TRANSFORM_PASP: avifTransformationFlags = 1 << 0;
@@ -122,21 +114,19 @@ pub const AVIF_TRANSFORM_CLAP: avifTransformationFlags = 1 << 1;
 pub const AVIF_TRANSFORM_IROT: avifTransformationFlags = 1 << 2;
 pub const AVIF_TRANSFORM_IMIR: avifTransformationFlags = 1 << 3;
 
-#[repr(C)]
-#[allow(non_camel_case_types)]
-#[allow(non_snake_case)]
 /// 'pasp' from ISO/IEC 14496-12:2015 12.1.4.3
 ///
 /// define the relative width and height of a pixel
+#[repr(C)]
+#[derive(Debug)]
 pub struct avifPixelAspectRatioBox {
     pub hSpacing: u32,
     pub vSpacing: u32,
 }
 
-#[repr(C)]
-#[allow(non_camel_case_types)]
-#[allow(non_snake_case)]
 /// 'clap' from ISO/IEC 14496-12:2015 12.1.4.3
+#[repr(C)]
+#[derive(Debug)]
 pub struct avifCleanApertureBox {
     /// a fractional number which defines the exact clean aperture width, in counted pixels, of the video image
     widthN: u32,
@@ -155,27 +145,24 @@ pub struct avifCleanApertureBox {
     vertOffD: u32,
 }
 
-#[repr(C)]
-#[allow(non_camel_case_types)]
-#[allow(non_snake_case)]
 /// 'irot' from ISO/IEC 23008-12:2017 6.5.10
+#[repr(C)]
+#[derive(Debug)]
 pub struct avifImageRotation {
     /// angle * 90 specifies the angle (in anti-clockwise direction) in units of degrees.
     /// legal values: [0-3]
     angle: u8,
 }
 
-#[repr(C)]
-#[allow(non_camel_case_types)]
-#[allow(non_snake_case)]
 /// 'imir' from ISO/IEC 23008-12:2017 6.5.12
+#[repr(C)]
+#[derive(Debug)]
 pub struct avifImageMirror {
     /// axis specifies a vertical (axis = 0) or horizontal (axis = 1) axis for the mirroring operation.
     /// legal values: [0, 1]
     axis: u8,
 }
 
-#[allow(non_camel_case_types)]
 pub type avifRGBFormat = __enum;
 
 pub const AVIF_RGB_FORMAT_RGB: avifRGBFormat = 0;
@@ -185,13 +172,11 @@ pub const AVIF_RGB_FORMAT_BGR: avifRGBFormat = 3;
 pub const AVIF_RGB_FORMAT_BGRA: avifRGBFormat = 4;
 pub const AVIF_RGB_FORMAT_ABGR: avifRGBFormat = 5;
 
-#[allow(non_camel_case_types)]
 pub type avifChromaUpsampling = __enum;
 
 pub const AVIF_CHROMA_UPSAMPLING_BILINEAR: avifChromaUpsampling = 0;
 pub const AVIF_CHROMA_UPSAMPLING_NEAREST: avifChromaUpsampling = 1;
 
-#[allow(non_camel_case_types)]
 pub type avifCodecChoice = __enum;
 pub const AVIF_CODEC_CHOICE_AUTO: avifCodecChoice = 0;
 pub const AVIF_CODEC_CHOICE_AOM: avifCodecChoice = 1;
@@ -199,8 +184,7 @@ pub const AVIF_CODEC_CHOICE_DAV1D: avifCodecChoice = 2;
 pub const AVIF_CODEC_CHOICE_RAV1E: avifCodecChoice = 4;
 
 #[repr(C)]
-#[allow(non_camel_case_types)]
-#[allow(non_snake_case)]
+#[derive(Debug)]
 pub struct avifIOStats {
     colorOBUSize: libc::size_t,
     alphaOBUSize: libc::size_t,
@@ -215,8 +199,7 @@ pub const AVIF_SPEED_SLOWEST: libc::c_int = 0;
 pub const AVIF_SPEED_FASTEST: libc::c_int = 10;
 
 #[repr(C)]
-#[allow(non_camel_case_types)]
-#[allow(non_snake_case)]
+#[derive(Debug)]
 pub struct avifImage {
     pub width: u32,
     pub height: u32,
@@ -253,9 +236,7 @@ pub struct avifImage {
 }
 
 #[repr(C)]
-#[allow(non_camel_case_types)]
-#[allow(non_snake_case)]
-
+#[derive(Debug)]
 pub struct avifRGBImage {
     pub width: u32,
     pub height: u32,
@@ -273,22 +254,18 @@ impl Default for avifRGBImage {
     }
 }
 
-#[allow(non_camel_case_types)]
 #[repr(C)]
-#[allow(non_snake_case)]
 pub struct avifEncoderData {
     _private: [u8; 0],
 }
 
-#[allow(non_camel_case_types)]
 #[repr(C)]
 pub struct avifDecoder {
     _private: [u8; 0],
 }
 
-#[allow(non_camel_case_types)]
 #[repr(C)]
-#[allow(non_snake_case)]
+#[derive(Debug)]
 pub struct avifEncoder {
     pub codecChoice: avifCodecChoice,
 
@@ -323,7 +300,6 @@ pub struct avifEncoder {
     pub data: *mut avifEncoderData,
 }
 
-#[allow(non_camel_case_types)]
 pub type avifResult = __enum;
 
 pub const AVIF_RESULT_OK: avifResult = 0;
@@ -346,13 +322,14 @@ pub const AVIF_RESULT_NO_IMAGES_REMAINING: avifResult = 16;
 pub const AVIF_RESULT_INVALID_EXIF_PAYLOAD: avifResult = 17;
 
 #[repr(C)]
-#[allow(non_camel_case_types)]
+#[derive(Debug)]
 pub struct avifROData {
     pub data: *const u8,
     pub size: libc::size_t,
 }
+
 #[repr(C)]
-#[allow(non_camel_case_types)]
+#[derive(Debug)]
 pub struct avifRWData {
     pub data: *mut u8,
     pub size: libc::size_t,
