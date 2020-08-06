@@ -1,6 +1,6 @@
 [package]
 name = "libavif-image"
-version = "0.2.0"
+version = "0.4.0"
 authors = ["Charles Samuels <ks@ks.ax>", "Paolo Barbolini <paolo@paolo565.org>"]
 edition = "2018"
 description="Load AVIF files into the `image` crate"
@@ -14,7 +14,7 @@ readme = "README.md"
 
 [dependencies]
 image = { version = "0.23", default-features = false }
-libavif = { version = "0.2.0", path = "..", default-features = false }
+libavif = { version = "0.4.0", path = "..", default-features = false }
 
 [dev-dependencies]
 image = { version = "0.23", default-features = false, features = ["jpeg"] }
