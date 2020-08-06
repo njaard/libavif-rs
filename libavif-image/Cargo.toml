@@ -27,4 +27,4 @@ codec-aom = ["libavif/codec-aom"]
 
 [package.metadata.docs.rs]
 no-default-features = true
-features = ["codec-aom"]
+

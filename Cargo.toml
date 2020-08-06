@@ -27,7 +27,6 @@ opt-level = 2
 
 [package.metadata.docs.rs]
 no-default-features = true
-features = ["codec-aom"]
 
 [workspace]
 members = [

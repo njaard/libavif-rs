@@ -28,4 +28,4 @@ cmake = "0.1"
 
 [package.metadata.docs.rs]
 no-default-features = true
-features = ["codec-aom"]
+
