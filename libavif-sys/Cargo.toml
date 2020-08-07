@@ -10,6 +10,7 @@ repository="https://github.com/njaard/libavif-rs"
 documentation="https://docs.rs/libavif-sys"
 license="BSD-2-Clause"
 readme = "README.md"
+exclude = ["/libavif/tests/", "/libavif/ext/", "/libavif/examples/", ".github"]
 
 [features]
 default = ["codec-dav1d", "codec-rav1e"]

@@ -10,6 +10,7 @@ keywords=["ffi","codec", "aom", "avif", "AV1"]
 repository="https://github.com/njaard/libavif-rs"
 documentation="https://docs.rs/libavif-sys"
 license="BSD-2-Clause"
+exclude = ["/vendor/third_party/googletest/", "/vendor/test/*.cc", "/vendor/test/*.h", "/vendor/doc/", "/vendor/examples/", "*.dox"]
 
 [build-dependencies]
 cmake = "0.1"
