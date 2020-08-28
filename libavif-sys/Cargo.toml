@@ -5,7 +5,7 @@ authors = ["Charles Samuels <ks@ks.ax>", "Paolo Barbolini <paolo@paolo565.org>"]
 edition = "2018"
 build = "build.rs"
 description="Unsafe wrapper around libavif, the image codec"
-keywords=["ffi","codec", "image", "avif", "AV1"]
+keywords=["ffi", "codec", "image", "avif", "AV1"]
 repository="https://github.com/njaard/libavif-rs"
 documentation="https://docs.rs/libavif-sys"
 license="BSD-2-Clause"
@@ -15,7 +15,7 @@ exclude = ["/libavif/tests/", "/libavif/ext/", "/libavif/examples/", ".github"]
 [features]
 default = ["codec-dav1d", "codec-rav1e"]
 codec-rav1e = ["rav1e","nasm-rs"]
-codec-dav1d = []
+codec-dav1d = ["libdav1d-sys"]
 codec-aom = ["libaom-sys"]
 
 [dependencies]
@@ -23,6 +23,7 @@ libc = "0.2"
 rav1e = { version = "=0.3.3", default-features = false, features = ["asm", "capi"], optional = true }
 nasm-rs = { version = "=0.1.7", optional = true }
 libaom-sys = { version = "0.6", path = "../libaom-sys", optional = true }
+libdav1d-sys = { version = "0.1", path = "../libdav1d-sys", optional = true }
 
 [build-dependencies]
 cmake = "0.1"

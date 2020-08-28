@@ -5,5 +5,5 @@
 	path = libaom-sys/vendor
 	url = https://aomedia.googlesource.com/aom
 [submodule "libavif-sys/dav1d"]
-	path = libavif-sys/dav1d
+	path = libdav1d-sys/vendor
 	url = https://code.videolan.org/videolan/dav1d.git
