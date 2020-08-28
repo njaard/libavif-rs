@@ -26,53 +26,33 @@ impl Encoder {
         self
     }
 
-    pub fn min_quantizer(&self) -> u8 {
+    pub fn quantizer(&self) -> u8 {
         unsafe { (*self.encoder).minQuantizer as u8 }
     }
 
-    pub fn set_min_quantizer(&mut self, min_quantizer: u8) -> &mut Self {
-        assert!(min_quantizer <= 63, "min_quantizer must be <= 63");
+    pub fn set_quantizer(&mut self, quantizer: u8) -> &mut Self {
+        assert!(quantizer <= 63, "quantizer must be <= 63");
 
-        unsafe { (*self.encoder).minQuantizer = min_quantizer as i32 }
+        let quantizer = quantizer as i32;
+        unsafe {
+            (*self.encoder).minQuantizer = quantizer;
+            (*self.encoder).maxQuantizer = quantizer;
+        }
         self
     }
 
-    pub fn max_quantizer(&self) -> u8 {
-        unsafe { (*self.encoder).maxQuantizer as u8 }
-    }
-
-    pub fn set_max_quantizer(&mut self, max_quantizer: u8) -> &mut Self {
-        assert!(max_quantizer <= 63, "max_quantizer must be <= 63");
-
-        unsafe { (*self.encoder).maxQuantizer = max_quantizer as i32 }
-        self
-    }
-
-    pub fn min_quantizer_alpha(&self) -> u8 {
+    pub fn quantizer_alpha(&self) -> u8 {
         unsafe { (*self.encoder).minQuantizerAlpha as u8 }
     }
 
-    pub fn set_min_quantizer_alpha(&mut self, min_quantizer_alpha: u8) -> &mut Self {
-        assert!(
-            min_quantizer_alpha <= 63,
-            "min_quantizer_alpha must be <= 63"
-        );
+    pub fn set_quantizer_alpha(&mut self, quantizer_alpha: u8) -> &mut Self {
+        assert!(quantizer_alpha <= 63, "quantizer_alpha must be <= 63");
 
-        unsafe { (*self.encoder).minQuantizerAlpha = min_quantizer_alpha as i32 }
-        self
-    }
-
-    pub fn max_quantizer_alpha(&self) -> u8 {
-        unsafe { (*self.encoder).maxQuantizerAlpha as u8 }
-    }
-
-    pub fn set_max_quantizer_alpha(&mut self, max_quantizer_alpha: u8) -> &mut Self {
-        assert!(
-            max_quantizer_alpha <= 63,
-            "max_quantizer_alpha must be <= 63"
-        );
-
-        unsafe { (*self.encoder).maxQuantizerAlpha = max_quantizer_alpha as i32 }
+        let quantizer_alpha = quantizer_alpha as i32;
+        unsafe {
+            (*self.encoder).minQuantizerAlpha = quantizer_alpha;
+            (*self.encoder).maxQuantizerAlpha = quantizer_alpha;
+        }
         self
     }
 
