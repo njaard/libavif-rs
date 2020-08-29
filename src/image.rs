@@ -21,7 +21,7 @@ impl AvifImage {
         Self { image }
     }
 
-    pub(crate) unsafe fn inner(&self) -> *const sys::avifImage {
+    pub(crate) fn inner(&self) -> *const sys::avifImage {
         self.image
     }
 }
