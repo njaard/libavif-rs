@@ -106,6 +106,12 @@ impl<'a> From<sys::avifRGBImage> for RgbPixels<'a> {
 
 impl<'a> From<AvifImage> for RgbPixels<'a> {
     fn from(image: AvifImage) -> Self {
+        Self::from(&image)
+    }
+}
+
+impl<'a> From<&AvifImage> for RgbPixels<'a> {
+    fn from(image: &AvifImage) -> Self {
         unsafe {
             let mut rgb = sys::avifRGBImage::default();
             let raw_rgb = &mut rgb as *mut sys::avifRGBImage;
