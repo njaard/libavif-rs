@@ -96,7 +96,7 @@ impl Encoder {
     /// Must be between 0 and 10.
     ///
     /// * `10` - _fastest_
-    /// * `0` - _slower_
+    /// * `0` - _slowest_
     ///
     /// # Panic
     ///
