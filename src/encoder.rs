@@ -23,14 +23,8 @@ impl Encoder {
     }
 
     /// Set the maximum allowed number of threads this `Encoder` can use
-    ///
-    /// # Panic
-    ///
-    /// This method panics if `max_threads` == 0
     pub fn set_max_threads(&mut self, max_threads: usize) -> &mut Self {
-        assert!(max_threads >= 1, "max_threads must be >= 1");
-
-        unsafe { (*self.encoder).maxThreads = max_threads as i32 }
+        unsafe { (*self.encoder).maxThreads = max_threads.max(1) as i32 }
         self
     }
 
@@ -45,14 +39,8 @@ impl Encoder {
     ///
     /// * `0` - _lossless_
     /// * `63` - _lowest quality_
-    ///
-    /// # Panic
-    ///
-    /// This method panics if `quantizer` > 63
     pub fn set_quantizer(&mut self, quantizer: u8) -> &mut Self {
-        assert!(quantizer <= 63, "quantizer must be <= 63");
-
-        let quantizer = quantizer as i32;
+        let quantizer = quantizer.min(63) as i32;
         unsafe {
             (*self.encoder).minQuantizer = quantizer;
             (*self.encoder).maxQuantizer = quantizer;
@@ -71,14 +59,8 @@ impl Encoder {
     ///
     /// * `0` - _lossless_
     /// * `63` - _lowest quality_
-    ///
-    /// # Panic
-    ///
-    /// This method panics if `quantizer_alpha` > 63
     pub fn set_quantizer_alpha(&mut self, quantizer_alpha: u8) -> &mut Self {
-        assert!(quantizer_alpha <= 63, "quantizer_alpha must be <= 63");
-
-        let quantizer_alpha = quantizer_alpha as i32;
+        let quantizer_alpha = quantizer_alpha.min(63) as i32;
         unsafe {
             (*self.encoder).minQuantizerAlpha = quantizer_alpha;
             (*self.encoder).maxQuantizerAlpha = quantizer_alpha;
@@ -97,14 +79,8 @@ impl Encoder {
     ///
     /// * `10` - _fastest_
     /// * `0` - _slowest_
-    ///
-    /// # Panic
-    ///
-    /// This method panics if `speed` > 10
     pub fn set_speed(&mut self, speed: u8) -> &mut Self {
-        assert!(speed <= 10, "speed must be <= 10");
-
-        unsafe { (*self.encoder).speed = speed as i32 }
+        unsafe { (*self.encoder).speed = speed.min(10) as i32 }
         self
     }
 
