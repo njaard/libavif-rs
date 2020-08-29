@@ -67,7 +67,7 @@ impl Encoder {
         self
     }
 
-    pub fn encode(&self, image: AvifImage) -> io::Result<AvifData<'static>> {
+    pub fn encode(&self, image: &AvifImage) -> io::Result<AvifData<'static>> {
         let mut data = Default::default();
         let result = unsafe { sys::avifEncoderWrite(self.encoder, image.inner(), &mut data) };
         if result != sys::AVIF_RESULT_OK {

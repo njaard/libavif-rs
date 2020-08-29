@@ -61,9 +61,10 @@ pub fn decode_rgb(avif_bytes: &[u8]) -> io::Result<RgbPixels> {
 /// Encode an 8 bit per channel RGB or RGBA image
 pub fn encode_rgb8(width: u32, height: u32, rgb: &[u8]) -> io::Result<AvifData<'static>> {
     let rgb = RgbPixels::new(width, height, rgb);
+    let image = rgb.to_image(YuvFormat::Yuv444);
 
     let mut encoder = Encoder::new();
     encoder.set_max_threads(1);
     encoder.set_quantizer(20);
-    encoder.encode(rgb.to_image(YuvFormat::Yuv444))
+    encoder.encode(&image)
 }

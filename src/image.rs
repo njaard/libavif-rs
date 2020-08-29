@@ -1,5 +1,3 @@
-use std::slice;
-
 use libavif_sys as sys;
 
 pub struct AvifImage {
