@@ -10,6 +10,13 @@ pub struct Encoder {
 
 impl Encoder {
     /// Create a new encoder with default settings
+    ///
+    /// # Defaults
+    ///
+    /// * `max_threads` -> `1`
+    /// * `quantizer` -> `0`
+    /// * `quantizer_alpha` -> `0`
+    /// * `speed` -> `10`
     pub fn new() -> Self {
         let encoder = unsafe { sys::avifEncoderCreate() };
         let mut encoder = Self { encoder };
