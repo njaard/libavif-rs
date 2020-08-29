@@ -1,5 +1,6 @@
 use libavif_sys as sys;
 
+/// YUV image
 pub struct AvifImage {
     image: *mut sys::avifImage,
 }
