@@ -23,3 +23,11 @@ impl AvifImage {
         self.image
     }
 }
+
+impl Drop for AvifImage {
+    fn drop(&mut self) {
+        unsafe {
+            sys::avifImageDestroy(self.image);
+        }
+    }
+}
