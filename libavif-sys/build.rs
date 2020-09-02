@@ -21,6 +21,8 @@ fn main() {
         .unwrap_or_default();
 
     avif.define("BUILD_SHARED_LIBS", "0");
+    // Required for clang 12 on macOS, and likely all future compilers libavif hasn't been tweaked for yet
+    avif.define("AVIF_ENABLE_WERROR", "0");
 
     if env::var_os("CI").is_some() {
         avif.very_verbose(true);
