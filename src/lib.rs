@@ -1,9 +1,8 @@
 #![allow(clippy::many_single_char_names)]
 
-use std::io;
-
 pub use self::data::AvifData;
 pub use self::encoder::Encoder;
+pub use self::error::Error;
 pub use self::format::YuvFormat;
 pub use self::image::AvifImage;
 pub use self::rgb::RgbPixels;
@@ -11,6 +10,7 @@ use libavif_sys as sys;
 
 mod data;
 mod encoder;
+mod error;
 mod format;
 mod image;
 mod rgb;
@@ -31,7 +31,7 @@ pub fn is_avif(avif_bytes: &[u8]) -> bool {
     unsafe { sys::avifPeekCompatibleFileType(&raw) == 1 }
 }
 
-pub fn decode(avif_bytes: &[u8]) -> io::Result<AvifImage> {
+pub fn decode(avif_bytes: &[u8]) -> Result<AvifImage, Error> {
     unsafe {
         let raw = sys::avifROData {
             data: avif_bytes.as_ptr(),
@@ -42,25 +42,20 @@ pub fn decode(avif_bytes: &[u8]) -> io::Result<AvifImage> {
         let decoder = sys::avifDecoderCreate();
         let result = sys::avifDecoderRead(decoder, image, &raw);
         sys::avifDecoderDestroy(decoder);
-        if result != sys::AVIF_RESULT_OK {
-            sys::avifImageDestroy(image);
-            return Err(io::Error::new(
-                io::ErrorKind::InvalidData,
-                format!("result={}", result),
-            ));
-        }
+        Error::code(result)?;
+
         Ok(AvifImage::from_raw(image))
     }
 }
 
 /// Decode into RGB pixels
-pub fn decode_rgb(avif_bytes: &[u8]) -> io::Result<RgbPixels> {
+pub fn decode_rgb(avif_bytes: &[u8]) -> Result<RgbPixels, Error> {
     decode(avif_bytes).map(Into::into)
 }
 
 /// Encode an 8 bit per channel RGB or RGBA image
-pub fn encode_rgb8(width: u32, height: u32, rgb: &[u8]) -> io::Result<AvifData<'static>> {
-    let rgb = RgbPixels::new(width, height, rgb);
+pub fn encode_rgb8(width: u32, height: u32, rgb: &[u8]) -> Result<AvifData<'static>, Error> {
+    let rgb = RgbPixels::new(width, height, rgb)?;
     let image = rgb.to_image(YuvFormat::Yuv444);
 
     let mut encoder = Encoder::new();
