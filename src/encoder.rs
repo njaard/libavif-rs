@@ -1,6 +1,4 @@
-use std::io;
-
-use crate::{AvifData, AvifImage};
+use crate::{AvifData, AvifImage, Error};
 use libavif_sys as sys;
 
 /// AVIF image encoder
@@ -92,15 +90,9 @@ impl Encoder {
     }
 
     /// Encode an `AvifImage` using the settings from this `Encoder`
-    pub fn encode(&self, image: &AvifImage) -> io::Result<AvifData<'static>> {
+    pub fn encode(&self, image: &AvifImage) -> Result<AvifData<'static>, Error> {
         let mut data = Default::default();
-        let result = unsafe { sys::avifEncoderWrite(self.encoder, image.inner(), &mut data) };
-        if result != sys::AVIF_RESULT_OK {
-            return Err(io::Error::new(
-                io::ErrorKind::InvalidData,
-                format!("result={}", result),
-            ));
-        }
+        Error::code(unsafe { sys::avifEncoderWrite(self.encoder, image.inner(), &mut data) })?;
         Ok(AvifData::from(data))
     }
 }

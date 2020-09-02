@@ -4,7 +4,7 @@ use std::slice;
 
 use libavif_sys as sys;
 
-use crate::{AvifImage, YuvFormat};
+use crate::{AvifImage, Error, YuvFormat};
 
 pub struct RgbPixels<'a> {
     owned: bool,
@@ -14,7 +14,7 @@ pub struct RgbPixels<'a> {
 }
 
 impl<'a> RgbPixels<'a> {
-    pub fn new(width: u32, height: u32, rgb: &'a [u8]) -> Self {
+    pub fn new(width: u32, height: u32, rgb: &'a [u8]) -> Result<Self, Error> {
         let (stride, format) = if (width * height * 3) as usize == rgb.len() {
             // RGB
             (3, sys::AVIF_RGB_FORMAT_RGB)
@@ -22,10 +22,10 @@ impl<'a> RgbPixels<'a> {
             // RGBA
             (4, sys::AVIF_RGB_FORMAT_RGBA)
         } else {
-            panic!("invalid rgb len")
+            return Err(Error::UnsupportedImageType);
         };
 
-        Self {
+        Ok(Self {
             owned: true,
             inner: sys::avifRGBImage {
                 width,
@@ -38,7 +38,7 @@ impl<'a> RgbPixels<'a> {
                 rowBytes: stride * width,
             },
             phantom: PhantomData,
-        }
+        })
     }
 
     /// width of the image in pixels

@@ -5,12 +5,12 @@
 
 use image::{DynamicImage, ImageBuffer};
 
-pub use libavif::is_avif;
 use libavif::AvifData;
+pub use libavif::{is_avif, Error};
 
 /// Read data that is in an AVIF file and load it into an image
-pub fn read(buf: &[u8]) -> Result<DynamicImage, String> {
-    let pixels = libavif::decode_rgb(buf).map_err(|e| format!("decoding AVIF: {}", e))?;
+pub fn read(buf: &[u8]) -> Result<DynamicImage, Error> {
+    let pixels = libavif::decode_rgb(buf)?;
     let buffer = ImageBuffer::from_vec(pixels.width(), pixels.height(), pixels.to_vec())
         .expect("pixels doesn't fit image::ImageBuffer");
 
@@ -18,19 +18,17 @@ pub fn read(buf: &[u8]) -> Result<DynamicImage, String> {
 }
 
 /// Save an image into an AVIF file
-pub fn save(img: &DynamicImage) -> Result<AvifData, String> {
+pub fn save(img: &DynamicImage) -> Result<AvifData, Error> {
     let data = match img {
         DynamicImage::ImageRgb8(img) => {
             let rgb = img.as_flat_samples();
-            libavif::encode_rgb8(img.width(), img.height(), rgb.as_slice())
-                .map_err(|e| format!("encoding AVIF: {:?}", e))?
+            libavif::encode_rgb8(img.width(), img.height(), rgb.as_slice())?
         }
         DynamicImage::ImageRgba8(img) => {
             let rgb = img.as_flat_samples();
-            libavif::encode_rgb8(img.width(), img.height(), rgb.as_slice())
-                .map_err(|e| format!("encoding AVIF: {:?}", e))?
+            libavif::encode_rgb8(img.width(), img.height(), rgb.as_slice())?
         }
-        _ => return Err("image type not supported".into()),
+        _ => return Err(Error::UnsupportedImageType),
     };
 
     Ok(data)
