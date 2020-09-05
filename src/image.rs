@@ -14,6 +14,13 @@ impl AvifImage {
         unsafe { (*self.image).height }
     }
 
+    pub(crate) fn empty() -> Self {
+        unsafe {
+            let image = sys::avifImageCreateEmpty();
+            Self::from_raw(image)
+        }
+    }
+
     pub(crate) unsafe fn from_raw(image: *mut sys::avifImage) -> Self {
         debug_assert!(!image.is_null());
 
@@ -21,6 +28,10 @@ impl AvifImage {
     }
 
     pub(crate) fn inner(&self) -> *const sys::avifImage {
+        self.image
+    }
+
+    pub(crate) fn inner_mut(&mut self) -> *mut sys::avifImage {
         self.image
     }
 }
