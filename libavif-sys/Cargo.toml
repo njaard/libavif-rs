@@ -14,14 +14,13 @@ exclude = ["/libavif/tests/", "/libavif/ext/", "/libavif/examples/", ".github"]
 
 [features]
 default = ["codec-dav1d", "codec-rav1e"]
-codec-rav1e = ["rav1e","nasm-rs"]
+codec-rav1e = ["rav1e"]
 codec-dav1d = ["libdav1d-sys"]
 codec-aom = ["libaom-sys"]
 
 [dependencies]
 libc = "0.2"
-rav1e = { version = "=0.3.3", default-features = false, features = ["asm", "capi"], optional = true }
-nasm-rs = { version = "=0.1.7", optional = true }
+rav1e = { version = "0.3.4", default-features = false, features = ["asm", "capi"], optional = true }
 libaom-sys = { version = "0.6", path = "../libaom-sys", optional = true }
 libdav1d-sys = { version = "0.1", path = "../libdav1d-sys", optional = true }
 
