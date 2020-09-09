@@ -67,8 +67,8 @@ jobs:
             rust: beta
           - name: linux / nightly
             rust: nightly
-          - name: linux / 1.36.0
-            rust: 1.36.0
+          - name: linux / 1.40.0
+            rust: 1.40.0
           - name: macOS / stable
             os: macOS-latest
           - name: windows / stable
