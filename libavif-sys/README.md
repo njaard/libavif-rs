@@ -3,7 +3,7 @@
 [![crates.io](https://img.shields.io/crates/v/libavif-sys.svg)](https://crates.io/crates/libavif-sys)
 [![Documentation](https://docs.rs/libavif-sys/badge.svg)](https://docs.rs/libavif-sys)
 [![BSD-2-Clause licensed](https://img.shields.io/crates/l/libavif-sys.svg)](../LICENSE)
-[![Rustc Version 1.36+](https://img.shields.io/badge/rustc-1.36+-lightgray.svg)](https://blog.rust-lang.org/2019/07/04/Rust-1.36.0.html)
+[![Rustc Version 1.40+](https://img.shields.io/badge/rustc-1.40+-lightgray.svg)](https://blog.rust-lang.org/2019/12/19/Rust-1.40.0.html)
 [![CI](https://github.com/njaard/libavif-rs/workflows/CI/badge.svg)](https://github.com/njaard/libavif-rs/actions?query=workflow%3ACI)
 
 AVIF is an image codec based on the next-generation
