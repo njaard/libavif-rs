@@ -71,6 +71,9 @@ jobs:
             rust: 1.44.0
           - name: macOS / stable
             os: macOS-latest
+          - name: macOS / stable / codec-aom
+            os: macOS-latest
+            features: "--no-default-features --features codec-aom"
           - name: windows / stable
             os: windows-latest
 
