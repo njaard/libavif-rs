@@ -36,7 +36,10 @@ fn main() {
         avif.define("AOM_INCLUDE_DIR", include);
 
         if let Some(pc_path) = env::var_os("DEP_AOM_PKGCONFIG") {
-            pc_paths.insert(0, pc_path.into());
+            let p = PathBuf::from(pc_path);
+
+            _built_products_paths.push(p.parent().unwrap().to_path_buf());
+            pc_paths.insert(0, p);
         }
     }
 
