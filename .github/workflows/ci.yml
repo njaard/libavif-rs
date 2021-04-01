@@ -67,8 +67,8 @@ jobs:
             rust: beta
           - name: linux / nightly
             rust: nightly
-          - name: linux / 1.44.0
-            rust: 1.44.0
+          - name: linux / 1.44.1
+            rust: 1.44.1
           - name: macOS / stable
             os: macOS-latest
           - name: macOS / stable / codec-aom
