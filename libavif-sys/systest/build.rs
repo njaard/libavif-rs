@@ -7,7 +7,7 @@ fn main() {
     cfg.header("avif/avif.h");
 
     cfg.skip_struct(|t| match t {
-        "avifEncoderData" | "avifDecoder" => true, // opaque
+        "avifEncoderData" | "avifDecoderData" | "avifCodecSpecificOptions" => true, // opaque
         _ => false,
     });
 
@@ -28,13 +28,16 @@ fn main() {
         _ => false,
     });
 
-    cfg.type_name(|t, _is_struct, _is_union| {
-        match t {
-            "__enum" | "avifPlanesFlags" => "int",
-            "avifEncoderData" => "struct avifEncoderData",
-            t => t,
-        }
-        .to_string()
+    cfg.type_name(|t, _is_struct, _is_union| match t {
+        "__enum"
+        | "avifPlanesFlags"
+        | "avifAddImageFlags"
+        | "avifColorPrimariesFind"
+        | "avifChannelIndex" => "int".to_string(),
+        t if _is_struct => format!("struct {}", t),
+        "f32" => "float".to_string(),
+        "f64" => "double".to_string(),
+        t => t.to_string(),
     });
 
     cfg.generate("../src/lib.rs", "ctest.rs");

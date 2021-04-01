@@ -13,8 +13,8 @@ fn images() {
         assert_eq!(image.width(), image2.width());
         assert_eq!(image.height(), image2.height());
 
-        let image = image.to_rgba();
-        let image2 = image2.to_rgba();
+        let image = image.to_rgba8();
+        let image2 = image2.to_rgba8();
 
         let diff = image
             .pixels()

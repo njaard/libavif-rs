@@ -281,7 +281,7 @@ pub const AVIF_SPEED_FASTEST: libc::c_int = 10;
 pub struct avifPixelFormatInfo {
     pub monochrome: avifBool,
     pub chromaShiftX: libc::c_int,
-    pub chromaShifty: libc::c_int,
+    pub chromaShiftY: libc::c_int,
 }
 
 #[repr(C)]
@@ -552,11 +552,7 @@ extern "C" {
 
     pub fn avifImageSetProfileICC(image: *mut avifImage, icc: *const u8, iccSize: libc::size_t);
     pub fn avifImageSetMetadataExif(image: *mut avifImage, exif: *const u8, exifSize: libc::size_t);
-    pub fn avifImageSetMetadataXMP(
-        image: *mut avifImage,
-        xmp: *mut avifImage,
-        xmpSize: libc::size_t,
-    );
+    pub fn avifImageSetMetadataXMP(image: *mut avifImage, xmp: *const u8, xmpSize: libc::size_t);
 
     pub fn avifRGBFormatChannelCount(format: avifRGBFormat) -> u32;
     pub fn avifRGBFormatHasAlpha(format: avifRGBFormat) -> avifBool;
@@ -596,16 +592,12 @@ extern "C" {
         value: *const libc::c_char,
     );
 
-    pub fn avifImageUsesU16(image: *mut avifImage) -> avifBool;
+    pub fn avifImageUsesU16(image: *const avifImage) -> avifBool;
 
     pub fn avifDecoderCreate() -> *mut avifDecoder;
     pub fn avifDecoderDestroy(decoder: *mut avifDecoder);
     /// call avifDecoderSetIO*() first
-    pub fn avifDecoderRead(
-        decoder: *mut avifDecoder,
-        image: *mut avifImage,
-        data: *const avifROData,
-    ) -> avifResult;
+    pub fn avifDecoderRead(decoder: *mut avifDecoder, image: *mut avifImage) -> avifResult;
     pub fn avifDecoderReadMemory(
         decoder: *mut avifDecoder,
         image: *mut avifImage,

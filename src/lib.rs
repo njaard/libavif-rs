@@ -32,15 +32,15 @@ pub fn is_avif(avif_bytes: &[u8]) -> bool {
 }
 
 pub fn decode(avif_bytes: &[u8]) -> Result<AvifImage, Error> {
-    let raw = sys::avifROData {
-        data: avif_bytes.as_ptr(),
-        size: avif_bytes.len(),
-    };
-
     let mut image = AvifImage::empty();
     unsafe {
         let decoder = sys::avifDecoderCreate();
-        let result = sys::avifDecoderRead(decoder, image.inner_mut(), &raw);
+        let result = sys::avifDecoderReadMemory(
+            decoder,
+            image.inner_mut(),
+            avif_bytes.as_ptr(),
+            avif_bytes.len(),
+        );
         sys::avifDecoderDestroy(decoder);
         Error::code(result)?;
 
