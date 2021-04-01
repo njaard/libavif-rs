@@ -21,6 +21,15 @@ pub const AVIF_PLANES_YUV: avifPlanesFlags = 1;
 pub const AVIF_PLANES_A: avifPlanesFlags = 1 << 1;
 pub const AVIF_PLANES_ALL: avifPlanesFlags = 0xff;
 
+pub type avifChannelIndex = __enum;
+pub const AVIF_CHAN_R: avifChannelIndex = 0;
+pub const AVIF_CHAN_G: avifChannelIndex = 1;
+pub const AVIF_CHAN_B: avifChannelIndex = 2;
+
+pub const AVIF_CHAN_Y: avifChannelIndex = 0;
+pub const AVIF_CHAN_U: avifChannelIndex = 1;
+pub const AVIF_CHAN_V: avifChannelIndex = 2;
+
 pub type avifDecoderSource = __enum;
 /// If a moov box is present in the .avif(s), use the tracks in it, otherwise decode the primary item.
 pub const AVIF_DECODER_SOURCE_AUTO: avifDecoderSource = 0;
@@ -35,6 +44,21 @@ pub const AVIF_DECODER_SOURCE_TRACKS: avifDecoderSource = 2;
 
 // Decode the thumbnail item. Currently unimplemented.
 // pub const AVIF_DECODER_SOURCE_THUMBNAIL_ITEM
+
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct avifImageTiming {
+    /// timescale of the media (Hz)
+    pub timescale: u64,
+    /// presentation timestamp in seconds (ptsInTimescales / timescale)
+    pub pts: f64,
+    /// presentation timestamp in "timescales"
+    pub ptsInTimescales: u64,
+    /// in seconds (durationInTimescales / timescale)
+    pub duration: f64,
+    /// duration in "timescales"
+    pub durationInTimescales: u64,
+}
 
 pub type avifRange = __enum;
 
@@ -177,20 +201,71 @@ pub const AVIF_RGB_FORMAT_ABGR: avifRGBFormat = 5;
 
 pub type avifChromaUpsampling = __enum;
 
-pub const AVIF_CHROMA_UPSAMPLING_BILINEAR: avifChromaUpsampling = 0;
-pub const AVIF_CHROMA_UPSAMPLING_NEAREST: avifChromaUpsampling = 1;
+pub const AVIF_CHROMA_UPSAMPLING_AUTOMATIC: avifChromaUpsampling = 0;
+pub const AVIF_CHROMA_UPSAMPLING_FASTEST: avifChromaUpsampling = 1;
+pub const AVIF_CHROMA_UPSAMPLING_BEST_QUALITY: avifChromaUpsampling = 2;
+pub const AVIF_CHROMA_UPSAMPLING_NEAREST: avifChromaUpsampling = 3;
+pub const AVIF_CHROMA_UPSAMPLING_BILINEAR: avifChromaUpsampling = 4;
 
 pub type avifCodecChoice = __enum;
 pub const AVIF_CODEC_CHOICE_AUTO: avifCodecChoice = 0;
 pub const AVIF_CODEC_CHOICE_AOM: avifCodecChoice = 1;
 pub const AVIF_CODEC_CHOICE_DAV1D: avifCodecChoice = 2;
+//pub const AVIF_CODEC_CHOICE_LIBGAV1: avifCodecChoice = 3;
 pub const AVIF_CODEC_CHOICE_RAV1E: avifCodecChoice = 4;
+//pub const AVIF_CODEC_CHOICE_SVT: avifCodecChoice = 5;
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct avifIOStats {
     colorOBUSize: libc::size_t,
     alphaOBUSize: libc::size_t,
+}
+
+type avifIOReadFunc = extern "C" fn(
+    io: *mut avifIO,
+    readFlags: u32,
+    offset: u64,
+    size: libc::size_t,
+    out: *mut avifROData,
+) -> avifResult;
+type avifIOWriteFunc = extern "C" fn(
+    io: *mut avifIO,
+    writeFlags: u32,
+    offset: u64,
+    size: libc::size_t,
+    data: *const u8,
+    size: libc::size_t,
+) -> avifResult;
+
+#[repr(C)]
+#[derive(Debug)]
+pub struct avifIO {
+    pub destroy: extern "C" fn(io: *mut avifIO),
+    pub read: avifIOReadFunc,
+
+    /// This is reserved for future use - but currently ignored. Set it to a null pointer.
+    pub write: avifIOWriteFunc,
+
+    /// If non-zero, this is a hint to internal structures of the max size offered by the content
+    /// this avifIO structure is reading. If it is a static memory source, it should be the size of
+    /// the memory buffer; if it is a file, it should be the file's size. If this information cannot
+    /// be known (as it is streamed-in), set a reasonable upper boundary here (larger than the file
+    /// can possibly be for your environment, but within your environment's memory constraints). This
+    /// is used for sanity checks when allocating internal buffers to protect against
+    /// malformed/malicious files.
+    pub sizeHint: u64,
+
+    // If true, *all* memory regions returned from *all* calls to read are guaranteed to be
+    // persistent and exist for the lifetime of the avifIO object. If false, libavif will make
+    // in-memory copies of samples and metadata content, and a memory region returned from read must
+    // only persist until the next call to read.
+    pub persistent: avifBool,
+
+    // The contents of this are defined by the avifIO implementation, and should be fully destroyed
+    // by the implementation of the associated destroy function, unless it isn't owned by the avifIO
+    // struct. It is not necessary to use this pointer in your implementation.
+    pub data: *mut libc::c_void,
 }
 
 pub const AVIF_QUANTIZER_LOSSLESS: libc::c_int = 0;
@@ -200,6 +275,14 @@ pub const AVIF_QUANTIZER_WORST_QUALITY: libc::c_int = 63;
 pub const AVIF_SPEED_DEFAULT: libc::c_int = -1;
 pub const AVIF_SPEED_SLOWEST: libc::c_int = 0;
 pub const AVIF_SPEED_FASTEST: libc::c_int = 10;
+
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct avifPixelFormatInfo {
+    pub monochrome: avifBool,
+    pub chromaShiftX: libc::c_int,
+    pub chromaShifty: libc::c_int,
+}
 
 #[repr(C)]
 #[derive(Debug)]
@@ -220,6 +303,7 @@ pub struct avifImage {
     pub alphaPlane: *mut u8,
     pub alphaRowBytes: u32,
     pub imageOwnsAlphaPlane: avifBool,
+    pub alphaPremultiplied: avifBool,
 
     pub icc: avifRWData,
 
@@ -247,6 +331,7 @@ pub struct avifRGBImage {
     pub format: avifRGBFormat,
     pub chromaUpsampling: avifChromaUpsampling,
     pub ignoreAlpha: avifBool,
+    pub alphaPremultiplied: avifBool,
     pub pixels: *mut u8,
     pub rowBytes: u32,
 }
@@ -261,10 +346,74 @@ impl Default for avifRGBImage {
 pub struct avifEncoderData {
     _private: [u8; 0],
 }
+#[repr(C)]
+pub struct avifCodecSpecificOptions {
+    _private: [u8; 0],
+}
+
+#[repr(C)]
+pub struct avifDecoderData {
+    _private: [u8; 0],
+}
 
 #[repr(C)]
 pub struct avifDecoder {
-    _private: [u8; 0],
+    /// Defaults to AVIF_CODEC_CHOICE_AUTO: Preference determined by order in availableCodecs table (avif.c)
+    pub codecChoice: avifCodecChoice,
+    /// multithreading is disabled if <2)
+    pub maxThreads: libc::c_int,
+    // avifs can have multiple sets of images in them. This specifies which to decode.
+    // Set this via avifDecoderSetSource().
+    pub requestedSource: avifDecoderSource,
+    /// All decoded image data; owned by the decoder. All information in this image is incrementally
+    /// added and updated as avifDecoder*() functions are called. After a successful call to
+    /// avifDecoderParse(), all values in decoder->image (other than the planes/rowBytes themselves)
+    /// will be pre-populated with all information found in the outer AVIF container, prior to any
+    /// AV1 decoding. If the contents of the inner AV1 payload disagree with the outer container,
+    /// these values may change after calls to avifDecoderRead*(),avifDecoderNextImage(), or
+    /// avifDecoderNthImage().
+    ///
+    /// The YUV and A contents of this image are likely owned by the decoder, so be sure to copy any
+    /// data inside of this image before advancing to the next image or reusing the decoder. It is
+    /// legal to call avifImageYUVToRGB() on this in between calls to avifDecoderNextImage(), but use
+    /// avifImageCopy() if you want to make a complete, permanent copy of this image's YUV content or
+    /// metadata.
+    pub image: *mut avifImage,
+
+    /// Counts and timing for the current image in an image sequence. Uninteresting for single image files.
+    /// 9-based
+    pub imageIndex: libc::c_int,
+    /// Always 1 for non-sequences
+    pub imageCount: libc::c_int,
+    pub imageTiming: avifImageTiming,
+    /// timescale of the media (Hz)
+    pub timescale: u64,
+    /// in seconds (durationInTimescales / timescale)
+    pub duration: f64,
+    /// duration in "timescales"
+    pub durationInTimescales: u64,
+
+    /// This is true when avifDecoderParse() detects an alpha plane. Use this to find out if alpha is
+    /// present after a successful call to avifDecoderParse(), but prior to any call to
+    /// avifDecoderNextImage() or avifDecoderNthImage(), as decoder->image->alphaPlane won't exist yet.
+    pub alphaPresent: avifBool,
+
+    /// Enable any of these to avoid reading and surfacing specific data to the decoded avifImage.
+    /// These can be useful if your avifIO implementation heavily uses AVIF_RESULT_WAITING_ON_IO for
+    /// streaming data, as some of these payloads are (unfortunately) packed at the end of the file,
+    /// which will cause avifDecoderParse() to return AVIF_RESULT_WAITING_ON_IO until it finds them.
+    /// If you don't actually leverage this data, it is best to ignore it here.
+    pub ignoreExif: avifBool,
+    pub ignoreXMP: avifBool,
+
+    /// stats from the most recent read, possibly 0s if reading an image sequence
+    pub ioStats: avifIOStats,
+
+    /// Use one of the avifDecoderSetIO*() functions to set this
+    pub io: *mut avifIO,
+
+    /// Internals used by the decoder
+    pub data: *mut avifDecoderData,
 }
 
 #[repr(C)]
@@ -301,7 +450,19 @@ pub struct avifEncoder {
 
     // Internals used by the encoder
     pub data: *mut avifEncoderData,
+    pub csOptions: *mut avifCodecSpecificOptions,
 }
+
+pub type avifAddImageFlags = __enum;
+pub const AVIF_ADD_IMAGE_FLAG_NONE: avifAddImageFlags = 0;
+
+/// Force this frame to be a keyframe (sync frame).
+pub const AVIF_ADD_IMAGE_FLAG_FORCE_KEYFRAME: avifAddImageFlags = 1 << 0;
+
+/// Use this flag when encoding a single image. Signals "still_picture" to AV1 encoders, which
+/// tweaks various compression rules. This is enabled automatically when using the
+/// avifEncoderWrite() single-image encode path.
+pub const AVIF_ADD_IMAGE_FLAG_SINGLE: avifAddImageFlags = 1 << 1;
 
 pub type avifResult = __enum;
 
@@ -323,11 +484,30 @@ pub const AVIF_RESULT_ISPE_SIZE_MISMATCH: avifResult = 14;
 pub const AVIF_RESULT_NO_CODEC_AVAILABLE: avifResult = 15;
 pub const AVIF_RESULT_NO_IMAGES_REMAINING: avifResult = 16;
 pub const AVIF_RESULT_INVALID_EXIF_PAYLOAD: avifResult = 17;
+pub const AVIF_RESULT_INVALID_IMAGE_GRID: avifResult = 18;
+pub const AVIF_RESULT_INVALID_CODEC_SPECIFIC_OPTION: avifResult = 19;
+pub const AVIF_RESULT_TRUNCATED_DATA: avifResult = 20;
+/// the avifIO field of avifDecoder is not set
+pub const AVIF_RESULT_IO_NOT_SET: avifResult = 21;
+pub const AVIF_RESULT_IO_ERROR: avifResult = 22;
+/// similar to EAGAIN/EWOULDBLOCK, this means the avifIO doesn't have necessary data available yet
+pub const AVIF_RESULT_WAITING_ON_IO: avifResult = 23;
+/// an argument passed into this function is invalid
+pub const AVIF_RESULT_INVALID_ARGUMENT: avifResult = 24;
+/// a requested code path is not (yet) implemented
+pub const AVIF_RESULT_NOT_IMPLEMENTED: avifResult = 25;
 
 #[repr(C)]
 #[derive(Debug)]
 pub struct avifROData {
     pub data: *const u8,
+    pub size: libc::size_t,
+}
+
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct avifExtent {
+    pub offset: u64,
     pub size: libc::size_t,
 }
 
@@ -349,6 +529,16 @@ impl Default for avifRWData {
 
 #[link(name = "avif", kind = "static")]
 extern "C" {
+    pub fn avifGetPixelFormatInfo(format: avifPixelFormat, info: *mut avifPixelFormatInfo);
+
+    pub fn avifResultToString(result: avifResult) -> *const libc::c_char;
+
+    pub fn avifColorPrimariesGetValues(acp: avifColorPrimaries, outPrimaries: *mut f32);
+    pub fn avifColorPrimariesFind(
+        inPrimaries: *const f32,
+        outName: *mut *const libc::c_char,
+    ) -> avifColorPrimaries;
+
     pub fn avifImageCreateEmpty() -> *mut avifImage;
     pub fn avifImageCreate(
         width: libc::c_int,
@@ -356,7 +546,20 @@ extern "C" {
         depth: libc::c_int,
         yuvFormat: avifPixelFormat,
     ) -> *mut avifImage;
+    /// deep copy
+    pub fn avifImageCopy(dstImage: *mut avifImage, srcImage: *const avifImage, planes: u32); // deep copy
     pub fn avifImageDestroy(image: *mut avifImage);
+
+    pub fn avifImageSetProfileICC(image: *mut avifImage, icc: *const u8, iccSize: libc::size_t);
+    pub fn avifImageSetMetadataExif(image: *mut avifImage, exif: *const u8, exifSize: libc::size_t);
+    pub fn avifImageSetMetadataXMP(
+        image: *mut avifImage,
+        xmp: *mut avifImage,
+        xmpSize: libc::size_t,
+    );
+
+    pub fn avifRGBFormatChannelCount(format: avifRGBFormat) -> u32;
+    pub fn avifRGBFormatHasAlpha(format: avifRGBFormat) -> avifBool;
 
     pub fn avifEncoderCreate() -> *mut avifEncoder;
     pub fn avifEncoderWrite(
@@ -366,28 +569,97 @@ extern "C" {
     ) -> avifResult;
     pub fn avifEncoderDestroy(encoder: *mut avifEncoder);
 
+    pub fn avifEncoderAddImage(
+        encoder: *mut avifEncoder,
+        image: *const avifImage,
+        durationInTimescales: u64,
+        addImageFlags: u32,
+    ) -> avifResult;
+    pub fn avifEncoderAddImageGrid(
+        encoder: *mut avifEncoder,
+        gridCols: u32,
+        gridRows: u32,
+        cellImages: *const *const avifImage,
+        addImageFlags: u32,
+    ) -> avifResult;
+    pub fn avifEncoderFinish(encoder: *mut avifEncoder, output: *mut avifRWData) -> avifResult;
+
+    /// Codec-specific, optional "advanced" tuning settings, in the form of string key/value pairs. These
+    /// should be set as early as possible, preferably just after creating avifEncoder but before
+    /// performing any other actions.
+    /// key must be non-NULL, but passing a NULL value will delete that key, if it exists.
+    /// Setting an incorrect or unknown option for the current codec will cause errors of type
+    /// AVIF_RESULT_INVALID_CODEC_SPECIFIC_OPTION from avifEncoderWrite() or avifEncoderAddImage().
+    pub fn avifEncoderSetCodecSpecificOption(
+        encoder: *mut avifEncoder,
+        key: *const libc::c_char,
+        value: *const libc::c_char,
+    );
+
+    pub fn avifImageUsesU16(image: *mut avifImage) -> avifBool;
+
     pub fn avifDecoderCreate() -> *mut avifDecoder;
     pub fn avifDecoderDestroy(decoder: *mut avifDecoder);
+    /// call avifDecoderSetIO*() first
     pub fn avifDecoderRead(
         decoder: *mut avifDecoder,
         image: *mut avifImage,
         data: *const avifROData,
     ) -> avifResult;
+    pub fn avifDecoderReadMemory(
+        decoder: *mut avifDecoder,
+        image: *mut avifImage,
+        data: *const u8,
+        size: libc::size_t,
+    ) -> avifResult;
+    pub fn avifDecoderReadFile(
+        decoder: *mut avifDecoder,
+        image: *mut avifImage,
+        filename: *const libc::c_char,
+    ) -> avifResult;
+
     pub fn avifDecoderSetSource(decoder: *mut avifDecoder, source: avifDecoderSource)
         -> avifResult;
-    pub fn avifDecoderParse(decoder: *mut avifDecoder, input: *const avifROData) -> avifResult;
+
+    pub fn avifDecoderSetIO(decoder: *mut avifDecoder, io: *mut avifIO);
+    pub fn avifDecoderSetIOMemory(
+        decoder: *mut avifDecoder,
+        data: *const u8,
+        size: libc::size_t,
+    ) -> avifResult;
+    pub fn avifDecoderSetIOFile(
+        decoder: *mut avifDecoder,
+        filename: *const libc::c_char,
+    ) -> avifResult;
+    pub fn avifDecoderParse(decoder: *mut avifDecoder) -> avifResult;
     pub fn avifDecoderNextImage(decoder: *mut avifDecoder) -> avifResult;
     pub fn avifDecoderNthImage(decoder: *mut avifDecoder, frameIndex: u32) -> avifResult;
     pub fn avifDecoderReset(decoder: *mut avifDecoder) -> avifResult;
 
+    pub fn avifDecoderIsKeyframe(decoder: *const avifDecoder, frameIndex: u32) -> avifBool;
+    pub fn avifDecoderNearestKeyframe(decoder: *const avifDecoder, frameIndex: u32) -> u32;
+
+    pub fn avifDecoderNthImageTiming(
+        decoder: *const avifDecoder,
+        frameIndex: u32,
+        outTiming: *mut avifImageTiming,
+    ) -> avifResult;
+
+    pub fn avifDecoderNthImageMaxExtent(
+        decoder: *const avifDecoder,
+        frameIndex: u32,
+        outExtent: *mut avifExtent,
+    ) -> avifResult;
+
     pub fn avifRWDataFree(raw: *mut avifRWData);
 
     pub fn avifRGBImageSetDefaults(rgb: *mut avifRGBImage, image: *const avifImage);
+    pub fn avifRGBImagePixelSize(rgb: *const avifRGBImage) -> u32;
     pub fn avifRGBImageAllocatePixels(rgb: *mut avifRGBImage);
     pub fn avifRGBImageFreePixels(rgb: *mut avifRGBImage);
 
-    pub fn avifImageYUVToRGB(image: *const avifImage, rgb: *mut avifRGBImage) -> avifResult;
     pub fn avifImageRGBToYUV(image: *mut avifImage, rgb: *const avifRGBImage) -> avifResult;
+    pub fn avifImageYUVToRGB(image: *const avifImage, rgb: *mut avifRGBImage) -> avifResult;
 
     pub fn avifImageAllocatePlanes(image: *mut avifImage, planes: u32); // Ignores any pre-existing planes
     pub fn avifImageFreePlanes(image: *mut avifImage, planes: u32); // Ignores any pre-existing planes
@@ -398,4 +670,17 @@ extern "C" {
     /// Returns AVIF_TRUE if input begins with a valid FileTypeBox (ftyp) that supports
     /// either the brand 'avif' or 'avis' (or both), without performing any allocations.
     pub fn avifPeekCompatibleFileType(input: *const avifROData) -> avifBool;
+
+    pub fn avifRGBImagePremultiplyAlpha(rgb: *mut avifRGBImage) -> avifResult;
+    pub fn avifRGBImageUnpremultiplyAlpha(rgb: *mut avifRGBImage) -> avifResult;
+
+    pub fn avifFullToLimitedY(depth: libc::c_int, v: libc::c_int) -> libc::c_int;
+    pub fn avifFullToLimitedUV(depth: libc::c_int, v: libc::c_int) -> libc::c_int;
+    pub fn avifLimitedToFullY(depth: libc::c_int, v: libc::c_int) -> libc::c_int;
+    pub fn avifLimitedToFullUV(depth: libc::c_int, v: libc::c_int) -> libc::c_int;
+
+    pub fn avifIOCreateMemoryReader(data: *const u8, size: libc::size_t) -> *mut avifIO;
+    pub fn avifIOCreateFileReader(filename: *const libc::c_char) -> *mut avifIO;
+    pub fn avifIODestroy(io: *mut avifIO);
+
 }
