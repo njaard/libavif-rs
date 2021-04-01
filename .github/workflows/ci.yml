@@ -107,7 +107,7 @@ jobs:
           $LINK="https://www.nasm.us/pub/nasm/releasebuilds/$NASM_VERSION/win64"
           curl -LO "$LINK/nasm-$NASM_VERSION-win64.zip"
           7z e -y "nasm-$NASM_VERSION-win64.zip" -o"C:\nasm"
-          echo "::add-path::C:\nasm"
+          echo "C:\nasm" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Install rust
         run: |
