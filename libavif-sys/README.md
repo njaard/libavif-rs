@@ -29,7 +29,7 @@ they have the best (speed) performance. You can disable those features and inste
 uses it via rav1e's C-API).
 
 # Platform support
-This crate is only expected to compile on Linux. Patches accepted.
+This crate is tested on Linux, MacOS, and Windows.
 
 # License
 This crate is released under the BSD-2-Clause license. The dependant
