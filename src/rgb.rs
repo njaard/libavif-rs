@@ -42,6 +42,16 @@ impl<'a> RgbPixels<'a> {
         })
     }
 
+    /// Safety: `rgb` must be a valid value obtained from libavif
+    /// which must have not been freed yet.
+    pub(crate) unsafe fn from_raw(rgb: sys::avifRGBImage) -> Self {
+        Self {
+            owned: false,
+            inner: rgb,
+            phantom: PhantomData,
+        }
+    }
+
     /// width of the image in pixels
     pub fn width(&self) -> u32 {
         self.inner.width
@@ -95,16 +105,6 @@ impl<'a> RgbPixels<'a> {
     }
 }
 
-impl<'a> From<sys::avifRGBImage> for RgbPixels<'a> {
-    fn from(rgb: sys::avifRGBImage) -> Self {
-        Self {
-            owned: false,
-            inner: rgb,
-            phantom: PhantomData,
-        }
-    }
-}
-
 impl<'a> From<AvifImage> for RgbPixels<'a> {
     fn from(image: AvifImage) -> Self {
         Self::from(&image)
@@ -123,7 +123,7 @@ impl<'a> From<&AvifImage> for RgbPixels<'a> {
             sys::avifRGBImageAllocatePixels(raw_rgb);
             sys::avifImageYUVToRGB(image.inner(), raw_rgb);
 
-            RgbPixels::from(rgb)
+            RgbPixels::from_raw(rgb)
         }
     }
 }
