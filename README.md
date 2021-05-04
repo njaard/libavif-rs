@@ -8,10 +8,10 @@
 
 Initial release of a high-level avif decoder.
 
-This crate is not really usable. Until I determine
-a useful high-level API, you may want to use the unsafe
-API in [`libavif-sys`](https://crates.io/crates/libavif-sys)
-or the utility functions for [`image`](https://crates.io/crates/image),
-[`libavif-image`](https://crates.io/crates/libavif-image).
+This crate is generally too minimal for production use;
+consider using [`libavif-image`](https://crates.io/crates/libavif-image)
+which provides utility functions for [`image`](https://crates.io/crates/image)
+(or the `avif` feature in `image`, which doesn't use this crate).
 
+You can also use the unsafe API in [`libavif-sys`](https://crates.io/crates/libavif-sys).
 
