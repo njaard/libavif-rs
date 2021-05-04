@@ -22,6 +22,16 @@ impl<'a> AvifData<'a> {
         }
     }
 
+    /// Safety: `data` must be a valid value obtained from libavif
+    /// which must have not been freed yet.
+    pub(crate) unsafe fn from_raw(data: sys::avifRWData) -> Self {
+        Self {
+            owned: false,
+            inner: data,
+            phantom: PhantomData,
+        }
+    }
+
     /// Extracts a slice containg the entire data without doing clones or allocation.
     pub fn as_slice(&'a self) -> &'a [u8] {
         unsafe { slice::from_raw_parts(self.inner.data, self.inner.size) }
@@ -47,16 +57,6 @@ impl<'a> std::ops::Deref for AvifData<'a> {
     type Target = [u8];
     fn deref(&self) -> &Self::Target {
         self.as_slice()
-    }
-}
-
-impl<'a> From<sys::avifRWData> for AvifData<'a> {
-    fn from(data: sys::avifRWData) -> Self {
-        Self {
-            owned: false,
-            inner: data,
-            phantom: PhantomData,
-        }
     }
 }
 

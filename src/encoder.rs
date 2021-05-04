@@ -92,8 +92,14 @@ impl Encoder {
     /// Encode an `AvifImage` using the settings from this `Encoder`
     pub fn encode(&self, image: &AvifImage) -> Result<AvifData<'static>, Error> {
         let mut data = Default::default();
-        Error::code(unsafe { sys::avifEncoderWrite(self.encoder, image.inner(), &mut data) })?;
-        Ok(AvifData::from(data))
+        unsafe {
+            Error::code(sys::avifEncoderWrite(
+                self.encoder,
+                image.inner(),
+                &mut data,
+            ))?;
+            Ok(AvifData::from_raw(data))
+        }
     }
 }
 

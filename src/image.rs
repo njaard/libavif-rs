@@ -21,6 +21,8 @@ impl AvifImage {
         }
     }
 
+    /// Safety: `image` must be a valid value obtained from libavif
+    /// which must have not been freed yet.
     pub(crate) unsafe fn from_raw(image: *mut sys::avifImage) -> Self {
         debug_assert!(!image.is_null());
 
