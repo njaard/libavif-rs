@@ -1,4 +1,3 @@
-
 #[cfg(feature = "codec-aom")]
 extern crate libaom_sys; // mark it as used
 
@@ -12,5 +11,3 @@ pub use rav1e::capi::*;
 #[allow(non_snake_case)]
 mod ffi;
 pub use ffi::*;
-
-
