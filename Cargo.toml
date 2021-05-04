@@ -32,7 +32,6 @@ no-default-features = true
 members = [
   "libavif-image",
   "libavif-sys",
-  "libavif-sys/systest",
   "libaom-sys",
   "libdav1d-sys",
 ]

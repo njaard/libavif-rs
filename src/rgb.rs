@@ -86,7 +86,7 @@ impl<'a> RgbPixels<'a> {
     pub fn to_image(&self, yuv_format: YuvFormat) -> AvifImage {
         unsafe {
             let image =
-                sys::avifImageCreate(self.width() as _, self.height() as _, 8, yuv_format as i32);
+                sys::avifImageCreate(self.width() as _, self.height() as _, 8, yuv_format as u32);
             sys::avifImageAllocatePlanes(image, sys::AVIF_PLANES_YUV as _);
 
             sys::avifImageRGBToYUV(image, &self.inner as *const sys::avifRGBImage);

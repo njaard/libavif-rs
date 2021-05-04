@@ -7,18 +7,18 @@ use libavif_sys as sys;
 #[derive(Debug, Clone)]
 pub enum Error {
     /// libavif operation failed with result `code`
-    Code(i32),
+    Code(u32),
     /// The image pixel format isn't supported or the specified `width` and `height` don't
     /// match the pixel buffer size
     UnsupportedImageType,
 }
 
 impl Error {
-    pub(crate) fn code(code: i32) -> Result<(), Error> {
+    pub(crate) fn code(code: ::std::os::raw::c_uint) -> Result<(), Error> {
         if code == sys::AVIF_RESULT_OK {
             Ok(())
         } else {
-            Err(Error::Code(code))
+            Err(Error::Code(code as u32))
         }
     }
 }
