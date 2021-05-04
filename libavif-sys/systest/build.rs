@@ -34,6 +34,7 @@ fn main() {
         | "avifAddImageFlags"
         | "avifColorPrimariesFind"
         | "avifChannelIndex" => "int".to_string(),
+        | "__enum16" => "uint64_t".to_string(),
         t if _is_struct => format!("struct {}", t),
         "f32" => "float".to_string(),
         "f64" => "double".to_string(),

@@ -15,6 +15,7 @@ pub const AVIF_PLANE_COUNT_YUV: usize = 3;
 pub type avifBool = libc::c_int;
 
 pub type __enum = libc::c_int;
+pub type __enum16 = u16;
 
 pub type avifPlanesFlags = __enum;
 pub const AVIF_PLANES_YUV: avifPlanesFlags = 1;
@@ -79,7 +80,7 @@ pub const AVIF_CHROMA_SAMPLE_POSITION_UNKNOWN: avifChromaSamplePosition = 0;
 pub const AVIF_CHROMA_SAMPLE_POSITION_VERTICAL: avifChromaSamplePosition = 1;
 pub const AVIF_CHROMA_SAMPLE_POSITION_COLOCATED: avifChromaSamplePosition = 2;
 
-pub type avifColorPrimaries = __enum;
+pub type avifColorPrimaries = __enum16;
 
 pub const AVIF_COLOR_PRIMARIES_UNKNOWN: avifColorPrimaries = 0;
 pub const AVIF_COLOR_PRIMARIES_BT709: avifColorPrimaries = 1;
@@ -96,7 +97,7 @@ pub const AVIF_COLOR_PRIMARIES_SMPTE431: avifColorPrimaries = 11;
 pub const AVIF_COLOR_PRIMARIES_SMPTE432: avifColorPrimaries = 12;
 pub const AVIF_COLOR_PRIMARIES_EBU3213: avifColorPrimaries = 22;
 
-pub type avifTransferCharacteristics = __enum;
+pub type avifTransferCharacteristics = __enum16;
 
 pub const AVIF_TRANSFER_CHARACTERISTICS_UNKNOWN: avifTransferCharacteristics = 0;
 pub const AVIF_TRANSFER_CHARACTERISTICS_BT709: avifTransferCharacteristics = 1;
@@ -117,7 +118,7 @@ pub const AVIF_TRANSFER_CHARACTERISTICS_SMPTE2084: avifTransferCharacteristics =
 pub const AVIF_TRANSFER_CHARACTERISTICS_SMPTE428: avifTransferCharacteristics = 17;
 pub const AVIF_TRANSFER_CHARACTERISTICS_HLG: avifTransferCharacteristics = 18;
 
-pub type avifMatrixCoefficients = __enum;
+pub type avifMatrixCoefficients = __enum16;
 
 pub const AVIF_MATRIX_COEFFICIENTS_IDENTITY: avifMatrixCoefficients = 0;
 pub const AVIF_MATRIX_COEFFICIENTS_BT709: avifMatrixCoefficients = 1;
