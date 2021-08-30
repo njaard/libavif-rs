@@ -3,7 +3,7 @@
 [![crates.io](https://img.shields.io/crates/v/libavif.svg)](https://crates.io/crates/libavif)
 [![Documentation](https://docs.rs/libavif/badge.svg)](https://docs.rs/libavif)
 [![BSD-2-Clause licensed](https://img.shields.io/crates/l/libavif.svg)](LICENSE)
-[![Rustc Version 1.44+](https://img.shields.io/badge/rustc-1.44+-lightgray.svg)](https://blog.rust-lang.org/2020/06/04/Rust-1.44.0.html)
+[![Rustc Version 1.46+](https://img.shields.io/badge/rustc-1.46+-lightgray.svg)](https://blog.rust-lang.org/2020/08/27/Rust-1.46.0.html)
 [![CI](https://github.com/njaard/libavif-rs/workflows/CI/badge.svg)](https://github.com/njaard/libavif-rs/actions?query=workflow%3ACI)
 
 Initial release of a high-level avif decoder.
