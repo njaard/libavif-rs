@@ -1,10 +1,9 @@
 use std::env;
 #[cfg(feature = "codec-rav1e")]
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use cmake::Config;
-use std::ffi::OsString;
 
 fn main() {
     if env::var_os("DOCS_RS").is_some() {
@@ -13,7 +12,6 @@ fn main() {
 
     let out_dir_ = env::var("OUT_DIR").unwrap();
     let out_dir = Path::new(&out_dir_);
-    let mut _built_products_paths: Vec<PathBuf> = vec![];
     let mut avif = Config::new("libavif");
 
     let mut pc_paths: Vec<_> = env::var("PKG_CONFIG_PATH")
@@ -35,12 +33,9 @@ fn main() {
         avif.define("AVIF_CODEC_AOM", "1");
         avif.define("AOM_INCLUDE_DIR", include);
 
-        if let Some(pc_path) = env::var_os("DEP_AOM_PKGCONFIG") {
-            let p = PathBuf::from(pc_path);
-
-            _built_products_paths.push(p.parent().unwrap().to_path_buf());
-            pc_paths.insert(0, p);
-        }
+        let pc_path =
+            env::var_os("DEP_AOM_PKGCONFIG").expect("libaom-sys should have set pkgconfig path");
+        pc_paths.insert(0, pc_path.into());
     }
 
     #[cfg(feature = "codec-rav1e")]
@@ -78,19 +73,8 @@ fn main() {
     eprintln!("building libavif");
 
     let local_pc_files = env::join_paths(pc_paths).unwrap();
-    let mut cmake_prefix_path = OsString::new();
-    for s in _built_products_paths {
-        if !cmake_prefix_path.is_empty() {
-            cmake_prefix_path.push(";");
-        }
-        cmake_prefix_path.push(s);
-    }
 
-    eprintln!(
-        "pc=\"{:?}\"; bp=\"{:?}\"",
-        local_pc_files, cmake_prefix_path
-    );
-    avif.define("CMAKE_PREFIX_PATH", cmake_prefix_path);
+    eprintln!("pc=\"{:?}\"", local_pc_files);
     avif.env("PKG_CONFIG_PATH", local_pc_files);
 
     let avif_built = avif.profile("Release").build();
