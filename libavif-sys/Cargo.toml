@@ -1,6 +1,6 @@
 [package]
 name = "libavif-sys"
-version = "0.10.3"
+version = "0.11.0"
 authors = ["Charles Samuels <ks@ks.ax>", "Paolo Barbolini <paolo@paolo565.org>"]
 edition = "2018"
 build = "build.rs"
