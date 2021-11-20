@@ -14,6 +14,7 @@ fn main() {
     let out_dir = Path::new(&out_dir_);
     let mut avif = Config::new("libavif");
 
+    #[allow(unused_mut)]
     let mut pc_paths: Vec<_> = env::var("PKG_CONFIG_PATH")
         .map(|v| env::split_paths(&v).collect())
         .unwrap_or_default();
