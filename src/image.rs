@@ -1,8 +1,8 @@
-use std::ptr;
+use std::{convert::TryInto, ptr};
 
 use libavif_sys as sys;
 
-use crate::YuvFormat;
+use crate::{Error, YuvFormat};
 
 /// YUV image
 pub struct AvifImage {
@@ -10,6 +10,21 @@ pub struct AvifImage {
 }
 
 impl AvifImage {
+    pub fn from_luma8(width: u32, height: u32, pixels: &[u8]) -> Result<Self, Error> {
+        if (width * height) as usize != pixels.len() {
+            return Err(Error::UnsupportedImageType);
+        }
+
+        let mut image = Self::new(
+            width.try_into().unwrap(),
+            height.try_into().unwrap(),
+            8,
+            YuvFormat::Yuv400,
+        );
+        image.set_y(pixels);
+        Ok(image)
+    }
+
     pub fn width(&self) -> u32 {
         unsafe { (*self.image).width }
     }
