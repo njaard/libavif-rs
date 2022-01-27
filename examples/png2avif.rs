@@ -16,6 +16,10 @@ fn main() {
             let rgb = img.as_flat_samples();
             libavif::encode_rgb8(img.width(), img.height(), rgb.as_slice()).expect("encoding avif")
         }
+        DynamicImage::ImageLuma8(img) => {
+            let rgb = img.as_flat_samples();
+            libavif::encode_rgb8(img.width(), img.height(), rgb.as_slice()).expect("encoding avif")
+        }
         _ => panic!("image type not supported"),
     };
 

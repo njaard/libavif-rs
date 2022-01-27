@@ -1,4 +1,8 @@
+use std::ptr;
+
 use libavif_sys as sys;
+
+use crate::YuvFormat;
 
 /// YUV image
 pub struct AvifImage {
@@ -18,6 +22,21 @@ impl AvifImage {
         unsafe {
             let image = sys::avifImageCreateEmpty();
             Self::from_raw(image)
+        }
+    }
+
+    pub(crate) fn new(width: i32, height: i32, depth: i32, format: YuvFormat) -> Self {
+        unsafe {
+            let image = sys::avifImageCreate(width, height, depth, format as u32);
+            sys::avifImageAllocatePlanes(image, sys::AVIF_PLANES_YUV);
+            Self::from_raw(image)
+        }
+    }
+
+    pub(crate) fn set_y(&mut self, y: &[u8]) {
+        // TODO: unsound
+        unsafe {
+            ptr::copy_nonoverlapping(y.as_ptr(), (*self.image).yuvPlanes[0], y.len());
         }
     }
 
