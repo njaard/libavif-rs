@@ -1,11 +1,8 @@
-use image::{GenericImageView, Pixel};
+use image::{DynamicImage, GenericImageView, Pixel};
 
 #[test]
 fn images() {
-    for non_avifs in ["rgb.jpg"].iter() {
-        let path = format!("tests/{}", non_avifs);
-        let image = image::open(path).expect("image::open non avif input");
-
+    fn do_test(image: &DynamicImage) {
         let avif = libavif_image::save(&image).expect("encode avif");
         assert!(libavif_image::is_avif(avif.as_slice()));
 
@@ -29,5 +26,15 @@ fn images() {
             .sum::<u64>()
             / image.pixels().count() as u64;
         assert!(diff < 20);
+    }
+
+    for non_avifs in ["rgb.jpg"].iter() {
+        let path = format!("tests/{}", non_avifs);
+        let rgb = image::open(path).expect("image::open non avif input");
+
+        do_test(&rgb);
+
+        let luma = DynamicImage::ImageLuma8(rgb.to_luma8());
+        do_test(&luma);
     }
 }
