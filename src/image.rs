@@ -21,7 +21,9 @@ impl AvifImage {
             8,
             YuvFormat::Yuv400,
         );
-        image.set_y(pixels);
+        unsafe {
+            image.set_y(pixels);
+        }
         Ok(image)
     }
 
@@ -48,11 +50,8 @@ impl AvifImage {
         }
     }
 
-    pub(crate) fn set_y(&mut self, y: &[u8]) {
-        // TODO: unsound
-        unsafe {
-            ptr::copy_nonoverlapping(y.as_ptr(), (*self.image).yuvPlanes[0], y.len());
-        }
+    pub(crate) unsafe fn set_y(&mut self, y: &[u8]) {
+        ptr::copy_nonoverlapping(y.as_ptr(), (*self.image).yuvPlanes[0], y.len());
     }
 
     /// Safety: `image` must be a valid value obtained from libavif
