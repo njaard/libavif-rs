@@ -28,6 +28,10 @@ pub fn save(img: &DynamicImage) -> Result<AvifData, Error> {
             let rgb = img.as_flat_samples();
             libavif::encode_rgb8(img.width(), img.height(), rgb.as_slice())?
         }
+        DynamicImage::ImageLuma8(img) => {
+            let rgb = img.as_flat_samples();
+            libavif::encode_rgb8(img.width(), img.height(), rgb.as_slice())?
+        }
         _ => return Err(Error::UnsupportedImageType),
     };
 
