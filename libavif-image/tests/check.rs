@@ -1,4 +1,4 @@
-use image::{DynamicImage, GenericImageView, Pixel};
+use image::{DynamicImage, Pixel};
 
 #[test]
 fn images() {
