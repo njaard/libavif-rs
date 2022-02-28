@@ -78,7 +78,7 @@ fn main() {
     eprintln!("pc=\"{:?}\"", local_pc_files);
     avif.env("PKG_CONFIG_PATH", local_pc_files);
 
-    let avif_built = avif.profile("Release").build();
+    let avif_built = avif.profile("Release").configure_arg("-DCMAKE_INSTALL_LIBDIR=lib").build();
 
     println!(
         "cargo:rustc-link-search=native={}",
