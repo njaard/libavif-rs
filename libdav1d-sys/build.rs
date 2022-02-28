@@ -15,6 +15,7 @@ fn main() {
         .arg("--buildtype")
         .arg("release")
         .arg("--prefix=/")
+        .arg("--libdir=lib")
         .arg(&out_dir)
         .arg("vendor")
         .status()
