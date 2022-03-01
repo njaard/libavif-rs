@@ -11,7 +11,8 @@ fn main() {
         .define("ENABLE_EXAMPLES", "0")
         .define("ENABLE_TESTDATA", "0")
         .define("ENABLE_TESTS", "0")
-        .define("ENABLE_TOOLS", "0");
+        .define("ENABLE_TOOLS", "0")
+        .define("CMAKE_INSTALL_LIBDIR", "lib");
 
     let host = env::var("HOST").expect("HOST");
     let target = env::var("TARGET").expect("TARGET");
