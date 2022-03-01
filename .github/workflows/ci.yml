@@ -75,7 +75,7 @@ jobs:
             os: macOS-latest
             features: "--no-default-features --features codec-aom"
           - name: windows / stable
-            os: windows-latest
+            os: windows-2019
 
     steps:
       - name: Checkout
@@ -95,13 +95,13 @@ jobs:
           brew install ninja nasm meson
 
       - name: Install dependencies (windows)
-        if: matrix.os == 'windows-latest'
+        if: matrix.os == 'windows-2019'
         run: |
           choco install -y ninja
           pip install meson
 
       - name: Install nasm (windows)
-        if: matrix.os == 'windows-latest'
+        if: matrix.os == 'windows-2019'
         run: |
           $NASM_VERSION="2.15.02"
           $LINK="https://www.nasm.us/pub/nasm/releasebuilds/$NASM_VERSION/win64"
@@ -115,15 +115,14 @@ jobs:
           rustup update --no-self-update ${{ matrix.rust || 'stable' }}
 
       - name: Test (Windows)
-        if: matrix.os == 'windows-latest'
+        if: matrix.os == 'windows-2019'
         shell: cmd
         run: |
           call "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
-          set CL=cl
           cargo test ${{ matrix.features }} --all
 
       - name: Test (Linux, macOS)
-        if: matrix.os != 'windows-latest'
+        if: matrix.os != 'windows-2019'
         run: |
           cargo test ${{ matrix.features }} --all
 
