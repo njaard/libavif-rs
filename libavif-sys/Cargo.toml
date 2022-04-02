@@ -2,7 +2,8 @@
 name = "libavif-sys"
 version = "0.12.1"
 authors = ["Charles Samuels <ks@ks.ax>", "Paolo Barbolini <paolo@paolo565.org>"]
-edition = "2018"
+edition = "2021"
+rust-version = "1.56"
 build = "build.rs"
 description="Unsafe wrapper around libavif, the image codec"
 keywords=["ffi", "codec", "image", "avif", "AV1"]
