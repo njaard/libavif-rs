@@ -2,7 +2,8 @@
 name = "libavif-image"
 version = "0.8.0"
 authors = ["Charles Samuels <ks@ks.ax>", "Paolo Barbolini <paolo@paolo565.org>"]
-edition = "2018"
+edition = "2021"
+rust-version = "1.56"
 description="Load AVIF files into the `image` crate"
 keywords=["codec", "image", "avif", "AV1"]
 repository="https://github.com/njaard/libavif-rs"
