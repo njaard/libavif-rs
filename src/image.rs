@@ -1,4 +1,4 @@
-use std::{convert::TryInto, ptr};
+use std::ptr;
 
 use libavif_sys as sys;
 
