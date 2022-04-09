@@ -2,6 +2,46 @@ use crate::{AddImageFlags, AvifData, AvifImage, Error};
 use libavif_sys as sys;
 
 /// AVIF image encoder
+///
+/// ## Encoding a single image
+///
+/// ```no_run
+/// # use std::fs;
+/// # use libavif::{AvifImage, Encoder};
+/// #
+/// # fn main() -> Result<(), Box<dyn std::error::Error>> {
+/// let luma_data = fs::read("luma.raw")?;
+/// let image = AvifImage::from_luma8(128, 128, &luma_data)?;
+/// let encoder = Encoder::new();
+/// let data = encoder.encode(&image)?;
+/// fs::write("luma.avif", &*data)?;
+/// # Ok(())
+/// # }
+/// ```
+///
+/// ## Encoding an image sequence
+///
+/// ```no_run
+/// # use std::fs;
+/// # use libavif::{AvifImage, Encoder};
+/// #
+/// # fn main() -> Result<(), Box<dyn std::error::Error>> {
+/// let mut encoder = Encoder::new();
+/// // Set timescale to 60Hz...
+/// encoder.set_timescale(60);
+/// for i in 0..60 {
+///     let luma_data = fs::read(&format!("luma{}.raw", i))?;
+///     let image = AvifImage::from_luma8(128, 128, &luma_data)?;
+///     // ...so we can use 1 as the duration.
+///     // The duration of a single frame is now 1/60 s.
+///     // So the framerate is 60fps
+///     encoder.add_image(&image, 1, Default::default())?;
+/// }
+/// let data = encoder.finish()?;
+/// fs::write("luma_animation.avif", &*data)?;
+/// # Ok(())
+/// # }
+/// ```
 pub struct Encoder {
     encoder: *mut sys::avifEncoder,
 }
