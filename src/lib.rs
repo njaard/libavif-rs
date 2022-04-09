@@ -3,6 +3,7 @@
 pub use self::data::AvifData;
 pub use self::encoder::Encoder;
 pub use self::error::Error;
+pub use self::flags::AddImageFlags;
 pub use self::format::YuvFormat;
 pub use self::image::AvifImage;
 pub use self::rgb::RgbPixels;
@@ -11,6 +12,7 @@ use libavif_sys as sys;
 mod data;
 mod encoder;
 mod error;
+mod flags;
 mod format;
 mod image;
 mod rgb;
