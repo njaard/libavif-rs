@@ -79,9 +79,16 @@ fn main() {
     eprintln!("pc=\"{:?}\"", local_pc_files);
     avif.env("PKG_CONFIG_PATH", local_pc_files);
 
-    avif.profile("Release")
-        .configure_arg("-DCMAKE_INSTALL_LIBDIR=lib")
-        .configure_arg("-DCMAKE_DISABLE_FIND_PACKAGE_libyuv=1");
+    avif.profile(if env::var("PROFILE").expect("PROFILE") == "release" {
+        "Release"
+    } else {
+        "Debug"
+    })
+    .configure_arg("-DCMAKE_INSTALL_LIBDIR=lib")
+    .configure_arg("-DCMAKE_DISABLE_FIND_PACKAGE_libyuv=1");
+    if env::var("LIBAVIF_CROSS_WIN32").is_ok() {
+        avif.configure_arg("-T host=x64").configure_arg("-A Win32");
+    }
     let avif_built = avif.build();
 
     println!(
