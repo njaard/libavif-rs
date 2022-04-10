@@ -30,12 +30,13 @@ fn main() {
     #[cfg(feature = "codec-aom")]
     {
         let include =
-            env::var_os("DEP_AOM_INCLUDE").expect("libaom-sys should have set pkgconfig path");
+            env::var_os("DEP_AOM_INCLUDE").expect("libaom-sys should have set include path");
         avif.define("AVIF_CODEC_AOM", "1");
         avif.define("AOM_INCLUDE_DIR", include);
 
         let pc_path =
             env::var_os("DEP_AOM_PKGCONFIG").expect("libaom-sys should have set pkgconfig path");
+        avif.define("AOM_LIBRARY", pc_path.clone());
         pc_paths.insert(0, pc_path.into());
     }
 
