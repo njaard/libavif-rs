@@ -16,6 +16,7 @@ libavif-sys = { version = "0.13.0", path = "libavif-sys", default-features = fal
 
 [dev-dependencies]
 image = "0.24"
+y4m = "0.7"
 
 [features]
 default = ["codec-dav1d", "codec-rav1e"]
