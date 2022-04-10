@@ -1,12 +1,13 @@
 use std::ptr;
 
 use libavif_sys as sys;
+use libavif_sys::avifImage;
 
 use crate::{Error, YuvFormat};
 
 /// YUV image
 pub struct AvifImage {
-    image: *mut sys::avifImage,
+    image: ptr::NonNull<sys::avifImage>,
 }
 
 impl AvifImage {
@@ -28,11 +29,11 @@ impl AvifImage {
     }
 
     pub fn width(&self) -> u32 {
-        unsafe { (*self.image).width }
+        unsafe { self.image.as_ref().width }
     }
 
     pub fn height(&self) -> u32 {
-        unsafe { (*self.image).height }
+        unsafe { self.image.as_ref().height }
     }
 
     pub(crate) fn empty() -> Self {
@@ -51,32 +52,34 @@ impl AvifImage {
     }
 
     pub(crate) unsafe fn set_y(&mut self, y: &[u8]) {
-        debug_assert!(!(*self.image).yuvPlanes[0].is_null());
+        debug_assert!(!self.image.as_ref().yuvPlanes[0].is_null());
 
-        ptr::copy_nonoverlapping(y.as_ptr(), (*self.image).yuvPlanes[0], y.len());
+        ptr::copy_nonoverlapping(y.as_ptr(), self.image.as_mut().yuvPlanes[0], y.len());
     }
 
     /// Safety: `image` must be a valid value obtained from libavif
     /// which must have not been freed yet.
     pub(crate) unsafe fn from_raw(image: *mut sys::avifImage) -> Self {
-        debug_assert!(!image.is_null());
-
-        Self { image }
+        // unwrap used for compatibility
+        Self { image: ptr::NonNull::new(image).unwrap() }
     }
 
-    pub(crate) fn inner(&self) -> *const sys::avifImage {
-        self.image
-    }
 
     pub(crate) fn inner_mut(&mut self) -> *mut sys::avifImage {
-        self.image
+        self.image.as_ptr()
     }
 }
 
 impl Drop for AvifImage {
     fn drop(&mut self) {
         unsafe {
-            sys::avifImageDestroy(self.image);
+            sys::avifImageDestroy(self.image.as_ptr());
         }
+    }
+}
+
+impl super::AvifImageRef for AvifImage {
+    unsafe fn image(&self) -> &avifImage {
+        self.image.as_ref()
     }
 }

@@ -1,4 +1,4 @@
-use crate::{AddImageFlags, AvifData, AvifImage, Error};
+use crate::{AddImageFlags, AvifData, AvifImageRef, Error};
 use libavif_sys as sys;
 
 /// AVIF image encoder
@@ -145,33 +145,33 @@ impl Encoder {
         self
     }
 
-    /// Encode an `AvifImage` using the settings from this `Encoder`
+    /// Encode an image using the settings from this `Encoder`
     ///
     /// Calling this function is the same as calling [`add_image`](Self::add_image) with
     /// [`AddImageFlags::SINGLE`](crate::AddImageFlags::SINGLE) and calling [`finish`](Self::finish).
-    pub fn encode(&self, image: &AvifImage) -> Result<AvifData<'static>, Error> {
+    pub fn encode<I: AvifImageRef>(&self, image_ref: &I) -> Result<AvifData<'static>, Error> {
         let mut data = Default::default();
         unsafe {
             Error::code(sys::avifEncoderWrite(
                 self.encoder,
-                image.inner(),
+                image_ref.image(),
                 &mut data,
             ))?;
             Ok(AvifData::from_raw(data))
         }
     }
 
-    /// Add an `AvifImage` to this `Encoder`.
-    pub fn add_image(
+    /// Add an image to this `Encoder`.
+    pub fn add_image<I: AvifImageRef>(
         &self,
-        image: &AvifImage,
+        image_ref: &I,
         duration_in_timescales: u64,
         flags: AddImageFlags,
     ) -> Result<(), super::Error> {
         unsafe {
             Error::code(sys::avifEncoderAddImage(
                 self.encoder,
-                image.inner(),
+                image_ref.image(),
                 duration_in_timescales,
                 flags.into(),
             ))

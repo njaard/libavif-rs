@@ -5,6 +5,7 @@ use std::slice;
 use libavif_sys as sys;
 
 use crate::{AvifImage, Error, YuvFormat};
+use crate::image::AvifImageRef;
 
 pub struct RgbPixels<'a> {
     owned: bool,
@@ -112,17 +113,17 @@ impl<'a> From<AvifImage> for RgbPixels<'a> {
     }
 }
 
-impl<'a> From<&AvifImage> for RgbPixels<'a> {
-    fn from(image: &AvifImage) -> Self {
+impl<'a, I: AvifImageRef> From<&I> for RgbPixels<'a> {
+    fn from(image: &I) -> Self {
         unsafe {
             let mut rgb = sys::avifRGBImage::default();
             let raw_rgb = &mut rgb as *mut sys::avifRGBImage;
-            sys::avifRGBImageSetDefaults(raw_rgb, image.inner());
+            sys::avifRGBImageSetDefaults(raw_rgb, image.image());
             rgb.format = sys::AVIF_RGB_FORMAT_RGBA;
             rgb.depth = 8;
 
             sys::avifRGBImageAllocatePixels(raw_rgb);
-            sys::avifImageYUVToRGB(image.inner(), raw_rgb);
+            sys::avifImageYUVToRGB(image.image(), raw_rgb);
 
             RgbPixels::from_raw(rgb)
         }
