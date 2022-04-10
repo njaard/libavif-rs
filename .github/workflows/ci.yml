@@ -48,8 +48,7 @@ jobs:
           rustup component add clippy
 
       - name: cargo clippy --all --examples
-        run:
-          cargo clippy --all --examples
+        run: cargo clippy --all --examples
 
   test:
     name: test / ${{ matrix.name }}
@@ -62,7 +61,7 @@ jobs:
           - name: linux / stable
             rust: stable
           - name: linux / stable / codec-aom
-            features: "--no-default-features --features codec-aom"
+            features: '--no-default-features --features codec-aom'
           - name: linux / beta
             rust: beta
           - name: linux / nightly
@@ -73,9 +72,12 @@ jobs:
             os: macOS-latest
           - name: macOS / stable / codec-aom
             os: macOS-latest
-            features: "--no-default-features --features codec-aom"
+            features: '--no-default-features --features codec-aom'
           - name: windows / stable
             os: windows-2019
+          - name: windows / stable codec-aom
+            os: windows-2019
+            features: '--no-default-features --features codec-aom'
 
     steps:
       - name: Checkout
@@ -102,12 +104,7 @@ jobs:
 
       - name: Install nasm (windows)
         if: matrix.os == 'windows-2019'
-        run: |
-          $NASM_VERSION="2.15.02"
-          $LINK="https://www.nasm.us/pub/nasm/releasebuilds/$NASM_VERSION/win64"
-          curl -LO "$LINK/nasm-$NASM_VERSION-win64.zip"
-          7z e -y "nasm-$NASM_VERSION-win64.zip" -o"C:\nasm"
-          echo "C:\nasm" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        uses: ilammy/setup-nasm@v1
 
       - name: Install rust
         run: |
@@ -125,5 +122,3 @@ jobs:
         if: matrix.os != 'windows-2019'
         run: |
           cargo test ${{ matrix.features }} --all
-
-
