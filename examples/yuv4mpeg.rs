@@ -3,6 +3,7 @@ use std::time::Instant;
 use std::{env, fs, io};
 use y4m::Colorspace;
 
+/// This struct holds information about the y4m stream.
 #[derive(Debug)]
 struct Y4MFrameConfig {
     dimensions: (i32, i32),
@@ -118,6 +119,7 @@ fn main() {
 
         let frame_start_ts = Instant::now();
         let mut image = config.create_image().expect("couldn't create image");
+        // These planes each have to be `row_bytes * height` bytes long
         image
             .set_y(frame.get_y_plane())
             .set_u(frame.get_u_plane())
