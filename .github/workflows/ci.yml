@@ -16,12 +16,15 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install rust
-        run: |
-          rustup update --no-self-update stable
-          rustup component add rustfmt
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: default
+          override: true
+          components: rustfmt
 
       - name: cargo fmt -- --check
         run: |
@@ -33,7 +36,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
 
@@ -60,28 +63,37 @@ jobs:
         include:
           - name: linux / stable
             rust: stable
+            target: x86_64-unknown-linux-gnu
           - name: linux / stable / codec-aom
             features: '--no-default-features --features codec-aom'
+            target: x86_64-unknown-linux-gnu
           - name: linux / beta
             rust: beta
+            target: x86_64-unknown-linux-gnu
           - name: linux / nightly
             rust: nightly
+            target: x86_64-unknown-linux-gnu
           - name: linux / 1.56.0
             rust: 1.56.0
+            target: x86_64-unknown-linux-gnu
           - name: macOS / stable
             os: macOS-latest
+            target: x86_64-apple-darwin
           - name: macOS / stable / codec-aom
             os: macOS-latest
             features: '--no-default-features --features codec-aom'
+            target: x86_64-apple-darwin
           - name: windows / stable
             os: windows-2019
+            target: x86_64-pc-windows-msvc
           - name: windows / stable codec-aom
             os: windows-2019
             features: '--no-default-features --features codec-aom'
+            target: x86_64-pc-windows-msvc
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
 
@@ -107,18 +119,22 @@ jobs:
         uses: ilammy/setup-nasm@v1
 
       - name: Install rust
-        run: |
-          rustup default ${{ matrix.rust || 'stable' }}
-          rustup update --no-self-update ${{ matrix.rust || 'stable' }}
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust || 'stable' }}
+          profile: default
+          default: true
+          override: true
+          target: ${{ matrix.target }}
 
       - name: Test (Windows)
         if: matrix.os == 'windows-2019'
         shell: cmd
         run: |
           call "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
-          cargo test ${{ matrix.features }} --all
+          cargo test ${{ matrix.features }} --target ${{ matrix.target }}
 
       - name: Test (Linux, macOS)
         if: matrix.os != 'windows-2019'
         run: |
-          cargo test ${{ matrix.features }} --all
+          cargo test ${{ matrix.features }} --target ${{ matrix.target }}

@@ -9,11 +9,24 @@ fn main() {
 
     let out_dir = PathBuf::from(env::var_os("OUT_DIR").unwrap());
     let install_dir = out_dir.join("install");
-    let s = Command::new("meson")
-        .env("DESTDIR", &install_dir)
+    let mut meson = Command::new("meson");
+
+    meson.env("DESTDIR", &install_dir);
+
+    let target = env::var("TARGET").expect("TARGET");
+
+    if target == "i686-pc-windows-msvc" {
+        meson.arg("--cross-file").arg("i686-win-msvc.meson");
+    }
+
+    let s = meson
         .arg("--default-library=static")
         .arg("--buildtype")
-        .arg("release")
+        .arg(if env::var("PROFILE").expect("PROFILE") == "release" {
+            "release"
+        } else {
+            "debug"
+        })
         .arg("--prefix=/")
         .arg("--libdir=lib")
         .arg(&out_dir)

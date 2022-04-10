@@ -6,19 +6,27 @@ fn main() {
     }
 
     let mut aom = cmake::Config::new("vendor");
-    aom.profile("Release")
-        .define("ENABLE_DOCS", "0")
-        .define("ENABLE_EXAMPLES", "0")
-        .define("ENABLE_TESTDATA", "0")
-        .define("ENABLE_TESTS", "0")
-        .define("ENABLE_TOOLS", "0")
-        .define("CMAKE_INSTALL_LIBDIR", "lib");
+    aom.profile(if env::var("PROFILE").expect("PROFILE") == "release" {
+        "Release"
+    } else {
+        "Debug"
+    })
+    .define("ENABLE_DOCS", "0")
+    .define("ENABLE_EXAMPLES", "0")
+    .define("ENABLE_TESTDATA", "0")
+    .define("ENABLE_TESTS", "0")
+    .define("ENABLE_TOOLS", "0")
+    .define("CMAKE_INSTALL_LIBDIR", "lib");
 
     let host = env::var("HOST").expect("HOST");
     let target = env::var("TARGET").expect("TARGET");
     if host != target {
         let target_arch = env::var("CARGO_CFG_TARGET_ARCH").expect("CARGO_CFG_TARGET_ARCH");
         aom.define("AOM_TARGET_CPU", target_arch);
+    }
+
+    if env::var("LIBAVIF_CROSS_WIN32").is_ok() {
+        aom.configure_arg("-T host=x64").configure_arg("-A Win32");
     }
 
     if target == "armv7-unknown-linux-gnueabihf" {
