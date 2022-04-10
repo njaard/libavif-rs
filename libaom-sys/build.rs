@@ -21,6 +21,13 @@ fn main() {
         aom.define("AOM_TARGET_CPU", target_arch);
     }
 
+    if target == "armv7-unknown-linux-gnueabihf" {
+        aom.define(
+            "CMAKE_TOOLCHAIN_FILE",
+            "build/cmake/toolchains/armv7-linux-gcc.cmake",
+        );
+    }
+
     let dst = aom.build();
 
     // DEP_AOM_INCLUDE, DEP_AOM_PKGCONFIG variables
