@@ -3,6 +3,7 @@ use std::time::Instant;
 use std::{env, fs, io};
 use y4m::Colorspace;
 
+#[derive(Debug)]
 struct Y4MFrameConfig {
     dimensions: (i32, i32),
     duration: u64,
@@ -89,22 +90,32 @@ fn get_plane_row_bytes(width: usize, colorspace: Colorspace) -> (usize, usize, u
 }
 
 fn main() {
-    let input = env::args().nth(1).expect("input filename");
+    let input = env::args().nth(1).expect("input filename or --stdin");
     let output = env::args().nth(2).expect("output filename");
-    let input = fs::OpenOptions::new()
-        .read(true)
-        .open(&input)
-        .expect("couldn't open file");
+    let input: Box<dyn io::Read> = match input.as_str() {
+        "--stdin" => {
+            if cfg!(windows) {
+                eprintln!("WARNING: Rust's implementation of Stdin on Windows doesn't support non UTF-8 strings and piping from ffmpeg will almost always fail!");
+            }
+            Box::new(io::stdin().lock())
+        }
+        input => Box::new(fs::File::open(input).expect("couldn't open input file")),
+    };
     let mut decoder = y4m::decode(input).expect("couldn't create decoder");
 
     let config = Y4MFrameConfig::new(&decoder);
-
     let mut encoder = Encoder::new();
     encoder.set_timescale(config.timescale);
 
     let start_ts = Instant::now();
     let mut frame_counter = 1;
-    while let Ok(frame) = decoder.read_frame() {
+    loop {
+        let frame = match decoder.read_frame() {
+            Ok(frame) => frame,
+            Err(y4m::Error::EOF) => break,
+            Err(e) => panic!("y4m decoder cannot read another frame: {}", e),
+        };
+
         let frame_start_ts = Instant::now();
         let mut image = config.create_image().expect("couldn't create image");
         image
