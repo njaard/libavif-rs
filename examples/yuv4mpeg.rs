@@ -38,10 +38,7 @@ impl Y4MFrameConfig {
             self.bit_depth,
             self.yuv_format,
         )?;
-        img.set_y_row_bytes(self.row_bytes.0)
-            .set_u_row_bytes(self.row_bytes.1)
-            .set_v_row_bytes(self.row_bytes.2)
-            .set_chroma_sample_position(self.chroma_sample_position);
+        img.set_chroma_sample_position(self.chroma_sample_position);
         Some(img)
     }
 }
@@ -121,9 +118,9 @@ fn main() {
         let mut image = config.create_image().expect("couldn't create image");
         // These planes each have to be `row_bytes * height` bytes long
         image
-            .set_y(frame.get_y_plane())
-            .set_u(frame.get_u_plane())
-            .set_v(frame.get_v_plane());
+            .set_y(frame.get_y_plane(), config.row_bytes.0)
+            .set_u(frame.get_u_plane(), config.row_bytes.1)
+            .set_v(frame.get_v_plane(), config.row_bytes.2);
 
         encoder
             .add_image(&image, config.duration, AddImageFlags::NONE)
