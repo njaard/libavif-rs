@@ -9,15 +9,12 @@ use libavif_sys::avifImage;
 ///
 /// **Safety:** This struct must never return a `*mut sys::avifImage`
 /// to make sure the plane data remains immutable.
-pub struct BorrowedAvifImage<'y, 'u, 'v, 'a> {
+pub struct BorrowedAvifImage<'data> {
     image: ptr::NonNull<sys::avifImage>,
-    _y_marker: PhantomData<&'y [u8]>,
-    _u_marker: PhantomData<&'u [u8]>,
-    _v_marker: PhantomData<&'v [u8]>,
-    _a_marker: PhantomData<&'a [u8]>,
+    _marker: PhantomData<&'data [u8]>,
 }
 
-impl<'y, 'u, 'v, 'a> BorrowedAvifImage<'y, 'u, 'v, 'a> {
+impl<'data> BorrowedAvifImage<'data> {
     pub fn new(width: i32, height: i32, depth: i32, format: YuvFormat) -> Option<Self> {
         unsafe {
             let mut image =
@@ -27,10 +24,7 @@ impl<'y, 'u, 'v, 'a> BorrowedAvifImage<'y, 'u, 'v, 'a> {
 
             Some(Self {
                 image,
-                _y_marker: Default::default(),
-                _u_marker: Default::default(),
-                _v_marker: Default::default(),
-                _a_marker: Default::default(),
+                _marker: Default::default(),
             })
         }
     }
@@ -42,7 +36,7 @@ impl<'y, 'u, 'v, 'a> BorrowedAvifImage<'y, 'u, 'v, 'a> {
     ///
     /// **Safety:** Here, we turn an immutable reference into a mutable reference.
     /// This is safe as long as we don't give out `*mut sys::avifImage`.
-    pub fn set_y(&mut self, data: &'y [u8], row_bytes: u32) -> &mut Self {
+    pub fn set_y(&mut self, data: &'data [u8], row_bytes: u32) -> &mut Self {
         unsafe {
             // Y-Plane must always have full width and height
             assert!(data.len() as u32 >= row_bytes * self.image.as_ref().height);
@@ -60,7 +54,7 @@ impl<'y, 'u, 'v, 'a> BorrowedAvifImage<'y, 'u, 'v, 'a> {
     //  else it has to be as high as the luma plane.
     ///
     /// **Safety:** See [set_y](Self::set_y).
-    pub fn set_u(&mut self, data: &'u [u8], row_bytes: u32) -> &mut Self {
+    pub fn set_u(&mut self, data: &'data [u8], row_bytes: u32) -> &mut Self {
         unsafe {
             assert!(data.len() as u32 / row_bytes >= self.expected_chroma_height());
             self.image.as_mut().yuvRowBytes[1] = row_bytes;
@@ -77,7 +71,7 @@ impl<'y, 'u, 'v, 'a> BorrowedAvifImage<'y, 'u, 'v, 'a> {
     /// else it has to be as high as the luma plane.
     ///
     /// **Safety:** See [set_y](Self::set_y).
-    pub fn set_v(&mut self, data: &'v [u8], row_bytes: u32) -> &mut Self {
+    pub fn set_v(&mut self, data: &'data [u8], row_bytes: u32) -> &mut Self {
         unsafe {
             assert!(data.len() as u32 / row_bytes >= self.expected_chroma_height());
             self.image.as_mut().yuvRowBytes[2] = row_bytes;
@@ -92,7 +86,7 @@ impl<'y, 'u, 'v, 'a> BorrowedAvifImage<'y, 'u, 'v, 'a> {
     /// **Panics** If the length of `data` is less than `row_bytes * height`.
     ///
     /// **Safety:** See [set_y](Self::set_y).
-    pub fn set_a(&mut self, data: &'a [u8], row_bytes: u32) -> &mut Self {
+    pub fn set_a(&mut self, data: &'data [u8], row_bytes: u32) -> &mut Self {
         unsafe {
             // alpha plane has the same height as the luma plane
             assert!(data.len() as u32 / row_bytes >= self.image.as_ref().height);
@@ -121,13 +115,13 @@ impl<'y, 'u, 'v, 'a> BorrowedAvifImage<'y, 'u, 'v, 'a> {
     }
 }
 
-impl Drop for BorrowedAvifImage<'_, '_, '_, '_> {
+impl Drop for BorrowedAvifImage<'_> {
     fn drop(&mut self) {
         unsafe { sys::avifImageDestroy(self.image.as_ptr()) }
     }
 }
 
-impl super::AvifImageRef for BorrowedAvifImage<'_, '_, '_, '_> {
+impl super::AvifImageRef for BorrowedAvifImage<'_> {
     unsafe fn image(&self) -> &avifImage {
         self.image.as_ref()
     }

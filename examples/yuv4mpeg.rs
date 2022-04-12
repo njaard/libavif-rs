@@ -31,7 +31,7 @@ impl Y4MFrameConfig {
         }
     }
 
-    fn create_image<'y, 'u, 'v, 'a>(&self) -> Option<BorrowedAvifImage<'y, 'u, 'v, 'a>> {
+    fn create_image<'data>(&self) -> Option<BorrowedAvifImage<'data>> {
         let mut img = BorrowedAvifImage::new(
             self.dimensions.0,
             self.dimensions.1,
