@@ -61,9 +61,10 @@ impl AvifImage {
     /// which must have not been freed yet.
     pub(crate) unsafe fn from_raw(image: *mut sys::avifImage) -> Self {
         // unwrap used for compatibility
-        Self { image: ptr::NonNull::new(image).unwrap() }
+        Self {
+            image: ptr::NonNull::new(image).unwrap(),
+        }
     }
-
 
     pub(crate) fn inner_mut(&mut self) -> *mut sys::avifImage {
         self.image.as_ptr()

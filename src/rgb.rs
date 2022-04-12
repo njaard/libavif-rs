@@ -4,8 +4,8 @@ use std::slice;
 
 use libavif_sys as sys;
 
-use crate::{AvifImage, Error, YuvFormat};
 use crate::image::AvifImageRef;
+use crate::{AvifImage, Error, YuvFormat};
 
 pub struct RgbPixels<'a> {
     owned: bool,

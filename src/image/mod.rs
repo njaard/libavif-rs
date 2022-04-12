@@ -1,12 +1,12 @@
-mod owned;
 mod borrowed;
-mod format;
 mod chroma_position;
+mod format;
+mod owned;
 
-pub use owned::AvifImage;
 pub use borrowed::BorrowedAvifImage;
-pub use format::YuvFormat;
 pub use chroma_position::ChromaSamplePosition;
+pub use format::YuvFormat;
+pub use owned::AvifImage;
 
 use libavif_sys as sys;
 
