@@ -95,7 +95,8 @@ fn main() {
             if cfg!(windows) {
                 eprintln!("WARNING: Rust's implementation of Stdin on Windows doesn't support non UTF-8 strings and piping from ffmpeg will almost always fail!");
             }
-            Box::new(io::stdin().lock())
+            let stdin = io::stdin();
+            Box::new(stdin.lock())
         }
         input => Box::new(fs::File::open(input).expect("couldn't open input file")),
     };
