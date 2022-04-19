@@ -35,20 +35,37 @@ fn main() {
 
         let host = env::var("HOST").expect("HOST");
         let target = env::var("TARGET").expect("TARGET");
-        if host != target {
-            let target_arch = env::var("CARGO_CFG_TARGET_ARCH").expect("CARGO_CFG_TARGET_ARCH");
-            aom.define("AOM_TARGET_CPU", target_arch);
-        }
 
-        if env::var("LIBAVIF_CROSS_WIN32").is_ok() {
-            aom.configure_arg("-T host=x64").configure_arg("-A Win32");
-        }
+        if target.contains("wasm") {
+            // https://aomedia.googlesource.com/aom/#emscripten-builds
+            aom.define("AOM_TARGET_CPU", "generic")
+                .define("CONFIG_ACCOUNTING", "1")
+                .define("CONFIG_INSPECTION", "1")
+                .define("CONFIG_MULTITHREAD", "0")
+                .define("CONFIG_RUNTIME_CPU_DETECT", "0")
+                .define("CONFIG_WEBM_IO", "0")
+                .define(
+                    "CMAKE_TOOLCHAIN_FILE",
+                    env::var("EMSCRIPTEN_CMAKE_FILE").expect(
+                        "EMSCRIPTEN_CMAKE_FILE must be set if you want to build wasm target, it's the local path to https://github.com/emscripten-core/emscripten/blob/main/cmake/Modules/Platform/Emscripten.cmake",
+                    ),
+                );
+        } else {
+            if host != target {
+                let target_arch = env::var("CARGO_CFG_TARGET_ARCH").expect("CARGO_CFG_TARGET_ARCH");
+                aom.define("AOM_TARGET_CPU", target_arch);
+            }
 
-        if target == "armv7-unknown-linux-gnueabihf" {
-            aom.define(
-                "CMAKE_TOOLCHAIN_FILE",
-                "build/cmake/toolchains/armv7-linux-gcc.cmake",
-            );
+            if env::var("LIBAVIF_CROSS_WIN32").is_ok() {
+                aom.configure_arg("-T host=x64").configure_arg("-A Win32");
+            }
+
+            if target == "armv7-unknown-linux-gnueabihf" {
+                aom.define(
+                    "CMAKE_TOOLCHAIN_FILE",
+                    "build/cmake/toolchains/armv7-linux-gcc.cmake",
+                );
+            }
         }
 
         let dst = aom.build();
