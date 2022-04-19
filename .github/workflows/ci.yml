@@ -90,6 +90,10 @@ jobs:
             os: windows-2019
             features: '--no-default-features --features codec-aom'
             target: x86_64-pc-windows-msvc
+          - name: wasm / stable codec-aom
+            os: macOS-latest
+            target: 'wasm32-unknown-unknown'
+            features: '--no-default-features --features codec-aom'
 
     steps:
       - name: Checkout
@@ -107,6 +111,10 @@ jobs:
         if: matrix.os == 'macOS-latest'
         run: |
           brew install ninja nasm meson
+      
+      - name: Install emcc
+        if: matrix.target == 'wasm32-unknown-unknown'
+        run: brew install emscripten
 
       - name: Install dependencies (windows)
         if: matrix.os == 'windows-2019'
@@ -135,6 +143,15 @@ jobs:
           cargo test ${{ matrix.features }} --target ${{ matrix.target }}
 
       - name: Test (Linux, macOS)
-        if: matrix.os != 'windows-2019'
+        if: ${{ matrix.os != 'windows-2019' && matrix.target != 'wasm32-unknown-unknown' }}
         run: |
           cargo test ${{ matrix.features }} --target ${{ matrix.target }}
+
+      - name: Check wasm
+        if: matrix.target == 'wasm32-unknown-unknown'
+        run: |
+          export EMSCRIPTEN_CMAKE_FILE="$(brew --cellar emscripten)/$(brew list --versions emscripten | tr ' ' '\n' | tail -1)/libexec/cmake/Modules/Platform/Emscripten.cmake"
+          cargo check ${{ matrix.features }} --target ${{ matrix.target }}
+        env:
+          CC: 'emcc'
+          CXX: 'emcc'
