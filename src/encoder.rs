@@ -93,6 +93,22 @@ impl Encoder {
         self
     }
 
+    /// Set the max and min quantizer value for the YUV channels
+    ///
+    /// Must be between 0 and 63.
+    ///
+    /// * `0` - _lossless_
+    /// * `63` - _lowest quality_
+    pub fn set_max_min_quantizer(&mut self, max_quantizer: u8, min_quantizer: u8) -> &mut Self {
+        let max_quantizer_i32 = max_quantizer.min(63).max(min_quantizer) as i32;
+        let min_quantizer_i32 = min_quantizer.min(63).min(max_quantizer) as i32;
+        unsafe {
+            (*self.encoder).maxQuantizer = max_quantizer_i32;
+            (*self.encoder).minQuantizer = min_quantizer_i32;
+        }
+        self
+    }
+
     /// Get quantizer value for the alpha channel
     pub fn quantizer_alpha(&self) -> u8 {
         unsafe { (*self.encoder).minQuantizerAlpha as u8 }
@@ -109,6 +125,26 @@ impl Encoder {
         unsafe {
             (*self.encoder).minQuantizerAlpha = quantizer_alpha;
             (*self.encoder).maxQuantizerAlpha = quantizer_alpha;
+        }
+        self
+    }
+
+    /// Set the max and min quantizer value for the alpha channel
+    ///
+    /// Must be between 0 and 63.
+    ///
+    /// * `0` - _lossless_
+    /// * `63` - _lowest quality_
+    pub fn set_max_min_quantizer_alpha(
+        &mut self,
+        max_quantizer_alpha: u8,
+        min_quantizer_alpha: u8,
+    ) -> &mut Self {
+        let max_quantizer_alpha_i32 = max_quantizer_alpha.min(63).max(min_quantizer_alpha) as i32;
+        let min_quantizer_alpha_i32 = min_quantizer_alpha.min(63).min(max_quantizer_alpha) as i32;
+        unsafe {
+            (*self.encoder).maxQuantizerAlpha = max_quantizer_alpha_i32;
+            (*self.encoder).minQuantizerAlpha = min_quantizer_alpha_i32;
         }
         self
     }
