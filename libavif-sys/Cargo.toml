@@ -22,7 +22,7 @@ codec-aom = ["libaom-sys"]
 [dependencies]
 libc = "0.2"
 rav1e = { version = "0.5.0", default-features = false, features = ["asm", "capi"], optional = true }
-libaom-sys = { version = "0.12", path = "../libaom-sys", optional = true }
+libaom-sys = { version = "0.13", path = "../libaom-sys", optional = true }
 libdav1d-sys = { version = "0.5", path = "../libdav1d-sys", optional = true }
 
 [build-dependencies]
