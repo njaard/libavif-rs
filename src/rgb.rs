@@ -38,6 +38,8 @@ impl<'a> RgbPixels<'a> {
                 isFloat: 0,
                 pixels: rgb.as_ptr() as *mut u8,
                 rowBytes: stride * width,
+                avoidLibYUV: sys::AVIF_FALSE as i32,
+                chromaDownsampling: sys::AVIF_CHROMA_DOWNSAMPLING_BEST_QUALITY,
             },
             phantom: PhantomData,
         })

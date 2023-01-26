@@ -42,7 +42,7 @@ impl AvifImage {
         }
     }
 
-    pub(crate) fn new(width: i32, height: i32, depth: i32, format: YuvFormat) -> Self {
+    pub(crate) fn new(width: u32, height: u32, depth: u32, format: YuvFormat) -> Self {
         unsafe {
             let image = sys::avifImageCreate(width, height, depth, format as u32);
             sys::avifImageAllocatePlanes(image, sys::AVIF_PLANES_YUV);
