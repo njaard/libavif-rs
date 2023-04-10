@@ -1,6 +1,6 @@
 [package]
 name = "libavif-sys"
-version = "0.14.1"
+version = "0.14.2"
 authors = ["Charles Samuels <ks@ks.ax>", "Paolo Barbolini <paolo@paolo565.org>"]
 edition = "2021"
 rust-version = "1.56"
