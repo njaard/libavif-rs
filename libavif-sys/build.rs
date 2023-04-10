@@ -78,7 +78,7 @@ fn main() {
 
     eprintln!("pc=\"{:?}\"", local_pc_files);
     avif.env("PKG_CONFIG_PATH", local_pc_files);
-    avif.define("CMAKE_DISABLE_FIND_PACKAGE_libsharpyuv","1");
+    avif.define("CMAKE_DISABLE_FIND_PACKAGE_libsharpyuv", "1");
 
     avif.profile(if env::var("PROFILE").expect("PROFILE") == "release" {
         "Release"
