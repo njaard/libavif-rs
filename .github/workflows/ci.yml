@@ -12,7 +12,7 @@ env:
 jobs:
   rustfmt:
     name: rustfmt / linux / stable
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout
@@ -32,7 +32,7 @@ jobs:
 
   clippy:
     name: clippy / linux / stable
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout
@@ -55,7 +55,7 @@ jobs:
 
   test:
     name: test / ${{ matrix.name }}
-    runs-on: ${{ matrix.os || 'ubuntu-20.04' }}
+    runs-on: ${{ matrix.os || 'ubuntu-22.04' }}
 
     strategy:
       fail-fast: false
@@ -102,7 +102,7 @@ jobs:
           submodules: true
 
       - name: Install dependencies (linux)
-        if: (matrix.os || 'ubuntu-20.04') == 'ubuntu-20.04'
+        if: (matrix.os || 'ubuntu-22.04') == 'ubuntu-22.04'
         run: |
           DEBIAN_FRONTEND=noninteractive sudo apt-get update
           DEBIAN_FRONTEND=noninteractive sudo apt-get install -y ninja-build nasm meson
