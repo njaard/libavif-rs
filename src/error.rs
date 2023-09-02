@@ -18,6 +18,7 @@ impl Error {
         if code == sys::AVIF_RESULT_OK {
             Ok(())
         } else {
+            #[allow(clippy::unnecessary_cast)]
             Err(Error::Code(code as u32))
         }
     }
