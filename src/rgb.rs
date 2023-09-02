@@ -36,6 +36,7 @@ impl<'a> RgbPixels<'a> {
                 ignoreAlpha: 0,
                 alphaPremultiplied: 0,
                 isFloat: 0,
+                maxThreads: 1,
                 pixels: rgb.as_ptr() as *mut u8,
                 rowBytes: stride * width,
                 avoidLibYUV: sys::AVIF_FALSE as i32,
