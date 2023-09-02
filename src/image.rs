@@ -15,12 +15,7 @@ impl AvifImage {
             return Err(Error::UnsupportedImageType);
         }
 
-        let mut image = Self::new(
-            width.try_into().unwrap(),
-            height.try_into().unwrap(),
-            8,
-            YuvFormat::Yuv400,
-        );
+        let mut image = Self::new(width, height, 8, YuvFormat::Yuv400);
         unsafe {
             image.set_y(pixels);
         }
