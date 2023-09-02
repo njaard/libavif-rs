@@ -64,8 +64,6 @@ pub fn encode_rgb8(width: u32, height: u32, rgb: &[u8]) -> Result<AvifData<'stat
         rgb.to_image(YuvFormat::Yuv444)
     };
 
-    let mut encoder = Encoder::new();
-    encoder.set_max_threads(1);
-    encoder.set_quantizer(20);
+    let encoder = Encoder::new();
     encoder.encode(&image)
 }
