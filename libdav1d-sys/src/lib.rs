@@ -1,8 +1,11 @@
-//! This crate is only for linking with dav1d library. There are no bindings in this crate.
+// cd vendor; meson setup build; cd build; ninja
+// bindgen --default-enum-style=rust --opaque-type=va_list --no-layout-tests --allowlist-item='^[Dd][aA][vV].*' --blocklist-item='^_.*' vendor/include/dav1d/dav1d.h -- -I vendor/include/dav1d/ -I vendor/build/include/dav1d/ > src/ffi.rs
 
-extern "C" {
-    pub fn dav1d_version() -> *const std::os::raw::c_char;
-}
+#[allow(bad_style)]
+#[allow(rustdoc::broken_intra_doc_links)]
+#[allow(clippy::all)]
+mod ffi;
+pub use ffi::*;
 
 #[test]
 fn poke() {
