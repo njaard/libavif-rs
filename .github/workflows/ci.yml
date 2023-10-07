@@ -73,8 +73,8 @@ jobs:
           - name: linux / nightly
             rust: nightly
             target: x86_64-unknown-linux-gnu
-          - name: linux / 1.62
-            rust: 1.62
+          - name: linux / 1.63
+            rust: 1.63
             target: x86_64-unknown-linux-gnu
           - name: macOS / stable
             os: macOS-latest
