@@ -1,8 +1,8 @@
 [package]
 name = "libdav1d-sys"
-version = "0.5.0"
+version = "0.5.1"
 authors = ["Charles Samuels <ks@ks.ax>", "Paolo Barbolini <paolo@paolo565.org>", "Kornel <kornel@geekhood.net>"]
-edition = "2018"
+edition = "2021"
 build = "build.rs"
 links = "dav1d"
 description="Builds and statically links dav1d AV1 decoder. Part of libavif-sys"
