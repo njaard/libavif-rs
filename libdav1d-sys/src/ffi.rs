@@ -662,14 +662,13 @@ pub struct Dav1dLogger {
     #[doc = " Logger callback. May be NULL to disable logging.\n\n @param cookie Custom pointer passed to all calls.\n @param format The vprintf compatible format string.\n @param     ap List of arguments referenced by the format string."]
     pub callback: *mut ::std::os::raw::c_void,
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub enum Dav1dInloopFilterType {
-    DAV1D_INLOOPFILTER_NONE = 0,
-    DAV1D_INLOOPFILTER_DEBLOCK = 1,
-    DAV1D_INLOOPFILTER_CDEF = 2,
-    DAV1D_INLOOPFILTER_RESTORATION = 4,
-    DAV1D_INLOOPFILTER_ALL = 7,
+pub mod Dav1dInloopFilterType {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const DAV1D_INLOOPFILTER_NONE: Type = 0;
+    pub const DAV1D_INLOOPFILTER_DEBLOCK: Type = 1;
+    pub const DAV1D_INLOOPFILTER_CDEF: Type = 2;
+    pub const DAV1D_INLOOPFILTER_RESTORATION: Type = 4;
+    pub const DAV1D_INLOOPFILTER_ALL: Type = 7;
 }
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
@@ -707,7 +706,7 @@ pub struct Dav1dSettings {
     #[doc = "< output invisibly coded frames (in coding order) in addition\n< to all visible frames. Because of show-existing-frame, this\n< means some frames may appear twice (once when coded,\n< once when shown, default 0)"]
     pub output_invisible_frames: ::std::os::raw::c_int,
     #[doc = "< postfilters to enable during decoding (default\n< DAV1D_INLOOPFILTER_ALL)"]
-    pub inloop_filters: Dav1dInloopFilterType,
+    pub inloop_filters: Dav1dInloopFilterType::Type,
     #[doc = "< frame types to decode (default\n< DAV1D_DECODEFRAMETYPE_ALL)"]
     pub decode_frame_type: Dav1dDecodeFrameType,
     #[doc = "< reserved for future use"]
