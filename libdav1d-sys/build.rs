@@ -18,6 +18,11 @@ fn main() {
     if target == "i686-pc-windows-msvc" {
         meson.arg("--cross-file").arg("i686-win-msvc.meson");
     }
+    if target == "aarch64-unknown-linux-gnu" {
+        meson
+            .arg("--cross-file")
+            .arg("aarch64-unknown-linux-gnu.meson");
+    }
 
     let s = meson
         .arg("--default-library=static")
