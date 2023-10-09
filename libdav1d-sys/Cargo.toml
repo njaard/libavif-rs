@@ -1,6 +1,6 @@
 [package]
 name = "libdav1d-sys"
-version = "0.5.1"
+version = "0.5.3"
 authors = ["Charles Samuels <ks@ks.ax>", "Paolo Barbolini <paolo@paolo565.org>", "Kornel <kornel@geekhood.net>"]
 edition = "2021"
 build = "build.rs"
@@ -11,3 +11,5 @@ repository="https://github.com/njaard/libavif-rs"
 documentation="https://docs.rs/libavif-sys"
 license="BSD-2-Clause"
 
+[dependencies]
+libc = "0.2"

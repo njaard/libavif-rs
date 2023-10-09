@@ -7,6 +7,16 @@
 mod ffi;
 pub use ffi::*;
 
+#[allow(bad_style)]
+pub const fn DAV1D_ERR(errno: ::std::os::raw::c_int) -> ::std::os::raw::c_int {
+    (if libc::EPERM > 0 { -errno } else { errno }) as _
+}
+
+pub const DAV1D_ERR_AGAIN: ::std::os::raw::c_int = DAV1D_ERR(libc::EAGAIN);
+pub const DAV1D_ERR_INVAL: ::std::os::raw::c_int = DAV1D_ERR(libc::EINVAL);
+pub const DAV1D_ERR_NOMEM: ::std::os::raw::c_int = DAV1D_ERR(libc::ENOMEM);
+pub const DAV1D_ERR_NOPROTOOPT: ::std::os::raw::c_int = DAV1D_ERR(libc::ENOPROTOOPT);
+
 #[test]
 fn poke() {
     unsafe {
