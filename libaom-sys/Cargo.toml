@@ -1,6 +1,6 @@
 [package]
 name = "libaom-sys"
-version = "0.14.0"
+version = "0.15.0"
 authors = ["Charles Samuels <ks@ks.ax>", "Paolo Barbolini <paolo@paolo565.org>", "Kornel <kornel@geekhood.net>"]
 edition = "2018"
 build = "build.rs"
