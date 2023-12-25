@@ -23,6 +23,11 @@ fn main() {
             .arg("--cross-file")
             .arg("aarch64-unknown-linux-gnu.meson");
     }
+    if target == "wasm32-unknown-emscripten" {
+        meson
+            .arg("--cross-file")
+            .arg("wasm32-unknown-emscripten.meson");
+    }
 
     let s = meson
         .arg("--default-library=static")

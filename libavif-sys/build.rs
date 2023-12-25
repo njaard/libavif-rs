@@ -44,15 +44,15 @@ fn main() {
     {
         let crate_dir_ = env::var("CARGO_MANIFEST_DIR").unwrap();
         let crate_dir = Path::new(&crate_dir_);
-        fs::create_dir_all(out_dir.join("include").join("rav1e")).expect("mkdir");
-        fs::copy(
-            crate_dir.join("rav1e.h"),
-            out_dir.join("include").join("rav1e").join("rav1e.h"),
-        )
-        .expect("copy rav1e.h");
+        let rav1e_include_dir = out_dir.join("include").join("rav1e");
+        fs::create_dir_all(&rav1e_include_dir).expect("mkdir");
+        fs::copy(crate_dir.join("rav1e.h"), rav1e_include_dir.join("rav1e.h"))
+            .expect("copy rav1e.h");
 
         avif.define("AVIF_CODEC_RAV1E", "1")
             .define("AVIF_CODEC_LIBRARIES", "rav1e")
+            // required by `emcmake cmake`
+            .define("RAV1E_INCLUDE_DIR", rav1e_include_dir)
             .define("RAV1E_LIBRARY", "-rav1e");
     }
 
