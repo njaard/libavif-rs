@@ -55,6 +55,7 @@ fn main() {
     assert!(s.success(), "ninja failed");
 
     let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap();
+    let target_env = env::var("CARGO_CFG_TARGET_ENV").unwrap();
 
     let mut unix_path = install_dir.join("lib").join("libdav1d.a");
     if !unix_path.exists() {
@@ -66,7 +67,7 @@ fn main() {
             .find(|p| p.exists())
             .expect("can't find libdav1d.a in install dir");
     }
-    let staticlib_path = if target_os == "windows" {
+    let staticlib_path = if target_os == "windows" && target_env == "msvc" {
         let win_path = install_dir.join("lib").join("dav1d.lib");
         if !win_path.exists() {
             std::fs::rename(&unix_path, &win_path).unwrap();
