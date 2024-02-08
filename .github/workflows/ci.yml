@@ -16,14 +16,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
-          profile: default
-          override: true
           components: rustfmt
 
       - name: cargo fmt -- --check
@@ -36,7 +34,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -46,9 +44,10 @@ jobs:
           DEBIAN_FRONTEND=noninteractive sudo apt-get install -y ninja-build nasm meson
 
       - name: Install rust
-        run: |
-          rustup update --no-self-update stable
-          rustup component add clippy
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          components: clippy
 
       - name: cargo clippy --all --examples
         run: cargo clippy --all --examples
@@ -94,10 +93,15 @@ jobs:
             os: macOS-latest
             target: 'wasm32-unknown-unknown'
             features: '--no-default-features --features codec-aom'
+          - name: wasi / stable codec-rav1e
+            os: macOS-14
+            target: 'wasm32-wasi-preview1-threads'
+            # libaom does not support wasi due to https://github.com/WebAssembly/wasi-libc/issues/432
+            features: '--no-default-features --features codec-rav1e'
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -127,13 +131,10 @@ jobs:
         uses: ilammy/setup-nasm@v1
 
       - name: Install rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: ${{ matrix.rust || 'stable' }}
-          profile: default
-          default: true
-          override: true
-          target: ${{ matrix.target }}
+          targets: ${{ matrix.target }}
 
       - name: Test (Windows)
         if: matrix.os == 'windows-2019'
@@ -143,7 +144,7 @@ jobs:
           cargo test ${{ matrix.features }} --target ${{ matrix.target }}
 
       - name: Test (Linux, macOS)
-        if: ${{ matrix.os != 'windows-2019' && matrix.target != 'wasm32-unknown-unknown' }}
+        if: ${{ matrix.os != 'windows-2019' && !contains(matrix.target, 'wasm') }}
         run: |
           cargo test ${{ matrix.features }} --target ${{ matrix.target }}
 
@@ -155,3 +156,20 @@ jobs:
         env:
           CC: 'emcc'
           CXX: 'emcc'
+
+      - name: Check wasi
+        if: matrix.target == 'wasm32-wasi-preview1-threads'
+        run: |
+          wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-21/wasi-sdk-21.0-macos.tar.gz
+          tar -xvf wasi-sdk-21.0-macos.tar.gz
+          export WASI_SDK_PATH="$(pwd)/wasi-sdk-21.0"
+          export PATH="$WASI_SDK_PATH/bin:$PATH"
+          cargo check ${{ matrix.features }} --target ${{ matrix.target }}
+        env:
+          CC: 'clang'
+          CXX: 'clang++'
+          AR: "${{ github.workspace }}/wasi-sdk-21.0/bin/ar"
+          CFLAGS: "--target=wasm32-wasi-threads -pthread --sysroot=${{ github.workspace }}/wasi-sdk-21.0/share/wasi-sysroot"
+          CXXFLAGS: "--target=wasm32-wasi-threads -pthread --sysroot=${{ github.workspace }}/wasi-sdk-21.0/share/wasi-sysroot"
+          LDFLAGS: "-fuse-ld=${{ github.workspace }}/wasi-sdk-21.0/bin/wasm-ld --target=wasm32-wasi-threads"
+          CARGO_TARGET_WASM32_WASI_PREVIEW1_THREADS_LINKER: "${{ github.workspace }}/wasi-sdk-21.0/bin/wasm-ld"
