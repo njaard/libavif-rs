@@ -2,9 +2,9 @@
 
 pub const AVIF_VERSION_MAJOR: u32 = 1;
 pub const AVIF_VERSION_MINOR: u32 = 0;
-pub const AVIF_VERSION_PATCH: u32 = 3;
+pub const AVIF_VERSION_PATCH: u32 = 4;
 pub const AVIF_VERSION_DEVEL: u32 = 0;
-pub const AVIF_VERSION: u32 = 1000300;
+pub const AVIF_VERSION: u32 = 1000400;
 pub const AVIF_TRUE: u32 = 1;
 pub const AVIF_FALSE: u32 = 0;
 pub const AVIF_DIAGNOSTICS_ERROR_BUFFER_SIZE: u32 = 256;
