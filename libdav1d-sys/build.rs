@@ -1,5 +1,5 @@
 use std::env;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 
 fn main() {
@@ -94,4 +94,32 @@ fn main() {
     println!("cargo:staticlib={}", staticlib_path.display());
     // DEP_DAV1D_INCLUDE with header include path
     println!("cargo:include={}", install_dir.join("include").display());
+
+    let bindings = bindgen::Builder::default()
+        .header("vendor/include/dav1d/dav1d.h")
+        .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
+        .constified_enum_module("Dav1dInloopFilterType")
+        .default_enum_style(bindgen::EnumVariation::Rust {
+            non_exhaustive: true,
+        })
+        .layout_tests(false)
+        .allowlist_item("^[Dd][aA][vV].*")
+        .blocklist_item("^_.*")
+        .clang_args(&[
+            "-I",
+            "vendor/include/dav1d/",
+            "-I",
+            Path::new(&env::var_os("OUT_DIR").unwrap())
+                .join("install/include/dav1d/")
+                .to_str()
+                .unwrap(),
+        ])
+        .generate()
+        .expect("Unable to generate bindings");
+
+    // Write the bindings to the $OUT_DIR/bindings.rs file.
+    let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
+    bindings
+        .write_to_file(out_path.join("bindings.rs"))
+        .expect("Couldn't write bindings!");
 }

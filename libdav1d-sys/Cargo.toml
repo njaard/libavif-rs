@@ -13,3 +13,5 @@ license="BSD-2-Clause"
 
 [dependencies]
 libc = "0.2"
+[build-dependencies]
+bindgen = "0.69.4"
