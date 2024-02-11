@@ -1,5 +1,5 @@
 use std::env;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::process::Command;
 
 fn main() {
@@ -95,6 +95,14 @@ fn main() {
     // DEP_DAV1D_INCLUDE with header include path
     println!("cargo:include={}", install_dir.join("include").display());
 
+    #[cfg(feature = "generate")]
+    generate_bindings();
+}
+
+#[cfg(feature = "generate")]
+fn generate_bindings() {
+    let out_path = PathBuf::from(env::var_os("OUT_DIR").unwrap());
+
     let bindings = bindgen::Builder::default()
         .header("vendor/include/dav1d/dav1d.h")
         .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
@@ -109,16 +117,12 @@ fn main() {
             "-I",
             "vendor/include/dav1d/",
             "-I",
-            Path::new(&env::var_os("OUT_DIR").unwrap())
-                .join("install/include/dav1d/")
-                .to_str()
-                .unwrap(),
+            out_path.join("install/include/dav1d/").to_str().unwrap(),
         ])
         .generate()
         .expect("Unable to generate bindings");
 
     // Write the bindings to the $OUT_DIR/bindings.rs file.
-    let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
     bindings
         .write_to_file(out_path.join("bindings.rs"))
         .expect("Couldn't write bindings!");
