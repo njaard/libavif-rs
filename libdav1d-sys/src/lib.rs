@@ -1,3 +1,9 @@
+//! These are raw FFI bindings for [libdav1d](https://code.videolan.org/videolan/dav1d), a fast software AV1 decoder.
+//! Refer to libdav1d's documentation for details.
+
+// ( cd vendor && rm -rf build; meson setup build && cd build && ninja )
+// bindgen --constified-enum-module="Dav1dInloopFilterType" --default-enum-style=rust --opaque-type=va_list --no-layout-tests --allowlist-item='^[Dd][aA][vV].*' --blocklist-item='^_.*' vendor/include/dav1d/dav1d.h -- -I vendor/include/dav1d/ -I vendor/build/include/dav1d/ > src/ffi.rs
+
 #![allow(bad_style)]
 #![allow(rustdoc::broken_intra_doc_links)]
 #![allow(clippy::all)]
@@ -5,7 +11,14 @@
 type __builtin_va_list = *mut std::ffi::c_void;
 type __va_list_tag = *mut std::ffi::c_void;
 
+#[cfg(feature = "generate")]
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
+
+#[cfg(not(feature = "generate"))]
+mod ffi;
+
+#[cfg(not(feature = "generate"))]
+pub use ffi::*;
 
 #[allow(bad_style)]
 pub const fn DAV1D_ERR(errno: ::std::os::raw::c_int) -> ::std::os::raw::c_int {
