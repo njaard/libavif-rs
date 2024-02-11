@@ -6,6 +6,7 @@ edition = "2021"
 rust-version = "1.63"
 description="Load AVIF files into the `image` crate"
 keywords=["codec", "image", "avif", "AV1"]
+categories = ["multimedia::images"]
 repository="https://github.com/njaard/libavif-rs"
 documentation="https://docs.rs/libavif-image"
 license="BSD-2-Clause"
