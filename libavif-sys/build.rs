@@ -90,14 +90,7 @@ fn main() {
     if env::var("LIBAVIF_CROSS_WIN32").is_ok() {
         avif.configure_arg("-T host=x64").configure_arg("-A Win32");
     }
-    if env::var("TARGET").expect("TARGET").contains("wasm") {
-        avif.define(
-            "CMAKE_TOOLCHAIN_FILE",
-            env::var("EMSCRIPTEN_CMAKE_FILE").expect(
-              "EMSCRIPTEN_CMAKE_FILE must be set if you want to build wasm target, it's the local path to https://github.com/emscripten-core/emscripten/blob/main/cmake/Modules/Platform/Emscripten.cmake",
-          ),
-        );
-    }
+
     let avif_built = avif.build();
 
     println!(

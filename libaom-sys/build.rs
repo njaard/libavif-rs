@@ -37,19 +37,35 @@ fn main() {
         let target = env::var("TARGET").expect("TARGET");
 
         if target.contains("wasm") {
-            // https://aomedia.googlesource.com/aom/#emscripten-builds
-            aom.define("AOM_TARGET_CPU", "generic")
-                .define("CONFIG_ACCOUNTING", "1")
-                .define("CONFIG_INSPECTION", "1")
-                .define("CONFIG_MULTITHREAD", "0")
-                .define("CONFIG_RUNTIME_CPU_DETECT", "0")
-                .define("CONFIG_WEBM_IO", "0")
-                .define(
-                    "CMAKE_TOOLCHAIN_FILE",
-                    env::var("EMSCRIPTEN_CMAKE_FILE").expect(
-                        "EMSCRIPTEN_CMAKE_FILE must be set if you want to build wasm target, it's the local path to https://github.com/emscripten-core/emscripten/blob/main/cmake/Modules/Platform/Emscripten.cmake",
-                    ),
-                );
+            match target.as_str() {
+                "wasm32-unknown-emscripten" => {
+                    // https://aomedia.googlesource.com/aom/#emscripten-builds
+                    aom.define("AOM_TARGET_CPU", "generic")
+                      .define("CONFIG_ACCOUNTING", "1")
+                      .define("CONFIG_INSPECTION", "1")
+                      .define("CONFIG_MULTITHREAD", "0")
+                      .define("CONFIG_RUNTIME_CPU_DETECT", "0")
+                      .define("CONFIG_WEBM_IO", "0")
+                      .define(
+                          "CMAKE_TOOLCHAIN_FILE",
+                          env::var("EMSCRIPTEN_CMAKE_FILE").expect(
+                              "EMSCRIPTEN_CMAKE_FILE must be set if you want to build wasm target, it's the local path to https://github.com/emscripten-core/emscripten/blob/main/cmake/Modules/Platform/Emscripten.cmake",
+                          ),
+                      );
+                }
+                "wasm32-wasi" | "wasm32-wasi-preview1-threads" => {
+                    aom.define("AOM_TARGET_CPU", "generic")
+                        .define("CONFIG_ACCOUNTING", "1")
+                        .define("CONFIG_INSPECTION", "1")
+                        .define(
+                            "CONFIG_MULTITHREAD",
+                            if target == "wasm32-wasi" { "1" } else { "0" },
+                        )
+                        .define("CONFIG_RUNTIME_CPU_DETECT", "0")
+                        .define("CONFIG_WEBM_IO", "0");
+                }
+                _ => {}
+            }
         } else {
             if host != target {
                 let target_arch = env::var("CARGO_CFG_TARGET_ARCH").expect("CARGO_CFG_TARGET_ARCH");
