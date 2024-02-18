@@ -1,6 +1,6 @@
 [package]
 name = "libavif-sys"
-version = "0.15.0+libavif.1.0.4"
+version = "0.16.0+libavif.1.0.4"
 authors = ["Charles Samuels <ks@ks.ax>", "Paolo Barbolini <paolo@paolo565.org>"]
 edition = "2021"
 rust-version = "1.63"
@@ -23,7 +23,7 @@ codec-aom = ["libaom-sys"]
 libc = "0.2"
 rav1e = { version = "0.7.1", default-features = false, features = ["asm", "capi"], optional = true }
 libaom-sys = { version = "0.15", path = "../libaom-sys", optional = true }
-libdav1d-sys = { version = "0.6", path = "../libdav1d-sys", optional = true }
+libdav1d-sys = { version = "0.7", path = "../libdav1d-sys", optional = true }
 
 [build-dependencies]
 cmake = "0.1.48"
