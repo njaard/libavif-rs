@@ -1,6 +1,6 @@
 [package]
 name = "libdav1d-sys"
-version = "0.7.0+libdav1d.1.4.0"
+version = "0.7.0+libdav1d.1.4.1"
 authors = ["Charles Samuels <ks@ks.ax>", "Paolo Barbolini <paolo@paolo565.org>", "Kornel <kornel@geekhood.net>"]
 edition = "2021"
 build = "build.rs"
