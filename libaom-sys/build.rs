@@ -82,6 +82,14 @@ fn main() {
                     "build/cmake/toolchains/armv7-linux-gcc.cmake",
                 );
             }
+
+            if target.contains("ohos") {
+                let ndk = env::var("OHOS_NDK_HOME").unwrap();
+                aom.define(
+                    "CMAKE_TOOLCHAIN_FILE",
+                    format!("{}/native/build/cmake/ohos.toolchain.cmake", ndk),
+                );
+            }
         }
 
         let dst = aom.build();
