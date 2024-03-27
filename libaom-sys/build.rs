@@ -82,13 +82,26 @@ fn main() {
                     "build/cmake/toolchains/armv7-linux-gcc.cmake",
                 );
             }
-
+            println!("cargo:warning=test");
             if target.contains("ohos") {
                 let ndk = env::var("OHOS_NDK_HOME").unwrap();
                 aom.define(
                     "CMAKE_TOOLCHAIN_FILE",
                     format!("{}/native/build/cmake/ohos.toolchain.cmake", ndk),
                 );
+                match target.as_str() {
+                    "armv7-unknown-linux-ohos" => {
+                        aom.cflag("-march=armv7-a -mfloat-abi=softfp -mtune=generic-armv7-a -mthumb -mfpu=neon -DHAVE_NEON")
+                            .cxxflag("-march=armv7-a -mfloat-abi=softfp -mtune=generic-armv7-a -mthumb -mfpu=neon -DHAVE_NEON")
+                            .asmflag("-march=armv7-a -mfloat-abi=softfp -mtune=generic-armv7-a -mthumb -mfpu=neon -DHAVE_NEON");
+                    }
+                    "x86_64-unknown-linux-ohos" => {
+                        aom.cflag("-msse4.1 -DHAVE_NEON_X86 -DHAVE_NEON")
+                            .cxxflag("-msse4.1 -DHAVE_NEON_X86 -DHAVE_NEON")
+                            .asmflag("-msse4.1 -DHAVE_NEON_X86 -DHAVE_NEON");
+                    }
+                    _ => {}
+                }
             }
         }
 
