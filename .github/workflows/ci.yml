@@ -89,9 +89,13 @@ jobs:
             os: windows-2019
             features: '--no-default-features --features codec-aom'
             target: x86_64-pc-windows-msvc
-          - name: wasm / stable codec-aom
+          - name: wasm / nightly codec-aom
+            os: ubuntu-22.04
+            target: 'wasm32-unknown-emscripten'
+            features: '--no-default-features --features codec-aom'
+          - name: wasm-macos / stable codec-aom
             os: macOS-latest
-            target: 'wasm32-unknown-unknown'
+            target: 'wasm32-unknown-emscripten'
             features: '--no-default-features --features codec-aom'
           - name: wasi / stable codec-rav1e
             os: macOS-14
@@ -117,8 +121,14 @@ jobs:
           brew install ninja nasm meson
       
       - name: Install emcc
-        if: matrix.target == 'wasm32-unknown-unknown'
+        if: matrix.target == 'wasm32-unknown-emscripten' && contains(matrix.os, 'macOS')
         run: brew install emscripten
+
+      - name: Install emcc
+        if: matrix.target == 'wasm32-unknown-emscripten' && contains(matrix.os, 'ubuntu')
+        run: |
+          DEBIAN_FRONTEND=noninteractive sudo apt-get update
+          DEBIAN_FRONTEND=noninteractive sudo apt-get install emscripten
 
       - name: Install dependencies (windows)
         if: matrix.os == 'windows-2019'
@@ -149,7 +159,16 @@ jobs:
           cargo test ${{ matrix.features }} --target ${{ matrix.target }}
 
       - name: Check wasm
-        if: matrix.target == 'wasm32-unknown-unknown'
+        if: matrix.target == 'wasm32-unknown-emscripten' && matrix.os == 'ubuntu-22.04'
+        run: |
+          export EMSCRIPTEN_CMAKE_FILE="/usr/share/emscripten/cmake/Modules/Platform/Emscripten.cmake"
+          cargo check ${{ matrix.features }} --target ${{ matrix.target }}
+        env:
+          CC: 'emcc'
+          CXX: 'emcc'
+
+      - name: Check wasm-macos
+        if: matrix.target == 'wasm32-unknown-emscripten' && contains(matrix.os, 'macOS')
         run: |
           export EMSCRIPTEN_CMAKE_FILE="$(brew --cellar emscripten)/$(brew list --versions emscripten | tr ' ' '\n' | tail -1)/libexec/cmake/Modules/Platform/Emscripten.cmake"
           cargo check ${{ matrix.features }} --target ${{ matrix.target }}
@@ -173,3 +192,4 @@ jobs:
           CXXFLAGS: "--target=wasm32-wasi-threads -pthread --sysroot=${{ github.workspace }}/wasi-sdk-21.0/share/wasi-sysroot"
           LDFLAGS: "-fuse-ld=${{ github.workspace }}/wasi-sdk-21.0/bin/wasm-ld --target=wasm32-wasi-threads"
           CARGO_TARGET_WASM32_WASI_PREVIEW1_THREADS_LINKER: "${{ github.workspace }}/wasi-sdk-21.0/bin/wasm-ld"
+
