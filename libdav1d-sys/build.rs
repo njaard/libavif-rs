@@ -18,6 +18,9 @@ fn main() {
     if target == "i686-pc-windows-msvc" {
         meson.arg("--cross-file").arg("i686-win-msvc.meson");
     }
+    if target == "x86_64-pc-windows-gnu" {
+        meson.arg("--cross-file").arg("x86_64-w64-mingw32.meson");
+    }
     if target == "aarch64-unknown-linux-gnu" {
         meson
             .arg("--cross-file")
