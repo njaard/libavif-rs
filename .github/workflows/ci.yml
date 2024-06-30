@@ -99,7 +99,7 @@ jobs:
             features: '--no-default-features --features codec-aom'
           - name: wasi / stable codec-rav1e
             os: macOS-14
-            target: 'wasm32-wasi-preview1-threads'
+            target: 'wasm32-wasip1-threads'
             # libaom does not support wasi due to https://github.com/WebAssembly/wasi-libc/issues/432
             features: '--no-default-features --features codec-rav1e'
 
@@ -177,7 +177,7 @@ jobs:
           CXX: 'emcc'
 
       - name: Check wasi
-        if: matrix.target == 'wasm32-wasi-preview1-threads'
+        if: matrix.target == 'wasm32-wasip1-threads'
         run: |
           wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-21/wasi-sdk-21.0-macos.tar.gz
           tar -xvf wasi-sdk-21.0-macos.tar.gz
