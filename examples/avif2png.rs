@@ -1,6 +1,6 @@
 use std::{env, fs};
 
-use image::{codecs::png::PngEncoder, ColorType, ImageEncoder};
+use image::{codecs::png::PngEncoder, ExtendedColorType, ImageEncoder};
 
 fn main() {
     let input = env::args().nth(1).expect("input filename");
@@ -11,6 +11,11 @@ fn main() {
 
     let encoder = PngEncoder::new(std::io::stdout());
     encoder
-        .write_image(&pixels, pixels.width(), pixels.height(), ColorType::Rgba8)
+        .write_image(
+            &pixels,
+            pixels.width(),
+            pixels.height(),
+            ExtendedColorType::Rgba8,
+        )
         .expect("out");
 }
