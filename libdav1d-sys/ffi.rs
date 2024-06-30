@@ -15,7 +15,7 @@ pub const DAV1D_API_VERSION_MINOR: u32 = 0;
 pub const DAV1D_API_VERSION_PATCH: u32 = 0;
 pub const DAV1D_MAX_THREADS: u32 = 256;
 pub const DAV1D_MAX_FRAME_DELAY: u32 = 256;
-pub type va_list = [u64; 4usize];
+pub type va_list = __builtin_va_list;
 #[doc = " A reference-counted object wrapper for a user-configurable pointer."]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -677,7 +677,7 @@ pub struct Dav1dLogger {
         unsafe extern "C" fn(
             cookie: *mut ::std::os::raw::c_void,
             format: *const ::std::os::raw::c_char,
-            ap: va_list,
+            ap: *mut __va_list_tag,
         ),
     >,
 }
