@@ -53,7 +53,7 @@ fn main() {
                           ),
                       );
                 }
-                "wasm32-wasi" | "wasm32-wasi-preview1-threads" => {
+                "wasm32-wasi" | "wasm32-wasi-preview1-threads" | "wasm32-wasip1-threads" => {
                     aom.define("AOM_TARGET_CPU", "generic")
                         .define("CONFIG_ACCOUNTING", "1")
                         .define("CONFIG_INSPECTION", "1")
