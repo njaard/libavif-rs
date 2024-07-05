@@ -12,7 +12,7 @@ license="BSD-2-Clause"
 readme = "README.md"
 
 [dependencies]
-libavif-sys = { version = "0.16.0", path = "libavif-sys", default-features = false }
+libavif-sys = { version = "0.17.0", path = "libavif-sys", default-features = false }
 
 [dev-dependencies]
 image = "0.25"
