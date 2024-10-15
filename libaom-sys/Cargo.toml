@@ -13,7 +13,7 @@ license="BSD-2-Clause"
 exclude = ["/vendor/third_party/googletest/", "/vendor/test/*.cc", "/vendor/test/*.h", "/vendor/doc/", "/vendor/examples/", "*.dox", "*.py", "/vendor/tools/auto_refactor/", "/vendor/tools/txfm_analyzer/"]
 
 [build-dependencies]
-cmake = "0.1"
+cmake = "0.1.51"
 
 [features]
 # You can't disable both
