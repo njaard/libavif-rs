@@ -33,6 +33,14 @@ fn main() {
         .define("ENABLE_TOOLS", "0")
         .define("CMAKE_INSTALL_LIBDIR", "lib");
 
+        // One of them must be set, and that also makes it back-compat with default-features=false
+        if cfg!(not(feature = "av1_decoder")) && cfg!(feature = "av1_encoder") {
+            aom.define("CONFIG_AV1_DECODER", "0");
+        }
+        if cfg!(not(feature = "av1_encoder")) && cfg!(feature = "av1_decoder") {
+            aom.define("CONFIG_AV1_ENCODER", "0");
+        }
+
         let host = env::var("HOST").expect("HOST");
         let target = env::var("TARGET").expect("TARGET");
 

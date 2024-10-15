@@ -14,3 +14,11 @@ exclude = ["/vendor/third_party/googletest/", "/vendor/test/*.cc", "/vendor/test
 
 [build-dependencies]
 cmake = "0.1"
+
+[features]
+# You can't disable both
+default = ["av1_encoder", "av1_decoder"]
+# Compile AV1 encoding support
+av1_encoder = []
+# Compile AV1 decoding support
+av1_decoder = []
