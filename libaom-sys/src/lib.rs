@@ -1,3 +1,5 @@
+//! These are automatically generated C bindings for libaom
+
 #[allow(bad_style)]
 mod ffi;
 pub use ffi::*;
