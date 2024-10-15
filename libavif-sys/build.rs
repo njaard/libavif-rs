@@ -31,7 +31,7 @@ fn main() {
     {
         let include =
             env::var_os("DEP_AOM_INCLUDE").expect("libaom-sys should have set include path");
-        avif.define("AVIF_CODEC_AOM", "1");
+        avif.define("AVIF_CODEC_AOM", "SYSTEM");
         avif.define("AOM_INCLUDE_DIR", include);
 
         let pc_path =
@@ -49,7 +49,7 @@ fn main() {
         fs::copy(crate_dir.join("rav1e.h"), rav1e_include_dir.join("rav1e.h"))
             .expect("copy rav1e.h");
 
-        avif.define("AVIF_CODEC_RAV1E", "1")
+        avif.define("AVIF_CODEC_RAV1E", "SYSTEM")
             .define("AVIF_CODEC_LIBRARIES", "rav1e")
             // required by `emcmake cmake`
             .define("RAV1E_INCLUDE_DIR", rav1e_include_dir)
@@ -60,7 +60,7 @@ fn main() {
     {
         let include =
             env::var_os("DEP_DAV1D_INCLUDE").expect("libdav1d-sys should have set pkgconfig path");
-        avif.define("AVIF_CODEC_DAV1D", "1");
+        avif.define("AVIF_CODEC_DAV1D", "SYSTEM");
         avif.define("DAV1D_INCLUDE_DIR", include);
 
         if let Some(pc_path) = env::var_os("DEP_DAV1D_PKGCONFIG") {
@@ -78,15 +78,13 @@ fn main() {
 
     eprintln!("pc=\"{:?}\"", local_pc_files);
     avif.env("PKG_CONFIG_PATH", local_pc_files);
-    avif.define("CMAKE_DISABLE_FIND_PACKAGE_libsharpyuv", "1");
 
     avif.profile(if env::var("PROFILE").expect("PROFILE") == "release" {
         "Release"
     } else {
         "Debug"
     })
-    .configure_arg("-DCMAKE_INSTALL_LIBDIR=lib")
-    .configure_arg("-DCMAKE_DISABLE_FIND_PACKAGE_libyuv=1");
+    .configure_arg("-DCMAKE_INSTALL_LIBDIR=lib");
     if env::var("LIBAVIF_CROSS_WIN32").is_ok() {
         avif.configure_arg("-T host=x64").configure_arg("-A Win32");
     }
