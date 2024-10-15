@@ -76,10 +76,10 @@ jobs:
             rust: 1.79.0
             target: x86_64-unknown-linux-gnu
           - name: macOS / stable
-            os: macOS-latest
+            os: macOS-13
             target: x86_64-apple-darwin
           - name: macOS / stable / codec-aom
-            os: macOS-latest
+            os: macOS-13
             features: '--no-default-features --features codec-aom'
             target: x86_64-apple-darwin
           - name: windows / stable
@@ -94,11 +94,11 @@ jobs:
             target: 'wasm32-unknown-emscripten'
             features: '--no-default-features --features codec-aom'
           - name: wasm-macos / stable codec-aom
-            os: macOS-latest
+            os: macOS-13
             target: 'wasm32-unknown-emscripten'
             features: '--no-default-features --features codec-aom'
           - name: wasi / stable codec-rav1e
-            os: macOS-14
+            os: macOS-latest
             target: 'wasm32-wasip1-threads'
             # libaom does not support wasi due to https://github.com/WebAssembly/wasi-libc/issues/432
             features: '--no-default-features --features codec-rav1e'
@@ -116,7 +116,7 @@ jobs:
           DEBIAN_FRONTEND=noninteractive sudo apt-get install -y ninja-build nasm meson
 
       - name: Install dependencies (macOS)
-        if: matrix.os == 'macOS-latest'
+        if: matrix.os == 'macOS-13'
         run: |
           brew install ninja nasm meson
       
