@@ -46,9 +46,11 @@ fn main() {
         .arg("vendor")
         .status();
     match s {
-        Ok(s) => if !s.success() {
-            println!("cargo:warning=Meson build failed. See error log for details");
-            std::process::exit(1);
+        Ok(s) => {
+            if !s.success() {
+                println!("cargo:warning=Meson build failed. See error log for details");
+                std::process::exit(1);
+            }
         }
         Err(err) => {
             println!("cargo:warning=This crate requires meson (and ninja) to be installed: https://mesonbuild.com/");
@@ -64,12 +66,16 @@ fn main() {
         .arg("install")
         .status();
     match s {
-        Ok(s) => if !s.success() {
-            println!("cargo:warning=ninja build failed. See error log for details");
-            std::process::exit(1);
+        Ok(s) => {
+            if !s.success() {
+                println!("cargo:warning=ninja build failed. See error log for details");
+                std::process::exit(1);
+            }
         }
         Err(err) => {
-            println!("cargo:warning=This crate requires ninja to be installed: https://ninja-build.org/");
+            println!(
+                "cargo:warning=This crate requires ninja to be installed: https://ninja-build.org/"
+            );
             println!("cargo:warning=ninja: {err}");
             std::process::exit(2);
         }
