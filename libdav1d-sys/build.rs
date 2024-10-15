@@ -44,18 +44,36 @@ fn main() {
         .arg("--libdir=lib")
         .arg(&out_dir)
         .arg("vendor")
-        .status()
-        .expect("This crate requires meson (and ninja) to be installed: https://mesonbuild.com/");
-    assert!(s.success(), "meson failed");
+        .status();
+    match s {
+        Ok(s) => if !s.success() {
+            println!("cargo:warning=Meson build failed. See error log for details");
+            std::process::exit(1);
+        }
+        Err(err) => {
+            println!("cargo:warning=This crate requires meson (and ninja) to be installed: https://mesonbuild.com/");
+            println!("cargo:warning=meson: {err}");
+            std::process::exit(2);
+        }
+    }
 
     eprintln!("Installing dav1d into {:?}", install_dir);
     let s = Command::new("ninja")
         .env("DESTDIR", &install_dir)
         .current_dir(&out_dir)
         .arg("install")
-        .status()
-        .expect("This crate requires ninja to be installed: https://ninja-build.org/");
-    assert!(s.success(), "ninja failed");
+        .status();
+    match s {
+        Ok(s) => if !s.success() {
+            println!("cargo:warning=ninja build failed. See error log for details");
+            std::process::exit(1);
+        }
+        Err(err) => {
+            println!("cargo:warning=This crate requires ninja to be installed: https://ninja-build.org/");
+            println!("cargo:warning=ninja: {err}");
+            std::process::exit(2);
+        }
+    }
 
     let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap();
     let target_env = env::var("CARGO_CFG_TARGET_ENV").unwrap();
