@@ -33,6 +33,23 @@ fn main() {
         .define("ENABLE_TOOLS", "0")
         .define("CMAKE_INSTALL_LIBDIR", "lib");
 
+        // One of them must be set, and that also makes it back-compat with default-features=false
+        if cfg!(not(feature = "av1_decoder")) && cfg!(feature = "av1_encoder") {
+            aom.define("CONFIG_AV1_DECODER", "0");
+        }
+        if cfg!(not(feature = "av1_encoder")) && cfg!(feature = "av1_decoder") {
+            aom.define("CONFIG_AV1_ENCODER", "0");
+        }
+
+        // Cargo features don't support values ;(
+        if let Some((width, height)) = env::var_os("LIB_AOM_DECODE_WIDTH_LIMIT")
+            .zip(env::var_os("LIB_AOM_DECODE_HEIGHT_LIMIT"))
+        {
+            aom.define("CONFIG_SIZE_LIMIT", "1");
+            aom.define("DECODE_WIDTH_LIMIT", width);
+            aom.define("DECODE_HEIGHT_LIMIT", height);
+        }
+
         let host = env::var("HOST").expect("HOST");
         let target = env::var("TARGET").expect("TARGET");
 
@@ -117,5 +134,18 @@ fn main() {
         );
     }
 
+    // print at the end, because this adds noise before build errors displayed by cargo (failed builds will rerun anyway)
+    for var in [
+        "EMSCRIPTEN_CMAKE_FILE",
+        "LIB_AOM_DECODE_HEIGHT_LIMIT",
+        "LIB_AOM_DECODE_WIDTH_LIMIT",
+        "LIB_AOM_INCLUDE_PATH",
+        "LIB_AOM_PKG_CONFIG_PATH",
+        "LIB_AOM_STATIC_LIB_PATH",
+        "LIBAVIF_CROSS_WIN32",
+        "OHOS_NDK_HOME",
+    ] {
+        println!("cargo::rerun-if-env-changed={var}");
+    }
     println!("cargo:rustc-link-lib=static=aom");
 }

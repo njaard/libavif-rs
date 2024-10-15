@@ -1,16 +1,24 @@
 [package]
 name = "libaom-sys"
-version = "0.17.0+libaom.3.9.1"
+version = "0.17.1+libaom.3.10.0"
 authors = ["Charles Samuels <ks@ks.ax>", "Paolo Barbolini <paolo@paolo565.org>", "Kornel <kornel@geekhood.net>"]
-edition = "2018"
+edition = "2021"
 build = "build.rs"
 links = "aom"
-description="Builds and statically links libaom. Part of libavif-sys"
+description = "Bindings for libaom. Part of libavif-sys"
 keywords=["ffi","codec", "aom", "avif", "AV1"]
 repository="https://github.com/njaard/libavif-rs"
 documentation="https://docs.rs/libavif-sys"
 license="BSD-2-Clause"
-exclude = ["/vendor/third_party/googletest/", "/vendor/test/*.cc", "/vendor/test/*.h", "/vendor/doc/", "/vendor/examples/", "*.dox"]
+exclude = ["/vendor/third_party/googletest/", "/vendor/test/*.cc", "/vendor/test/*.h", "/vendor/doc/", "/vendor/examples/", "*.dox", "*.py", "/vendor/tools/auto_refactor/", "/vendor/tools/txfm_analyzer/"]
 
 [build-dependencies]
-cmake = "0.1"
+cmake = "0.1.51"
+
+[features]
+# You can't disable both
+default = ["av1_encoder", "av1_decoder"]
+# Compile AV1 encoding support
+av1_encoder = []
+# Compile AV1 decoding support
+av1_decoder = []
