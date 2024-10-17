@@ -145,7 +145,7 @@ fn main() {
         "LIBAVIF_CROSS_WIN32",
         "OHOS_NDK_HOME",
     ] {
-        println!("cargo::rerun-if-env-changed={var}");
+        println!("cargo:rerun-if-env-changed={var}");
     }
     println!("cargo:rustc-link-lib=static=aom");
 }
