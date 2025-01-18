@@ -15,7 +15,7 @@ license="BSD-2-Clause"
 libc = "0.2"
 
 [build-dependencies]
-bindgen = { version="0.69.4", default-features = false, features = ["runtime"], optional = true }
+bindgen = { version="0.71.1", default-features = false, features = ["runtime"], optional = true }
 
 [features]
 # Generate FFI bindings using bindgen instead of using pregenerated ones.
