@@ -12,6 +12,7 @@ fn main() {
     let mut meson = Command::new("meson");
 
     meson.env("DESTDIR", &install_dir);
+    meson.arg("setup");
 
     let target = env::var("TARGET").expect("TARGET");
 
