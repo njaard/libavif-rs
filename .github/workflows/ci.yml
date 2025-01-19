@@ -133,7 +133,10 @@ jobs:
       - name: Install dependencies (windows)
         if: matrix.os == 'windows-2019'
         run: |
-          choco install -y ninja
+          choco install ninja -y --no-progress
+          choco install python --version 3.13.1 -y --no-progress
+          $env:PATH = "C:\Python313\Scripts;C:\Python313;$env:PATH"
+          python --version
           pip install meson
 
       - name: Install nasm (windows)
@@ -151,6 +154,7 @@ jobs:
         shell: cmd
         run: |
           call "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+          set PATH=C:\Python313\Scripts;C:\Python313;%PATH%
           cargo test ${{ matrix.features }} --target ${{ matrix.target }}
 
       - name: Test (Linux, macOS)
