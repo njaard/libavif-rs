@@ -15,6 +15,8 @@ fn main() {
     meson.arg("setup");
 
     let target = env::var("TARGET").expect("TARGET");
+    let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap();
+    let target_env = env::var("CARGO_CFG_TARGET_ENV").unwrap();
 
     if target == "i686-pc-windows-msvc" {
         meson.arg("--cross-file").arg("i686-win-msvc.meson");
@@ -41,7 +43,10 @@ fn main() {
         } else {
             "debug"
         })
-        .arg("--prefix=/")
+        .arg(format!(
+            "--prefix={}",
+            if target_os == "windows" { "C:\\" } else { "/" }
+        ))
         .arg("--libdir=lib")
         .arg(&out_dir)
         .arg("vendor")
@@ -81,9 +86,6 @@ fn main() {
             std::process::exit(2);
         }
     }
-
-    let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap();
-    let target_env = env::var("CARGO_CFG_TARGET_ENV").unwrap();
 
     let mut unix_path = install_dir.join("lib").join("libdav1d.a");
     if !unix_path.exists() {
