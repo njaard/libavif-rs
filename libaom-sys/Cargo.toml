@@ -1,6 +1,6 @@
 [package]
 name = "libaom-sys"
-version = "0.17.1+libaom.3.10.0"
+version = "0.17.2+libaom.3.11.0"
 authors = ["Charles Samuels <ks@ks.ax>", "Paolo Barbolini <paolo@paolo565.org>", "Kornel <kornel@geekhood.net>"]
 edition = "2021"
 build = "build.rs"
