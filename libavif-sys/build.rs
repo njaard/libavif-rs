@@ -86,7 +86,7 @@ fn main() {
         "Debug"
     })
     .configure_arg("-DCMAKE_INSTALL_LIBDIR=lib")
-    .configure_arg("-DCMAKE_DISABLE_FIND_PACKAGE_libyuv=1");
+    .configure_arg("-DAVIF_LIBYUV=OFF");
     if env::var("LIBAVIF_CROSS_WIN32").is_ok() {
         avif.configure_arg("-T host=x64").configure_arg("-A Win32");
     }

@@ -2,17 +2,14 @@
 name = "libavif-image"
 version = "0.13.1"
 authors = ["Charles Samuels <ks@ks.ax>", "Paolo Barbolini <paolo@paolo565.org>"]
-edition = "2021"
-rust-version = "1.63"
-description="Load AVIF files into the `image` crate"
-keywords=["codec", "image", "avif", "AV1"]
+edition = "2024"
+rust-version = "1.85"
+description = "Load AVIF files into the `image` crate"
+keywords = ["codec", "image", "avif", "AV1"]
 categories = ["multimedia::images"]
-repository="https://github.com/njaard/libavif-rs"
-documentation="https://docs.rs/libavif-image"
-license="BSD-2-Clause"
+repository = "https://github.com/njaard/libavif-rs"
+license = "BSD-2-Clause"
 readme = "README.md"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 image = { version = "0.25", default-features = false }
@@ -29,4 +26,3 @@ codec-aom = ["libavif/codec-aom"]
 
 [package.metadata.docs.rs]
 no-default-features = true
-

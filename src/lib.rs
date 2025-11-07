@@ -51,7 +51,7 @@ pub fn decode(avif_bytes: &[u8]) -> Result<AvifImage, Error> {
 }
 
 /// Decode into RGB pixels
-pub fn decode_rgb(avif_bytes: &[u8]) -> Result<RgbPixels, Error> {
+pub fn decode_rgb(avif_bytes: &[u8]) -> Result<RgbPixels<'_>, Error> {
     decode(avif_bytes).map(Into::into)
 }
 

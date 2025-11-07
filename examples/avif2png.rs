@@ -1,6 +1,6 @@
 use std::{env, fs};
 
-use image::{codecs::png::PngEncoder, ExtendedColorType, ImageEncoder};
+use image::{ExtendedColorType, ImageEncoder, codecs::png::PngEncoder};
 
 fn main() {
     let input = env::args().nth(1).expect("input filename");

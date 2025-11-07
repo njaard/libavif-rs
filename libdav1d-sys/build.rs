@@ -59,7 +59,9 @@ fn main() {
             }
         }
         Err(err) => {
-            println!("cargo:warning=This crate requires meson (and ninja) to be installed: https://mesonbuild.com/");
+            println!(
+                "cargo:warning=This crate requires meson (and ninja) to be installed: https://mesonbuild.com/"
+            );
             println!("cargo:warning=meson: {err}");
             std::process::exit(2);
         }
@@ -92,7 +94,7 @@ fn main() {
         unix_path = std::fs::read_dir(install_dir.join("lib"))
             .unwrap()
             .filter_map(|e| e.ok())
-            .filter(|e| !e.file_name().to_str().map_or(false, |n| n.starts_with('.')))
+            .filter(|e| !e.file_name().to_str().is_some_and(|n| n.starts_with('.')))
             .map(|e| e.path().join("libdav1d.a"))
             .find(|p| p.exists())
             .expect("can't find libdav1d.a in install dir");

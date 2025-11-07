@@ -6,7 +6,7 @@
 use image::{DynamicImage, ImageBuffer};
 
 use libavif::AvifData;
-pub use libavif::{is_avif, Error};
+pub use libavif::{Error, is_avif};
 
 /// Read data that is in an AVIF file and load it into an image
 pub fn read(buf: &[u8]) -> Result<DynamicImage, Error> {

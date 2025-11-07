@@ -12,16 +12,15 @@ env:
 jobs:
   rustfmt:
     name: rustfmt / linux / stable
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
           components: rustfmt
 
       - name: cargo fmt -- --check
@@ -30,11 +29,11 @@ jobs:
 
   clippy:
     name: clippy / linux / stable
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: true
 
@@ -46,7 +45,6 @@ jobs:
       - name: Install rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
           components: clippy
 
       - name: cargo clippy --all --examples
@@ -54,7 +52,7 @@ jobs:
 
   test:
     name: test / ${{ matrix.name }}
-    runs-on: ${{ matrix.os || 'ubuntu-22.04' }}
+    runs-on: ${{ matrix.os || 'ubuntu-24.04' }}
 
     strategy:
       fail-fast: false
@@ -72,29 +70,29 @@ jobs:
           - name: linux / nightly
             rust: nightly
             target: x86_64-unknown-linux-gnu
-          - name: linux / 1.79.0
-            rust: 1.79.0
+          - name: linux / 1.85.1
+            rust: 1.85.1
             target: x86_64-unknown-linux-gnu
           - name: macOS / stable
-            os: macOS-13
+            os: macOS-15
             target: x86_64-apple-darwin
           - name: macOS / stable / codec-aom
-            os: macOS-13
+            os: macOS-15
             features: '--no-default-features --features codec-aom'
             target: x86_64-apple-darwin
           - name: windows / stable
-            os: windows-2019
+            os: windows-2025
             target: x86_64-pc-windows-msvc
           - name: windows / stable codec-aom
-            os: windows-2019
+            os: windows-2025
             features: '--no-default-features --features codec-aom'
             target: x86_64-pc-windows-msvc
           - name: wasm / nightly codec-aom
-            os: ubuntu-22.04
+            os: ubuntu-24.04
             target: 'wasm32-unknown-emscripten'
             features: '--no-default-features --features codec-aom'
           - name: wasm-macos / stable codec-aom
-            os: macOS-13
+            os: macOS-15
             target: 'wasm32-unknown-emscripten'
             features: '--no-default-features --features codec-aom'
           - name: wasi / stable codec-rav1e
@@ -105,21 +103,21 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: true
 
       - name: Install dependencies (linux)
-        if: (matrix.os || 'ubuntu-22.04') == 'ubuntu-22.04'
+        if: (matrix.os || 'ubuntu-24.04') == 'ubuntu-24.04'
         run: |
           DEBIAN_FRONTEND=noninteractive sudo apt-get update
           DEBIAN_FRONTEND=noninteractive sudo apt-get install -y ninja-build nasm meson
 
       - name: Install dependencies (macOS)
-        if: matrix.os == 'macOS-13'
+        if: matrix.os == 'macOS-15'
         run: |
           brew install ninja nasm meson
-      
+
       - name: Install emcc
         if: matrix.target == 'wasm32-unknown-emscripten' && contains(matrix.os, 'macOS')
         run: brew install emscripten
@@ -131,7 +129,7 @@ jobs:
           DEBIAN_FRONTEND=noninteractive sudo apt-get install emscripten
 
       - name: Install dependencies (windows)
-        if: matrix.os == 'windows-2019'
+        if: matrix.os == 'windows-2025'
         run: |
           choco install ninja -y --no-progress
           choco install python --version 3.13.1 -y --no-progress
@@ -140,7 +138,7 @@ jobs:
           pip install meson
 
       - name: Install nasm (windows)
-        if: matrix.os == 'windows-2019'
+        if: matrix.os == 'windows-2025'
         uses: ilammy/setup-nasm@v1
 
       - name: Install rust
@@ -150,20 +148,20 @@ jobs:
           targets: ${{ matrix.target }}
 
       - name: Test (Windows)
-        if: matrix.os == 'windows-2019'
+        if: matrix.os == 'windows-2025'
         shell: cmd
         run: |
-          call "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+          call "C:/Program Files (x86)/Microsoft Visual Studio/2025/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
           set PATH=C:\Python313\Scripts;C:\Python313;%PATH%
           cargo test ${{ matrix.features }} --target ${{ matrix.target }}
 
       - name: Test (Linux, macOS)
-        if: ${{ matrix.os != 'windows-2019' && !contains(matrix.target, 'wasm') }}
+        if: ${{ matrix.os != 'windows-2025' && !contains(matrix.target, 'wasm') }}
         run: |
           cargo test ${{ matrix.features }} --target ${{ matrix.target }}
 
       - name: Check wasm
-        if: matrix.target == 'wasm32-unknown-emscripten' && matrix.os == 'ubuntu-22.04'
+        if: matrix.target == 'wasm32-unknown-emscripten' && matrix.os == 'ubuntu-24.04'
         run: |
           export EMSCRIPTEN_CMAKE_FILE="/usr/share/emscripten/cmake/Modules/Platform/Emscripten.cmake"
           cargo check ${{ matrix.features }} --target ${{ matrix.target }}
@@ -196,4 +194,3 @@ jobs:
           CXXFLAGS: "--target=wasm32-wasi-threads -pthread --sysroot=${{ github.workspace }}/wasi-sdk-21.0/share/wasi-sysroot"
           LDFLAGS: "-fuse-ld=${{ github.workspace }}/wasi-sdk-21.0/bin/wasm-ld --target=wasm32-wasi-threads"
           CARGO_TARGET_WASM32_WASI_PREVIEW1_THREADS_LINKER: "${{ github.workspace }}/wasi-sdk-21.0/bin/wasm-ld"
-

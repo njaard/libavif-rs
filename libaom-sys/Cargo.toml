@@ -1,16 +1,15 @@
 [package]
 name = "libaom-sys"
-version = "0.17.2+libaom.3.11.0"
+version = "0.17.2+libaom.3.13.1"
 authors = ["Charles Samuels <ks@ks.ax>", "Paolo Barbolini <paolo@paolo565.org>", "Kornel <kornel@geekhood.net>"]
 edition = "2021"
 build = "build.rs"
 links = "aom"
 description = "Bindings for libaom. Part of libavif-sys"
-keywords=["ffi","codec", "aom", "avif", "AV1"]
+keywords = ["ffi","codec", "aom", "avif", "AV1"]
 categories = ["multimedia::video"]
-repository="https://github.com/njaard/libavif-rs"
-documentation="https://docs.rs/libavif-sys"
-license="BSD-2-Clause"
+repository = "https://github.com/njaard/libavif-rs"
+license = "BSD-2-Clause"
 exclude = ["/vendor/third_party/googletest/", "/vendor/test/*.cc", "/vendor/test/*.h", "/vendor/doc/", "/vendor/examples/", "*.dox", "*.py", "/vendor/tools/auto_refactor/", "/vendor/tools/txfm_analyzer/"]
 
 [build-dependencies]

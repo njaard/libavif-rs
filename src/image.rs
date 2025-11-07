@@ -46,9 +46,11 @@ impl AvifImage {
     }
 
     pub(crate) unsafe fn set_y(&mut self, y: &[u8]) {
-        debug_assert!(!(*self.image).yuvPlanes[0].is_null());
+        unsafe {
+            debug_assert!(!(*self.image).yuvPlanes[0].is_null());
 
-        ptr::copy_nonoverlapping(y.as_ptr(), (*self.image).yuvPlanes[0], y.len());
+            ptr::copy_nonoverlapping(y.as_ptr(), (*self.image).yuvPlanes[0], y.len());
+        }
     }
 
     /// Safety: `image` must be a valid value obtained from libavif
