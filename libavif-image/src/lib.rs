@@ -18,7 +18,7 @@ pub fn read(buf: &[u8]) -> Result<DynamicImage, Error> {
 }
 
 /// Save an image into an AVIF file
-pub fn save(img: &DynamicImage) -> Result<AvifData, Error> {
+pub fn save<'a>(img: &'a DynamicImage) -> Result<AvifData<'a>, Error> {
     let data = match img {
         DynamicImage::ImageRgb8(img) => {
             let rgb = img.as_flat_samples();
