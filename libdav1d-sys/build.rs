@@ -45,7 +45,11 @@ fn main() {
         })
         .arg(format!(
             "--prefix={}",
-            if target_os == "windows" { "C:\\" } else { "/" }
+            if target_os == "windows" && target != "x86_64-pc-windows-gnu" {
+                "C:\\"
+            } else {
+                "/"
+            }
         ))
         .arg("--libdir=lib")
         .arg(&out_dir)
@@ -92,7 +96,7 @@ fn main() {
         unix_path = std::fs::read_dir(install_dir.join("lib"))
             .unwrap()
             .filter_map(|e| e.ok())
-            .filter(|e| !e.file_name().to_str().map_or(false, |n| n.starts_with('.')))
+            .filter(|e| !e.file_name().to_str().is_some_and(|n| n.starts_with('.')))
             .map(|e| e.path().join("libdav1d.a"))
             .find(|p| p.exists())
             .expect("can't find libdav1d.a in install dir");
@@ -124,6 +128,9 @@ fn main() {
     println!("cargo:staticlib={}", staticlib_path.display());
     // DEP_DAV1D_INCLUDE with header include path
     println!("cargo:include={}", install_dir.join("include").display());
+
+    #[cfg(target_os = "windows")]
+    println!("cargo:rustc-link-arg=-NODEFAULTLIB:msvcrtd");
 
     #[cfg(feature = "generate")]
     generate_bindings();

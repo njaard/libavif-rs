@@ -37,6 +37,15 @@ pub fn decode(avif_bytes: &[u8]) -> Result<AvifImage, Error> {
     let mut image = AvifImage::empty();
     unsafe {
         let decoder = sys::avifDecoderCreate();
+        (*decoder).codecChoice = sys::AVIF_CODEC_CHOICE_AUTO;
+        (*decoder).maxThreads = -1;
+        (*decoder).imageSizeLimit = sys::AVIF_DEFAULT_IMAGE_SIZE_LIMIT;
+        (*decoder).imageDimensionLimit = sys::AVIF_DEFAULT_IMAGE_DIMENSION_LIMIT;
+        (*decoder).strictFlags = sys::AVIF_STRICT_ENABLED;
+        (*decoder).allowProgressive = 0;
+        (*decoder).imageContentToDecode |= sys::AVIF_IMAGE_CONTENT_SAMPLE_TRANSFORMS;
+        (*decoder).ignoreExif = 0;
+        (*decoder).ignoreXMP = 0;
         let result = sys::avifDecoderReadMemory(
             decoder,
             image.inner_mut(),
@@ -51,7 +60,7 @@ pub fn decode(avif_bytes: &[u8]) -> Result<AvifImage, Error> {
 }
 
 /// Decode into RGB pixels
-pub fn decode_rgb(avif_bytes: &[u8]) -> Result<RgbPixels, Error> {
+pub fn decode_rgb<'a>(avif_bytes: &'a [u8]) -> Result<RgbPixels<'a>, Error> {
     decode(avif_bytes).map(Into::into)
 }
 
