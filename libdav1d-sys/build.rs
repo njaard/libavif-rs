@@ -125,6 +125,9 @@ fn main() {
     // DEP_DAV1D_INCLUDE with header include path
     println!("cargo:include={}", install_dir.join("include").display());
 
+    #[cfg(target_os = "windows")]
+    println!("cargo:rustc-link-arg=-NODEFAULTLIB:msvcrtd");
+
     #[cfg(feature = "generate")]
     generate_bindings();
 }
