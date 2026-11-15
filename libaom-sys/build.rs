@@ -26,6 +26,7 @@ fn main() {
         } else {
             "Debug"
         })
+        .define("ENABLE_APPS", "0")
         .define("ENABLE_DOCS", "0")
         .define("ENABLE_EXAMPLES", "0")
         .define("ENABLE_TESTDATA", "0")
