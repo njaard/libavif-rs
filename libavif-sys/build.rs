@@ -87,6 +87,13 @@ fn main() {
     })
     .configure_arg("-DCMAKE_INSTALL_LIBDIR=lib")
     .configure_arg("-DAVIF_LIBYUV=OFF");
+
+    // Match Rust's +crt-static; CMP0091 makes CMake honor the runtime setting.
+    if env::var("CARGO_CFG_TARGET_ENV").as_deref() == Ok("msvc") {
+        avif.define("CMAKE_POLICY_DEFAULT_CMP0091", "NEW")
+            .define("CMAKE_MSVC_RUNTIME_LIBRARY", "MultiThreaded");
+    }
+
     if env::var("LIBAVIF_CROSS_WIN32").is_ok() {
         avif.configure_arg("-T host=x64").configure_arg("-A Win32");
     }

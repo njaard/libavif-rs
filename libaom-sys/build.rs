@@ -26,12 +26,19 @@ fn main() {
         } else {
             "Debug"
         })
+        .define("ENABLE_APPS", "0")
         .define("ENABLE_DOCS", "0")
         .define("ENABLE_EXAMPLES", "0")
         .define("ENABLE_TESTDATA", "0")
         .define("ENABLE_TESTS", "0")
         .define("ENABLE_TOOLS", "0")
         .define("CMAKE_INSTALL_LIBDIR", "lib");
+
+        // Match Rust's +crt-static; CMP0091 makes CMake honor the runtime setting.
+        if env::var("CARGO_CFG_TARGET_ENV").as_deref() == Ok("msvc") {
+            aom.define("CMAKE_POLICY_DEFAULT_CMP0091", "NEW")
+                .define("CMAKE_MSVC_RUNTIME_LIBRARY", "MultiThreaded");
+        }
 
         // One of them must be set, and that also makes it back-compat with default-features=false
         if cfg!(not(feature = "av1_decoder")) && cfg!(feature = "av1_encoder") {
@@ -94,9 +101,10 @@ fn main() {
             }
 
             if target == "armv7-unknown-linux-gnueabihf" {
+                // libaom 3.15 moved the toolchains out of build/cmake.
                 aom.define(
                     "CMAKE_TOOLCHAIN_FILE",
-                    "build/cmake/toolchains/armv7-linux-gcc.cmake",
+                    "cmake/toolchains/armv7-linux-gcc.cmake",
                 );
             }
             if target.contains("ohos") {
