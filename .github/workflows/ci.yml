@@ -144,12 +144,14 @@ jobs:
           targets: ${{ matrix.target }}
 
       - name: Test (Windows)
-        if: matrix.os == 'windows-2025'
+        if: matrix.os == 'windows-2025-vs2026'
         shell: cmd
         run: |
           call "C:/Program Files (x86)/Microsoft Visual Studio/2025/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
           set PATH=C:\Python313\Scripts;C:\Python313;%PATH%
           cargo test ${{ matrix.features }} --target ${{ matrix.target }}
+          set RUSTFLAGS=-Ctarget-feature=+crt-static
+          cargo test -p libdav1d-sys --target ${{ matrix.target }}
 
       - name: Test (Linux, macOS)
         if: ${{ matrix.os != 'windows-2025-vs2026' && !contains(matrix.target, 'wasm') }}
