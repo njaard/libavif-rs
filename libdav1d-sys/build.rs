@@ -35,6 +35,18 @@ fn main() {
             .arg("wasm32-unknown-emscripten.meson");
     }
 
+    if target_os == "windows" && target_env == "msvc" {
+        let crt_static = env::var("CARGO_CFG_TARGET_FEATURE")
+            .expect("CARGO_CFG_TARGET_FEATURE")
+            .split(',')
+            .any(|feature| feature == "crt-static");
+        meson.arg(if crt_static {
+            "-Db_vscrt=mt"
+        } else {
+            "-Db_vscrt=md"
+        });
+    }
+
     let s = meson
         .arg("--default-library=static")
         .arg("--buildtype")
@@ -128,9 +140,6 @@ fn main() {
     println!("cargo:staticlib={}", staticlib_path.display());
     // DEP_DAV1D_INCLUDE with header include path
     println!("cargo:include={}", install_dir.join("include").display());
-
-    #[cfg(target_os = "windows")]
-    println!("cargo:rustc-link-arg=-NODEFAULTLIB:msvcrtd");
 
     #[cfg(feature = "generate")]
     generate_bindings();
